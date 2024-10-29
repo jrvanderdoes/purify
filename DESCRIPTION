@@ -1,0 +1,14 @@
+Package: purify
+Title: Equalized permutation for statified data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Jeremy", "VanderDoes", , "jeremyvanderdoes@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0001-9885-3073"))
+    person("", "", , "email@", role = c("aut"),
+           comment = c(ORCID = ""))
+Description: Sample stratified data via permutation methods to standardize group
+  sizes.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
