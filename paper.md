@@ -24,24 +24,80 @@ bibliography: paper.bib
 
 # Summary
 
-`Purify` is an R package developed for bootstrap resampling and permutation testing, specifically designed to handle data with a dependent output variable and multiple predictors. This package provides an efficient implementation for resampling and applying custom functions across resampled datasets, enabling robust statistical analysis, hypothesis testing, and model evaluation. The core functionality of `Purify` lies in its ability to permute user-selected predictor variables while keeping the output variable unchanged, which is useful in studying the stability of statistical inferences, in particular with unbalanced dataset.
+`Purify` is an R package designed for bootstrap resampling and permutation testing, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
 
 # Statement of need
 
-Bootstrap resampling is a widely-used technique for estimating the distribution of a statistic by resampling from the data with replacement. This approach is crucial for performing accurate hypothesis testing and estimating confidence intervals, especially when analytical solutions are difficult to obtain. Existing R packages for resampling (e.g., `boot`, `rsample`) focus primarily on simple applications of the bootstrap but may lack flexibility for complex, dependent data structures.
-
-`Purify` fills this gap by providing a customizable framework for permuting predictor variables while keeping the output variable constant, allowing users to apply various statistical functions and assess the impact of different predictor combinations on outcomes. This package is particularly valuable for researchers, data scientists, and statisticians working in fields such as econometrics, finance, and machine learning.
+Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. `Purify` fills this gap by enabling data scientists and researchers to perform targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, `Purify` enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.
 
 
-# Information
+# Package Functionality
 
-The paper should be between 250-1000 words.
+The primary function in `Purify` is `resample_function()`, with four available resampling methods:
 
-See an example paper at [website](https://joss.readthedocs.io/en/latest/example_paper.html).
+1. `Simple`: Standard permutation of predictor variables without additional structure.
+2. `Stratify`: Resampling within specified strata to maintain group structure.
+3. `Sliding`: Applying a sliding window to generate resamples over time-ordered data.
+4. `Segment`: Dividing data into segments and resampling within each.
 
-Format details at [website](https://joss.readthedocs.io/en/latest/paper.html), perhaps also see [website](https://joss.readthedocs.io/en/latest/submitting.html)
+This flexibility enables users to adapt Purify to diverse data contexts and hypothesis-testing requirements.
+
+
+## Example Usage
+
+The following example demonstrates the use of `Purify` with simulated data, applying a mean squared error (MSE) calculation over 1,000 resamples using the simple method:
+
+```{r eval=False}
+library(purify)
+
+# Simulate data
+set.seed(123)
+n <- 100
+data <- data.frame(
+  output = rnorm(n),
+  predictor1 = rnorm(n),
+  predictor2 = rnorm(n)
+)
+
+# Define a custom function to calculate MSE
+mse_function <- function(data) {
+  mean((data$output - predict(lm(output ~ ., data = data)))^2)
+}
+
+# Perform resampling with the 'simple' method
+results <- resample_function(data = data, fn = mse_function, n = 1000, method = "simple")
+```
+
+
+# Implementation
+
+`Purify` is implemented in R, using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements.
 
 
 # Acknowledgements
 
+Development of the `Purify` package was inspired by foundational methods in statistical resampling and permutation testing. Special thanks to the open-source R community for support and resources.
+
+
 # References
+
+- Efron, B., & Tibshirani, R. J. (1994). *An Introduction to the Bootstrap*. CRC Press.
+- Davison, A. C., & Hinkley, D. V. (1997). *Bootstrap Methods and Their Application*. Cambridge University Press.
+- Wickham, H. (2019). *Advanced R*. CRC Press.
+
+
+# Contributing
+
+Contributions to `Purify` are welcome. Please submit pull requests or open issues on the GitHub repository.
+
+
+
+<!--Information-->
+
+<!--The paper should be between 250-1000 words.-->
+
+<!--See an example paper at [website](https://joss.readthedocs.io/en/latest/example_paper.html).-->
+
+<!--Format details at [website](https://joss.readthedocs.io/en/latest/paper.html), perhaps also see [website](https://joss.readthedocs.io/en/latest/submitting.html)-->
+
+
