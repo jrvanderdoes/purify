@@ -20,7 +20,6 @@ affiliations:
     index: 1
 date: 4 November 2024
 bibliography: paper.bib
-nocite: @davison:hinkley:1997 @efron:tibshirani:1998 @wickham:2019
 ---
 
 # Summary
@@ -92,6 +91,8 @@ Contributions to `Purify` are welcome. Please submit pull requests or open issue
 
 
 # References
+
+\nocite{davison:hinkley:1997, efron:tibshirani:1998, wickham:2019}
 
 
 <!--The paper should be between 250-1000 words.-->
