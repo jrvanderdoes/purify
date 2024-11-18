@@ -43,7 +43,7 @@ A primary function in `Purify` is `resample_function()`, with four available res
 
 This flexibility enables users to adapt `Purify` to diverse data contexts and hypothesis-testing requirements. 
 
-Other permutation functions such as \code{resample()} are included for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` for stratified samples.
+Other permutation functions such as `resample()` are included for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` for stratified samples.
 
 
 ## Example Usage
@@ -71,7 +71,7 @@ mse_function <- function(data) {
 results <- resample_function(data = data, fn = mse_function, M = 1000, method = 'simple')
 ```
 
-Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented \code{resample_function()}, the function \code{resample()} can be used to directly return the resampled data.
+Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented `resample_function()`, the function `resample()` can be used to directly return the resampled data.
 
 
 # Implementation
