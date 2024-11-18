@@ -7,7 +7,7 @@ tags:
   - Simulation
 authors:
   - name: Jeremy VanderDoes
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0001-9885-3073
     equal-contrib: true 
     affiliation: 1 # (Multiple affiliations must be quoted)
     corresponding: true
@@ -20,6 +20,7 @@ affiliations:
   index: 1
 date: 4 November 2024
 bibliography: paper.bib
+nocite: davison:hinkley:1997 efron:tibshirani:1998 wickham:2019
 ---
 
 # Summary
@@ -33,14 +34,16 @@ Bootstrap resampling is fundamental for estimating the distribution of a statist
 
 # Package Functionality
 
-The primary function in `Purify` is `resample_function()`, with four available resampling methods:
+A primary function in `Purify` is `resample_function()`, with four available resampling methods:
 
 1. `Simple`: Standard permutation of predictor variables without additional structure.
 2. `Stratify`: Resampling within specified strata to maintain group structure.
 3. `Sliding`: Applying a sliding window to generate resamples over time-ordered data.
 4. `Segment`: Dividing data into segments and resampling within each.
 
-This flexibility enables users to adapt Purify to diverse data contexts and hypothesis-testing requirements.
+This flexibility enables users to adapt `Purify` to diverse data contexts and hypothesis-testing requirements. 
+
+Other permutation functions such as \code{resample()} are included for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` for stratified samples.
 
 
 ## Example Usage
@@ -65,13 +68,15 @@ mse_function <- function(data) {
 }
 
 # Perform resampling with the 'simple' method
-results <- resample_function(data = data, fn = mse_function, n = 1000, method = "simple")
+results <- resample_function(data = data, fn = mse_function, M = 1000, method = 'simple')
 ```
+
+Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented \code{resample_function()}, the function \code{resample()} can be used to directly return the resampled data.
 
 
 # Implementation
 
-`Purify` is implemented in R, using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements.
+`Purify` is implemented in R, using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. `Purify` was used in @tetui:etal:2022 and several upcoming papers.
 
 
 # Acknowledgements
@@ -81,18 +86,12 @@ Development of the `Purify` package was inspired by foundational methods in stat
 
 # References
 
-- Efron, B., & Tibshirani, R. J. (1994). *An Introduction to the Bootstrap*. CRC Press.
-- Davison, A. C., & Hinkley, D. V. (1997). *Bootstrap Methods and Their Application*. Cambridge University Press.
-- Wickham, H. (2019). *Advanced R*. CRC Press.
-
 
 # Contributing
 
 Contributions to `Purify` are welcome. Please submit pull requests or open issues on the GitHub repository.
 
 
-
-<!--Information-->
 
 <!--The paper should be between 250-1000 words.-->
 

@@ -12,7 +12,7 @@
 #'  should be a data.frame with a row for each variable and the first column
 #'  being the estimates.
 #'
-#' @param X Data.frame of to be resampled where the rows are the observations
+#' @param data Data.frame of to be resampled where the rows are the observations
 #'  and the columns are the variables. Note, all variables except the first are
 #'  permuted, where the first is used for the models given in fn.
 #' @param fn Function to apply on each resampled data set. It should return
@@ -45,34 +45,69 @@
 #' @export
 #'
 #' @examples
-resample_function <- function(X, fn, alpha=0.05, ...){
-  X_M <- resample(X, ...)
+resample_function <- function(data, fn, alpha=0.05, ...){
+  X_M <- resample(data, ...)
 
   bs_values <- sapply(X_M,
-                      function(X_i,fn, Y, .colnams, ...){
-                        fn(X=X_i, ...) },
-                      fn=fn, Y=X[,1], simplify = F)
-
+                      function(X_i,fn,  ...){
+                        fn(X_i, ...) },
+                      fn=fn, simplify = F)
   # Results
-  estims <- data.frame('V1'=bs_values[[1]][,1])
+  if(length(bs_values[[1]])==1){
+    # Scalar value
+    estims <- rep(NA, length(bs_values))
+    for(i in 1:length(bs_values)){
+      estims[i] <- bs_values[[i]]
+    }
 
-  for(i in 2:length(bs_values)){
-    estims[,i] <- bs_values[[i]][,1]
+    # Estimate values
+    meanParms <- mean(estims, na.rm = T)
+    meanParamsSD <- sd(estims)
+    lowSamp <- quantile(estims,probs = c(alpha/2))
+    upSamp <- quantile(estims,probs = c(1-alpha/2))
+    cat('hi1\n')
+  } else if(is.vector(bs_values[[1]])){
+
+    estims <- data.frame('V1'=bs_values[[1]])
+
+    for(i in 2:length(bs_values)){
+      estims[,i] <- bs_values[[i]]
+    }
+
+    # Estimate values
+    meanParms <- rowMeans(estims, na.rm = T)
+    meanParamsSD <- apply(estims,MARGIN = 1, sd )
+    lowSamp <- apply(estims,MARGIN = 1,
+                     function(x,y){ quantile(x,probs = c(y))}, y=alpha/2)
+    upSamp <- apply(estims,MARGIN = 1,
+                    function(x,y){ quantile(x,probs = c(y))}, y=1-alpha/2)
+  }else{
+    estims <- data.frame('V1'=bs_values[[1]][,1])
+
+    for(i in 2:length(bs_values)){
+      estims[,i] <- bs_values[[i]][,1]
+    }
+
+    # Estimate values
+    meanParms <- rowMeans(estims, na.rm = T)
+    meanParamsSD <- apply(estims,MARGIN = 1, sd )
+    lowSamp <- apply(estims,MARGIN = 1,
+                     function(x,y){ quantile(x,probs = c(y))}, y=alpha/2)
+    upSamp <- apply(estims,MARGIN = 1,
+                    function(x,y){ quantile(x,probs = c(y))}, y=1-alpha/2)
   }
 
   ## Organize overall bootstrapped estimates
-  meanParms <- rowMeans(estims, na.rm = T)
-  meanParamsSD <- apply(estims,MARGIN = 1, sd )
+  Z_alpha <- qnorm(alpha/2)
   results <- data.frame(
     'estimates' = meanParms,
     'sd' = meanParamsSD,
-    'lowerNorm'= meanParms + qnorm(alpha/2)*meanParamsSD,
-    'upperNorm'= meanParms - qnorm(alpha/2)*meanParamsSD,
-    'lowerResamp'= apply(estims,MARGIN = 1,
-                    function(x,y){ quantile(x,probs = c(y))}, y=alpha/2),
-    'upperResamp'= apply(estims,MARGIN = 1,
-                    function(x,y){ quantile(x,probs = c(y))}, y=1-alpha/2)
+    'lowerNorm'= meanParms + Z_alpha * meanParamsSD,
+    'upperNorm'= meanParms - Z_alpha * meanParamsSD,
+    'lowerResamp'= lowSamp,
+    'upperResamp'= upSamp
     )
+  rownames(results) <- NULL
 
   list(
     "estimates" = results,
@@ -89,12 +124,12 @@ resample_function <- function(X, fn, alpha=0.05, ...){
 #'
 #' Resample data for use in estimation or models.
 #'
-#' @param X Data.frame of to be resampled where the rows are the observations
+#' @param data Data.frame of to be resampled where the rows are the observations
 #'  and the columns are the variables. Note, all variables are permuted, so be
 #'  sure to remove the output variable if you wish to model it so that it is not
 #'  permuted with the data.
 #' @param M Numeric. Number of permutation iterations.
-#' @param type String indicating type of permutation test. Options include
+#' @param method String indicating method of permutation test. Options include
 #'  'simple', 'stratify', 'sliding' and 'segment'. Simple permutes the entire
 #'  data set at random. Stratify  segments the data based on some stratification
 #'  variable, \code{stratify}, and resamples from each group. The groups are
@@ -104,14 +139,14 @@ resample_function <- function(X, fn, alpha=0.05, ...){
 #'  2-5, 3-6, and so on. Segment does not repeat the values, i.e. 1-4, 5-8,
 #'  9-12, and so on.
 #' @param size Numeric for the size of the resampled data. Typically the same of
-#'  the original data set. However, when type='stratify' and a group is
+#'  the original data set. However, when method='stratify' and a group is
 #'  extremely small, it may be valuable to decrease the size.
 #' @param replace Boolean. Indicates if the data should be permuted (FALSE) or
 #'  bootstrapped (TRUE). If the size to too large, permuting may be impossible.
-#' @param blockSize Numeric for the size of the blocks when using \code{type} of
+#' @param blockSize Numeric for the size of the blocks when using \code{method} of
 #'  sliding or segment. Otherwise it is unused.
 #' @param strata String or numeric. This indicate the column to stratify the
-#'  data when \code{type} is stratify. This can be the column number or the
+#'  data when \code{method} is stratify. This can be the column number or the
 #'  column name.
 #'
 #' @return List of resampled data sets.
@@ -119,26 +154,26 @@ resample_function <- function(X, fn, alpha=0.05, ...){
 #' @export
 #'
 #' @examples
-resample <- function(X, M=1000,
-                     type = c('simple','stratify','sliding','segment'),
-                     size = nrow(X),
+resample <- function(data, M=1000,
+                     method = c('simple','stratify','sliding','segment'),
+                     size = nrow(data),
                      replace=TRUE,
                      blockSize=1, strata=NULL){
   types_poss <- c('simple','stratify','sliding','segment')
-  type <- types_poss[min(pmatch(type,types_poss))]
+  method <- types_poss[min(pmatch(method,types_poss))]
   # TODO:: Verify input
 
-  n <- nrow(X)
+  n <- nrow(data)
 
-  if(type=='simple'){
+  if(method=='simple'){
     if(size>n && !replace) stop('The variable size is too large to permute.',
                                 call. = FALSE)
 
     X_resampled <- sapply(1:M, function(i,n,X1,replace=replace){
       X1[sample(1:n,replace = replace,size = size),]
-    },n=n, replace = replace, X1=X, simplify = FALSE)
+    },n=n, replace = replace, X1=data, simplify = FALSE)
 
-  } else if(type=='sliding'){
+  } else if(method=='sliding'){
     # TODO:: Add error check
 
     idxGroups <- sapply(0:(n-blockSize), function(x,blockSize){
@@ -160,9 +195,9 @@ resample <- function(X, M=1000,
     X_resampled <- sapply(as.data.frame(idxs),
                           function(loop_iter, Xdata) {
                             Xdata[stats::na.omit(loop_iter),]
-                          }, Xdata=X,simplify = F
+                          }, Xdata=data,simplify = F
     )
-  } else if(type=='segment'){
+  } else if(method=='segment'){
     # TODO:: Add error check
 
     idxGroups <- .getChunks(1:n, n / blockSize)
@@ -182,24 +217,24 @@ resample <- function(X, M=1000,
     X_resampled <- sapply(as.data.frame(idxs),
                           function(loop_iter, Xdata) {
                             Xdata[stats::na.omit(loop_iter),]
-                          }, Xdata=X, simplify = F
+                          }, Xdata=data, simplify = F
     )
 
-  } else if(type=='stratify') {
+  } else if(method=='stratify') {
     # TODO:: Add error check
 
-    # X[[strata]] <- paste0(X[[strata]],'A')
+    # data[[strata]] <- paste0(data[[strata]],'A')
 
-    groups <- as.data.frame(table(X[[strata]]))
-    # groups <- unique(X[[strata]])
-    # group_sizes <- as.numeric(table(X[[strata]]))
+    groups <- as.data.frame(table(data[[strata]]))
+    # groups <- unique(data[[strata]])
+    # group_sizes <- as.numeric(table(data[[strata]]))
 
     min_size <- floor(size/nrow(groups))
 
     # Group Strata together
     X_stacked_stata <- data.frame()
     for(i in 1:nrow(groups)){
-      X_stacked_stata <- rbind(X_stacked_stata, X[X[[strata]]==groups[i,'Var1'],])
+      X_stacked_stata <- rbind(X_stacked_stata, data[data[[strata]]==groups[i,'Var1'],])
     }
     rownames(X_stacked_stata) <- NULL
 
@@ -220,7 +255,7 @@ resample <- function(X, M=1000,
     X1=X_stacked_stata, simplify=FALSE)
 
   } else{
-    stop('Check `type` variable', call. = FALSE)
+    stop('Check `method` variable', call. = FALSE)
   }
 
   X_resampled
@@ -233,7 +268,7 @@ resample <- function(X, M=1000,
 #'     subsegments. The values of x are kept in order (i.e. not scrambled).
 #'
 #' @param x Vector of values
-#' @param chunksN Numeric indicating the number of chunks to split X into
+#' @param chunksN Numeric indicating the number of chunks to split data into
 #'
 #' @return A list with chunksN items, each containing an similiar sized subset
 #'     of the original vector
