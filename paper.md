@@ -16,11 +16,11 @@ authors:
     orcid: 0000-0000-0000-0000
     affiliation: 1
 affiliations:
-- name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
-  index: 1
+  - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
+    index: 1
 date: 4 November 2024
 bibliography: paper.bib
-nocite: @* 
+nocite: @davison:hinkley:1997 @efron:tibshirani:1998 @wickham:2019
 ---
 
 # Summary
