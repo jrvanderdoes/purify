@@ -27,7 +27,7 @@ and 'segment'. We follow these for this vignette.
 # Simple Permutation
 
 Consider a simple data set as generated below.
-```{r, simple_generate}
+```{r simple_generate}
 set.seed(12345)
 n <- 100
 
@@ -44,7 +44,7 @@ data_simple$y <- 1 + 2*data_simple$x - 3*data_simple$z + data_simple$x*data_simp
 ```
 
 Suppose we are interested in the regression $$y\sim \beta_0+\beta_1x+\beta_2z+\beta_3xz$$. This can be codified as follows, noting that the first value of the output data.frame is the estimates.
-```{r, simple_function}
+```{r simple_function}
 simple_function <- function(X){
   reg <- lm(y~x*z, data=X)
   
@@ -53,13 +53,13 @@ simple_function <- function(X){
 ```
 
 The model on the original data is computed.
-```{R, simple_regression}
+```{R simple_regression}
 set.seed(12345)
 simple_function(data_simple)
 ```
 This simulation returns value which are similar but are definitely different from the true values
 This can be resampled as follows.
-```{rm simple_resample_function}
+```{r simple_resample_function}
 set.seed(12345)
 res <- resample_function(data_simple, simple_function)
 res$estimates
@@ -70,7 +70,7 @@ The resampling returns better estimates.
 # Statified Permutation (TODO::UPDATE)
 
 Consider a stratified data set as generated below.
-```{r, stratify_generate}
+```{r stratify_generate}
 set.seed(1234)
 n <- 500
 
@@ -87,12 +87,12 @@ data_strat$y <- 10 + 0.1*data_strat$x + rnorm(n,sd=10)
 ```
 
 We see major in balance is the groups
-```{r stratify_imbalance}
+```{r, stratify_imbalance}
 boxplot_strata(data_strat,'z')
 ```
 
 Suppose we are interested in the following regression model.
-```{r, stratify_function}
+```{r stratify_function}
 strat_function <- function(X){
   reg <- lm(y~x+z+w, data=X)
   
@@ -102,15 +102,15 @@ strat_function <- function(X){
 ```
 
 The model on the original data can be computed.
-```{R, simple_regression}
+```{r strat_regression}
 set.seed(1234)
 strat_function(data_strat)
 ```
 This simulation returns value which are far different from the true values,
 This can be resampled as follows.
-```{rm simple_resample_function}
+```{r strat_resample_function}
 set.seed(1234)
-res <- resample_function(X = data_strat, fn = strat_function, type='stratify',
+res <- resample_function(data = data_strat, fn = strat_function, method='stratify',
                          strata='z', size=200)
 res$estimates
 ```
@@ -120,7 +120,7 @@ The resampling returns better estimates.
 # Dependent (Sliding / Segment) Permutation
 
 Consider a dependent data set as generated below.
-```{r, dependent_generate}
+```{r dependent_generate}
 set.seed(1234)
 n <- 500
 
@@ -140,6 +140,6 @@ data_ts <- data_ts[-(1:burnin),]
 
 We could resample as follows.
 ```{r dependent_resample}
-res <- resample(X = data_ts,type='sliding',blockSize = 5)
-res1 <- resample(data_ts,type='segment',blockSize = 5)
+res <- resample(data = data_ts,method='sliding',blockSize = 5)
+res1 <- resample(data_ts,method='segment',blockSize = 5)
 ```

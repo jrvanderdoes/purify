@@ -4,6 +4,8 @@
 # purify
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of purify is to …
