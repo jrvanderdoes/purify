@@ -3,7 +3,7 @@ title: 'Purify: A R package for Bootstrapping'
 tags:
   - R
   - Statistics
-  - Bootstrap Resampling
+  - Permutation and Bootstrap Resampling
   - Simulation
 authors:
   - name: Jeremy VanderDoes
@@ -20,16 +20,20 @@ affiliations:
   index: 1
 date: 4 November 2024
 bibliography: paper.bib
-nocite: davison:hinkley:1997 efron:tibshirani:1998 wickham:2019
+nocite: @* 
 ---
 
 # Summary
 
-`Purify` is an R package designed for bootstrap resampling and permutation testing, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
+`Purify` is an R package designed for permutation-based resampling and testing, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
 
 # Statement of need
 
-Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. `Purify` fills this gap by enabling data scientists and researchers to perform targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, `Purify` enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.
+Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. `Purify` fills this gap by enabling data scientists and researchers to perform targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. 
+
+The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, `Purify` enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.
+
+Permutation tests can be naturally computational intensive and speed is an important consideration throughout `Purify`. Users can use it in a variety of problems. Additional functions are also included to make visualization and understanding of problems easier. Detailed documentation make `Purify` accessible to users of varying statistical understanding.
 
 
 # Package Functionality
@@ -43,16 +47,17 @@ A primary function in `Purify` is `resample_function()`, with four available res
 
 This flexibility enables users to adapt `Purify` to diverse data contexts and hypothesis-testing requirements. 
 
-Other permutation functions such as `resample()` are included for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` for stratified samples.
+Other permutation functions such as `resample()` are included to allow custom modeling for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` to visualize group sizes in stratified samples.
 
 
-## Example Usage
+## Examples
 
-The following example demonstrates the use of `Purify` with simulated data, applying a mean squared error (MSE) calculation over 1,000 resamples using the simple method:
+`Purify` provides several in-depth vignettes in the package or at its [website](https://jrvanderdoes.github.io/purify/).
+- An *Introduction* vignette describes the core features of `purify' and includes simulations to verify the functions.
+- A *ExampleName* vignette details a case scenario on real data.
 
-```{r eval=False}
-library(purify)
-
+We consider a simple simulations below.
+```r
 # Simulate data
 set.seed(123)
 n <- 100
@@ -63,16 +68,13 @@ data <- data.frame(
 )
 
 # Define a custom function to calculate MSE
-mse_function <- function(data) {
+mse_fn <- function(data) {
   mean((data$output - predict(lm(output ~ ., data = data)))^2)
 }
 
 # Perform resampling with the 'simple' method
-results <- resample_function(data = data, fn = mse_function, M = 1000, method = 'simple')
+results <- resample_function(data = data, fn = mse_fn, M = 1000, method = 'simple')
 ```
-
-Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented `resample_function()`, the function `resample()` can be used to directly return the resampled data.
-
 
 # Implementation
 
@@ -84,13 +86,12 @@ Model coefficients can also be examined under permutation; see documentation. Ho
 Development of the `Purify` package was inspired by foundational methods in statistical resampling and permutation testing. Special thanks to the open-source R community for support and resources.
 
 
-# References
-
-
 # Contributing
 
 Contributions to `Purify` are welcome. Please submit pull requests or open issues on the GitHub repository.
 
+
+# References
 
 
 <!--The paper should be between 250-1000 words.-->

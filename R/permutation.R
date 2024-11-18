@@ -6,20 +6,19 @@
 #'  function can be constructed using \code{resample()} when
 #'  \code{resample_function()} is insufficient. The code permutes every
 #'  column except the first ('output'), then applies the function on
-#'  the permuted sample with the (non-permuted) output.
+#'  the permuted sample with the (non-permuted) output. The output is used
+#'  to create bootstrapped estimates.
 #'
 #' @param fn Function. Function to use for each permuted sample. The output
-#'  should be a data.frame with a row for each variable and the first column
-#'  being the estimates.
-#'
-#' @param data Data.frame of to be resampled where the rows are the observations
+#'  should be one of the following. (1) A numeric values (e.g. mean squared
+#'  error), (2) A numeric vector (e.g. vector of coefficients), or (3) a
+#'  data.frame with a row for each variable and the first column being the values
+#'  of interest.#'
+#' @param data Data.frame to be resampled where the rows are the observations
 #'  and the columns are the variables. Note, all variables except the first are
 #'  permuted, where the first is used for the models given in fn.
-#' @param fn Function to apply on each resampled data set. It should return
-#'  a data,frame with the first column at the variable estimates (row as
-#'  variables).
 #' @param ... This is for the parameters of the resampling. See parameters of
-#' \code{resample()}, if not given, the defaults are used.
+#' \code{resample()}. When not given, the defaults are used.
 #'
 #' @return A list of items. The first is the results as a dataframe. It has the
 #'  following columns with a row per variable.
@@ -45,6 +44,16 @@
 #' @export
 #'
 #' @examples
+#' n <- 50
+#' data <- data.frame(
+#'   output = rnorm(n),
+#'   predictor1 = rnorm(n),
+#'   predictor2 = rnorm(n)
+#' )
+#'
+#' fn <- function(data) { coef(lm(output ~ ., data = data)) }
+#' # Warning, M is below recommendation for example speed
+#' results <- resample_function(data = data, fn = fn, M = 10, method = 'simple')
 resample_function <- function(data, fn, alpha=0.05, ...){
   X_M <- resample(data, ...)
 
@@ -124,7 +133,7 @@ resample_function <- function(data, fn, alpha=0.05, ...){
 #'
 #' Resample data for use in estimation or models.
 #'
-#' @param data Data.frame of to be resampled where the rows are the observations
+#' @param data Data.frame to be resampled where the rows are the observations
 #'  and the columns are the variables. Note, all variables are permuted, so be
 #'  sure to remove the output variable if you wish to model it so that it is not
 #'  permuted with the data.
@@ -154,6 +163,12 @@ resample_function <- function(data, fn, alpha=0.05, ...){
 #' @export
 #'
 #' @examples
+#' n <- 50
+#' data <- data.frame(
+#'   predictor1 = rnorm(n),
+#'   predictor2 = rnorm(n)
+#' )
+#' results <- resample(data)
 resample <- function(data, M=1000,
                      method = c('simple','stratify','sliding','segment'),
                      size = nrow(data),
@@ -274,11 +289,6 @@ resample <- function(data, M=1000,
 #'     of the original vector
 #'
 #' @keywords internal
-#'
-#' @examples
-#' .getChunks(1:100, 1)
-#' .getChunks(1:100, 2)
-#' .getChunks(1:100, 5)
 .getChunks <- function(x, chunksN) {
   chunksN <- round(chunksN)
 

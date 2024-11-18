@@ -19,9 +19,4 @@ of the original vector
 This (internal) function splits the vector x into a \code{chunksN} number of
 subsegments. The values of x are kept in order (i.e. not scrambled).
 }
-\examples{
-.getChunks(1:100, 1)
-.getChunks(1:100, 2)
-.getChunks(1:100, 5)
-}
 \keyword{internal}

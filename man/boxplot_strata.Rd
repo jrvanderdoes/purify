@@ -4,13 +4,20 @@
 \alias{boxplot_strata}
 \title{Title}
 \usage{
-boxplot_strata(X, strata)
+boxplot_strata(data, strata)
 }
 \arguments{
-\item{X}{description}
+\item{data}{Data.frame of the data, where rows are observations and columns
+are the variables.}
 
-\item{strata}{description}
+\item{strata}{String of the column name in the data to investigate.}
+}
+\value{
+A ggplot2 object of strata sizes
 }
 \description{
 Title
+}
+\examples{
+boxplot_strata(data.frame('A'=rnorm(100),'B'=rbinom(100,2,0.5)), 'B')
 }

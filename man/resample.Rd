@@ -15,7 +15,7 @@ resample(
 )
 }
 \arguments{
-\item{data}{Data.frame of to be resampled where the rows are the observations
+\item{data}{Data.frame to be resampled where the rows are the observations
 and the columns are the variables. Note, all variables are permuted, so be
 sure to remove the output variable if you wish to model it so that it is not
 permuted with the data.}
@@ -51,4 +51,12 @@ List of resampled data sets.
 }
 \description{
 Resample data for use in estimation or models.
+}
+\examples{
+n <- 50
+data <- data.frame(
+  predictor1 = rnorm(n),
+  predictor2 = rnorm(n)
+)
+results <- resample(data)
 }

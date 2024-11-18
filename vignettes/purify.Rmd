@@ -1,8 +1,8 @@
 ---
-title: "Simulations"
+title: "purify"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulations}
+  %\VignetteIndexEntry{purify}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,17 +14,64 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Overview and Setup
+# Introduction
 
+Welcome to `purify'! This vignette will outline the main functions and offer many valuable simulations for these funtions. Real data examples can be found in other vignettes.
+
+`Purify' comes from its purpose of permutation tests and statification for data. It can be used to purify data and mitigate confounding effects, particularly when looking at strata which are much smaller than other strata.
+
+The data can be found on GitHub and can be loaded as:
 ```{r setup}
 library(purify)
 ```
+
+## Example from paper to include
+
+The following example demonstrates the use of `Purify` with simulated data, applying a mean squared error (MSE) calculation over 1,000 resamples using the simple method:
+```{r}
+# Simulate data
+set.seed(123)
+n <- 100
+data <- data.frame(
+  output = rnorm(n),
+  predictor1 = rnorm(n),
+  predictor2 = rnorm(n)
+)
+
+# Define a custom function to calculate MSE
+mse_function <- function(data) {
+  mean((data$output - predict(lm(output ~ ., data = data)))^2)
+}
+coef_function <- function(data) {
+  coef(lm(output ~ ., data = data))
+}
+
+summ_function <- function(data) {
+  coef(summary(lm(output ~ ., data = data)))
+}
+
+# Perform resampling with the 'simple' method
+results <- resample_function(data = data, fn = mse_function, 
+                             M = 1000, method = 'simple')
+results$estimates
+results_coef <- resample_function(data = data, fn = coef_function, 
+                                  M = 1000, method = "simple")
+results_coef$estimates
+results_summ <- resample_function(data = data, fn = summ_function, 
+                                  M = 1000, method = "simple")
+results_summ$estimates
+```
+
+Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented `resample_function()`, the function `resample()` can be used to directly return the resampled data.
+
+
+# Using resample_function()
 
 In this vignette, we explore the use of this package with simulated data. The function \code{resample_function()} has four options, 'simple', 'stratify', 'sliding', 
 and 'segment'. We follow these for this vignette.
 
 
-# Simple Permutation
+## Simple Permutation
 
 Consider a simple data set as generated below.
 ```{r simple_generate}
@@ -67,7 +114,7 @@ res$estimates
 The resampling returns better estimates.
 
 
-# Statified Permutation (TODO::UPDATE)
+## Statified Permutation (TODO::UPDATE)
 
 Consider a stratified data set as generated below.
 ```{r stratify_generate}
@@ -117,7 +164,7 @@ res$estimates
 The resampling returns better estimates.
 
 
-# Dependent (Sliding / Segment) Permutation
+## Dependent (Sliding / Segment) Permutation
 
 Consider a dependent data set as generated below.
 ```{r dependent_generate}
