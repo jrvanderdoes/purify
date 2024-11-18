@@ -19,6 +19,8 @@ affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
     index: 1
 date: 4 November 2024
+nocite: | 
+  @*
 bibliography: paper.bib
 ---
 
@@ -52,6 +54,7 @@ Other permutation functions such as `resample()` are included to allow custom mo
 ## Examples
 
 `Purify` provides several in-depth vignettes in the package or at its [website](https://jrvanderdoes.github.io/purify/).
+
 - An *Introduction* vignette describes the core features of `purify' and includes simulations to verify the functions.
 - A *ExampleName* vignette details a case scenario on real data.
 
@@ -91,8 +94,6 @@ Contributions to `Purify` are welcome. Please submit pull requests or open issue
 
 
 # References
-
-\nocite{davison:hinkley:1997, efron:tibshirani:1998, wickham:2019}
 
 
 <!--The paper should be between 250-1000 words.-->
