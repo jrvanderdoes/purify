@@ -11,7 +11,8 @@ resample(
   size = nrow(data),
   replace = TRUE,
   blockSize = 1,
-  strata = NULL
+  strata = NULL,
+  stratify_sizes = c("original", "mean", "min", "max")
 )
 }
 \arguments{
@@ -45,6 +46,11 @@ sliding or segment. Otherwise it is unused.}
 \item{strata}{String or numeric. This indicate the column to stratify the
 data when \code{method} is stratify. This can be the column number or the
 column name.}
+
+\item{stratify_sizes}{Option for selecting the sizes of each stata. Can be numeric
+(single value or a value for each strata), or the texts: \code{min}, \code{max}, \code{original},
+or \code{mean}. The text indicates group sizes are all the same as the minimum group,
+maximum group, mean group size, or just their original sizes.}
 }
 \value{
 List of resampled data sets.

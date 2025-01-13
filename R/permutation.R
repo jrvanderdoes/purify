@@ -17,6 +17,7 @@
 #' @param data Data.frame to be resampled where the rows are the observations
 #'  and the columns are the variables. Note, all variables except the first are
 #'  permuted, where the first is used for the models given in fn.
+#' @param alpha Significance level for confidence intervals
 #' @param ... This is for the parameters of the resampling. See parameters of
 #' \code{resample()}. When not given, the defaults are used.
 #'
@@ -71,10 +72,10 @@ resample_function <- function(data, fn, alpha=0.05, ...){
 
     # Estimate values
     meanParms <- mean(estims, na.rm = T)
-    meanParamsSD <- sd(estims)
-    lowSamp <- quantile(estims,probs = c(alpha/2))
-    upSamp <- quantile(estims,probs = c(1-alpha/2))
-    cat('hi1\n')
+    meanParamsSD <- stats::sd(estims)
+    lowSamp <- stats::quantile(estims,probs = c(alpha/2))
+    upSamp <- stats::quantile(estims,probs = c(1-alpha/2))
+
   } else if(is.vector(bs_values[[1]])){
 
     estims <- data.frame('V1'=bs_values[[1]])
@@ -84,12 +85,12 @@ resample_function <- function(data, fn, alpha=0.05, ...){
     }
 
     # Estimate values
-    meanParms <- rowMeans(estims, na.rm = T)
-    meanParamsSD <- apply(estims,MARGIN = 1, sd )
+    meanParms <- rowMeans(estims, na.rm = TRUE)
+    meanParamsSD <- apply(estims,MARGIN = 1, stats::sd )
     lowSamp <- apply(estims,MARGIN = 1,
-                     function(x,y){ quantile(x,probs = c(y))}, y=alpha/2)
+                     function(x,y){ stats::quantile(x,probs = c(y))}, y=alpha/2)
     upSamp <- apply(estims,MARGIN = 1,
-                    function(x,y){ quantile(x,probs = c(y))}, y=1-alpha/2)
+                    function(x,y){ stats::quantile(x,probs = c(y))}, y=1-alpha/2)
   }else{
     estims <- data.frame('V1'=bs_values[[1]][,1])
 
@@ -98,16 +99,16 @@ resample_function <- function(data, fn, alpha=0.05, ...){
     }
 
     # Estimate values
-    meanParms <- rowMeans(estims, na.rm = T)
-    meanParamsSD <- apply(estims,MARGIN = 1, sd )
+    meanParms <- rowMeans(estims, na.rm = TRUE)
+    meanParamsSD <- apply(estims,MARGIN = 1, stats::sd )
     lowSamp <- apply(estims,MARGIN = 1,
-                     function(x,y){ quantile(x,probs = c(y))}, y=alpha/2)
+                     function(x,y){ stats::quantile(x,probs = c(y))}, y=alpha/2)
     upSamp <- apply(estims,MARGIN = 1,
-                    function(x,y){ quantile(x,probs = c(y))}, y=1-alpha/2)
+                    function(x,y){ stats::quantile(x,probs = c(y))}, y=1-alpha/2)
   }
 
   ## Organize overall bootstrapped estimates
-  Z_alpha <- qnorm(alpha/2)
+  Z_alpha <- stats::qnorm(alpha/2)
   results <- data.frame(
     'estimates' = meanParms,
     'sd' = meanParamsSD,
@@ -157,6 +158,10 @@ resample_function <- function(data, fn, alpha=0.05, ...){
 #' @param strata String or numeric. This indicate the column to stratify the
 #'  data when \code{method} is stratify. This can be the column number or the
 #'  column name.
+#' @param stratify_sizes Option for selecting the sizes of each stata. Can be numeric
+#'  (single value or a value for each strata), or the texts: `min`, `max`, `original`,
+#'  or `mean`. The text indicates group sizes are all the same as the minimum group,
+#'  maximum group, mean group size, or just their original sizes.
 #'
 #' @return List of resampled data sets.
 #'
@@ -173,7 +178,8 @@ resample <- function(data, M=1000,
                      method = c('simple','stratify','sliding','segment'),
                      size = nrow(data),
                      replace=TRUE,
-                     blockSize=1, strata=NULL){
+                     blockSize=1, strata=NULL,
+                     stratify_sizes=c('original','mean','min','max')){
   types_poss <- c('simple','stratify','sliding','segment')
   method <- types_poss[min(pmatch(method,types_poss))]
   # TODO:: Verify input
@@ -244,8 +250,6 @@ resample <- function(data, M=1000,
     # groups <- unique(data[[strata]])
     # group_sizes <- as.numeric(table(data[[strata]]))
 
-    min_size <- floor(size/nrow(groups))
-
     # Group Strata together
     X_stacked_stata <- data.frame()
     for(i in 1:nrow(groups)){
@@ -253,20 +257,37 @@ resample <- function(data, M=1000,
     }
     rownames(X_stacked_stata) <- NULL
 
+    # stratify_sizes=c('original','mean','min','max')
+    # If sizes are original
+    sizes <- groups
+    if(is.numeric(stratify_sizes)){
+      sizes$Freq <- stratify_sizes
+    } else if(tolower(stratify_sizes)=='min'){
+      sizes$Freq <- min(sizes$Freq)
+    } else if(tolower(stratify_sizes)=='max'){
+      sizes$Freq <- max(sizes$Freq)
+    } else if(tolower(stratify_sizes)=='mean'){
+      sizes$Freq <- mean(sizes$Freq)
+    } else if(tolower(stratify_sizes)!='original'){
+      stop(paste0('Check `stratify_sizes`. It should be a numeric number or one of the following strings:',
+                  ' `original`, `mean`, `min`, or `max`.'),
+           call. = FALSE)
+    }
+
     ## Stratified sampling
     X_resampled <- sapply(1:M,
-                          function(i, n, X1, min_size=min_size,
+                          function(i, n, X1, sizes=sizes,
                                    replace=replace, groups=groups){
       return_idxs <-c()
       group_sizes_tmp <- c(0, cumsum(groups$Freq))
       for(i in 2:length(group_sizes_tmp)){
         return_idxs <- c(return_idxs,
                          sample((group_sizes_tmp[i-1]+1):group_sizes_tmp[i],
-                                size=min_size, replace = replace))
+                                size=sizes$Freq[i-1], replace = replace))
       }
 
       X1[return_idxs,]
-    }, n=n, min_size=min_size, replace=replace, groups=groups,
+    }, n=n, sizes=sizes, replace=replace, groups=groups,
     X1=X_stacked_stata, simplify=FALSE)
 
   } else{

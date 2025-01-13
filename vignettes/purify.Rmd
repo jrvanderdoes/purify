@@ -25,46 +25,6 @@ The data can be found on GitHub and can be loaded as:
 library(purify)
 ```
 
-## Example from paper to include
-
-The following example demonstrates the use of `Purify` with simulated data, applying a mean squared error (MSE) calculation over 1,000 resamples using the simple method:
-```{r}
-# Simulate data
-set.seed(123)
-n <- 100
-data <- data.frame(
-  output = rnorm(n),
-  predictor1 = rnorm(n),
-  predictor2 = rnorm(n)
-)
-
-# Define a custom function to calculate MSE
-mse_function <- function(data) {
-  mean((data$output - predict(lm(output ~ ., data = data)))^2)
-}
-coef_function <- function(data) {
-  coef(lm(output ~ ., data = data))
-}
-
-summ_function <- function(data) {
-  coef(summary(lm(output ~ ., data = data)))
-}
-
-# Perform resampling with the 'simple' method
-results <- resample_function(data = data, fn = mse_function, 
-                             M = 1000, method = 'simple')
-results$estimates
-results_coef <- resample_function(data = data, fn = coef_function, 
-                                  M = 1000, method = "simple")
-results_coef$estimates
-results_summ <- resample_function(data = data, fn = summ_function, 
-                                  M = 1000, method = "simple")
-results_summ$estimates
-```
-
-Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented `resample_function()`, the function `resample()` can be used to directly return the resampled data.
-
-
 # Using resample_function()
 
 In this vignette, we explore the use of this package with simulated data. The function \code{resample_function()} has four options, 'simple', 'stratify', 'sliding', 
@@ -114,54 +74,66 @@ res$estimates
 The resampling returns better estimates.
 
 
-## Statified Permutation (TODO::UPDATE)
+## Statified Permutation
 
-Consider a stratified data set as generated below.
-```{r stratify_generate}
+The following example demonstrates the use of `Purify` with simulated data that can be stratified. 
+Consider some data with $150$ observations, with varying relationship to time, 
+as simulated and plotted below.
+```{r}
+# Simulate data
 set.seed(1234)
-n <- 500
+data <- rbind(
+  data.frame('time'=runif(10,min=0,max=20),'group'=1),
+  data.frame('time'=runif(140,min=0,max=20),'group'=2)
+)
+data$value <- ifelse(data$group==1,0.5,-0.5)*data$time + rnorm(nrow(data),sd=10)
 
-data_strat <- data.frame('y'=rep(NA,n),
-                         'x'=NA,
-                         'z'=sample(c('A','B','C'),size=n,replace=TRUE,prob=c(0.65,0.3,0.05)),
-                         'w'= rnorm(n,75,50))
-data_strat[data_strat$z=='A',"x"] <- rnorm(length(data_strat[data_strat$z=='A',"x"]),40,15)
-data_strat[data_strat$z=='B',"x"] <- rnorm(length(data_strat[data_strat$z=='B',"x"]),60,25)
-data_strat[data_strat$z=='C',"x"] <- rnorm(length(data_strat[data_strat$z=='C',"x"]),100,25)
-
-data_strat$y <- 10 + 0.1*data_strat$x + rnorm(n,sd=10)
-
+plot(x=data$time,y=data$value,
+     col=c('red','blue')[data$group], pch=c(3,20)[data$group])
 ```
 
-We see major in balance is the groups
-```{r, stratify_imbalance}
-boxplot_strata(data_strat,'z')
-```
-
-Suppose we are interested in the following regression model.
-```{r stratify_function}
-strat_function <- function(X){
-  reg <- lm(y~x+z+w, data=X)
-  
-  coef(summary(reg))
+Note that there is a real, contradictory effect from time for each group.
+A natural place to start with some data is a linear model, and examining the 
+coefficients.
+```{r summary_function}
+summ_function <- function(data) {
+  coef(summary(lm(value ~ ., data = data)))
 }
-
 ```
 
-The model on the original data can be computed.
-```{r strat_regression}
-set.seed(1234)
-strat_function(data_strat)
+Run a linear model for the original data and each group.
+```{r basic_regression}
+summ_function(data)
+summ_function(data[data$group==1,])
+summ_function(data[data$group==2,])
 ```
-This simulation returns value which are far different from the true values,
-This can be resampled as follows.
-```{r strat_resample_function}
-set.seed(1234)
-res <- resample_function(data = data_strat, fn = strat_function, method='stratify',
-                         strata='z', size=200)
-res$estimates
+On the entire data the intercept and time seems important, but groups cannot be 
+distinquished due to data inbalance. The first group indicates time is not 
+important, likely from the small sample. The second group find time highly
+significant now. 
+
+It can be hard to decide what is proper. Here resampling may be of value. We
+consider the groups with stratified bootstrapping with the same size as the 
+original and with the group sizes increased, perhaps due to domain knowledge.
+```{r resamp_regression}
+results_orig <- resample_function(data = data, fn = summ_function, 
+                             M = 1000, method = 'stratify',
+                             strata='group',stratify_sizes='original')
+results_mean <- resample_function(data = data, fn = summ_function, 
+                             M = 1000, method = 'stratify',
+                             strata='group',stratify_sizes='mean')
 ```
-The resampling returns better estimates.
+
+Comparing to the original model:
+```{r compare_models}
+summ_function(data)
+results_orig$estimates
+results_mean$estimates
+```
+The originally sized group performs similarly to the linear model. However, 
+increasing the groups, perhaps to correct for survey missampling, shows the 
+groups are different, and time is now insignificant, which would be the true 
+middle value.
 
 
 ## Dependent (Sliding / Segment) Permutation

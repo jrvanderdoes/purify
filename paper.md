@@ -18,7 +18,7 @@ authors:
 affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
     index: 1
-date: 4 November 2024
+date: 13 January 2025
 nocite: | 
   @*
 bibliography: paper.bib
@@ -26,11 +26,11 @@ bibliography: paper.bib
 
 # Summary
 
-`Purify` is an R package designed for permutation-based resampling and testing, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
+`Purify` is an R package designed for permutation-based resampling and testing of data, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
 
 # Statement of need
 
-Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. `Purify` fills this gap by enabling data scientists and researchers to perform targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. 
+Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. Other packages are devoted to a single type of resampling making testing of various approaches unwieldy. `Purify` fills this gap by enabling data scientists and researchers to perform and compare targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. 
 
 The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, `Purify` enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.
 
@@ -42,7 +42,7 @@ Permutation tests can be naturally computational intensive and speed is an impor
 A primary function in `Purify` is `resample_function()`, with four available resampling methods:
 
 1. `Simple`: Standard permutation of predictor variables without additional structure.
-2. `Stratify`: Resampling within specified strata to maintain group structure.
+2. `Stratify`: Resampling within specified strata to maintain group structure or change sampling when known inbalances exist.
 3. `Sliding`: Applying a sliding window to generate resamples over time-ordered data.
 4. `Segment`: Dividing data into segments and resampling within each.
 
@@ -51,46 +51,60 @@ This flexibility enables users to adapt `Purify` to diverse data contexts and hy
 Other permutation functions such as `resample()` are included to allow custom modeling for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` to visualize group sizes in stratified samples.
 
 
-## Examples
+## Example
 
 `Purify` provides several in-depth vignettes in the package or at its [website](https://jrvanderdoes.github.io/purify/).
 
-- An *Introduction* vignette describes the core features of `purify' and includes simulations to verify the functions.
-- A *ExampleName* vignette details a case scenario on real data.
+- An *Introduction* vignette describes the core features of `purify' and includes simulations to demonstrate the functions.
+- A *cats* vignette details a case scenario on real data.
 
-We consider a simple simulations below.
-```r
-# Simulate data
-set.seed(123)
-n <- 100
-data <- data.frame(
-  output = rnorm(n),
-  predictor1 = rnorm(n),
-  predictor2 = rnorm(n)
-)
+We consider a subset of the cats data set below, where we use sex and body weight to estimate heart weight. In this subset, we drop some female cats so that the data is highly imbalanced, yet if the data is correct then sex and body weight are important. While the sample is small, this mismatch is common in many surveys.
+```{r setup, echo=FALSE}
+library(purify)
+library(ggplot2)
+```
 
-# Define a custom function to calculate MSE
-mse_fn <- function(data) {
-  mean((data$output - predict(lm(output ~ ., data = data)))^2)
+```{r example_plot, echo=FALSE}
+ggplot() +
+  geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
+  theme_bw() +
+  theme(axis.title = element_text(size=22),
+        axis.text = element_text(size=18),
+        legend.position = c(.2, .8),
+        legend.title = element_blank(),
+        legend.text = element_text(size=14)) +
+  scale_color_discrete(labels = c('Female', 'Male')) +
+  scale_shape_manual(labels = c('Female', 'Male'),
+                       values = c(16,3))
+```
+
+```{r example}  
+summ_function <- function(data) {
+  coef(summary(lm(Hwt ~ ., data = data)))
 }
 
-# Perform resampling with the 'simple' method
-results <- resample_function(data = data, fn = mse_fn, M = 1000, method = 'simple')
+set.seed(1234)
+summ_function(subcats)
+
+# Perform resampling
+results <- resample_function(data = subcats, fn = summ_function, 
+                             M = 1000, method = 'stratify',
+                             strata='Sex',stratify_sizes='mean')
+results$estimates
 ```
+
+Although the female cats clearly have a lower heart weight even for the same body weight, the traditional linear model does not detect this. The stratified approach does detect the difference without sacrificing estimation of the bodyweight.
 
 # Implementation
 
-`Purify` is implemented in R, using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. `Purify` was used in @tetui:etal:2022 and several upcoming papers.
+`Purify` is implemented in R, following standard stylization and using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. `Purify` has been used in @tetui:etal:2022, @scsrubook, and several upcoming papers.
 
 
 # Acknowledgements
 
 Development of the `Purify` package was inspired by foundational methods in statistical resampling and permutation testing. Special thanks to the open-source R community for support and resources.
 
-
-# Contributing
-
-Contributions to `Purify` are welcome. Please submit pull requests or open issues on the GitHub repository.
+Contributions to `Purify` are welcome and notable recognition is given to all who raise awareness of deficiencies in the package via the GitHub repository.
 
 
 # References

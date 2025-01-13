@@ -17,6 +17,8 @@ error), (2) A numeric vector (e.g. vector of coefficients), or (3) a
 data.frame with a row for each variable and the first column being the values
 of interest.#'}
 
+\item{alpha}{Significance level for confidence intervals}
+
 \item{...}{This is for the parameters of the resampling. See parameters of
 \code{resample()}. When not given, the defaults are used.}
 }
