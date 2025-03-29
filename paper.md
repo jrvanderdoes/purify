@@ -71,9 +71,10 @@ functions to illuminate the methods and results. Detailed documentation makes
 
 A primary function in `Purify` is `resample()` with clear input parameters 
 to simplify the process. The multistep selection allows for combinations of 
-dependent data, inbalanced data, and resampling to be performed with and without 
-replacment. The flexibility enables users to adapt `Purify` to diverse data 
-contexts and hypothesis-testing requirements. See also `cross_validation()`.
+dependent data, unbalanced data, and resampling to be performed with and without 
+replacement. The flexibility enables users to adapt `Purify` to diverse data 
+contexts and hypothesis-testing requirements. See also `cross_validation()` and
+`confidence_intervals()`.
 
 Supporting functions such as `summarize_resample()` provide additional 
 information to the user. Visualization such as `plot_strata_bar()` or 

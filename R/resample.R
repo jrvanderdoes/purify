@@ -76,8 +76,9 @@ resample <- function(data, M = 1000,
     data.vector <- TRUE
   }
 
-  if(is.null(sizes) && is.null(strata))
+  if (is.null(sizes) && is.null(strata)) {
     sizes <- n
+  }
 
   ## Resample
   if (is.null(strata)) {
@@ -92,7 +93,7 @@ resample <- function(data, M = 1000,
 
     if (data.vector) {
       X_resampled <-
-        sapply(1:M, function(i, sizes, X1, idxGroups=idxGroups,replace = replace, blocksize = blocksize) {
+        sapply(1:M, function(i, sizes, X1, idxGroups = idxGroups, replace = replace, blocksize = blocksize) {
           min_group <- min(sapply(idxGroups, length))
           size_val <- ifelse(!replace, length(idxGroups), ceiling(sizes / min_group) + 1)
 
@@ -102,7 +103,7 @@ resample <- function(data, M = 1000,
           ret_val
           # unlist(X1[sample(1:length(X1),replace = replace,
           #                         size = size_val)])[1:n]
-        }, sizes = sizes, replace = replace, X1 = data, idxGroups=idxGroups, blocksize = blocksize, simplify = FALSE)
+        }, sizes = sizes, replace = replace, X1 = data, idxGroups = idxGroups, blocksize = blocksize, simplify = FALSE)
     } else {
       X_resampled <-
         sapply(1:M, function(i, sizes, X1, replace = replace, blocksize = blocksize,
@@ -259,10 +260,11 @@ resample <- function(data, M = 1000,
     result <- X_resampled
   }
 
-  if(data.vector && !is.data.frame(result)){
+  if (data.vector && !is.data.frame(result)) {
     result <- t(as.data.frame(result))
-    if(nrow(result)==1)
+    if (nrow(result) == 1) {
       result <- t(result)
+    }
     rownames(result) <- NULL
   }
 

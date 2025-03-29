@@ -46,12 +46,14 @@ Method for the computation of bootstrapped confidence intervals.
 }
 \examples{
 data <- cumsum(rnorm(150))
-pred_model <- function(x,h){ predict(forecast::ets(x),h=h)$mean }
+pred_model <- function(x, h) {
+  predict(forecast::ets(x), h = h)$mean
+}
 h <- 10
-ets_model <- predict(forecast::ets(data[1:140]),h)
-ints <- confidence_intervals(data = data[1:140], pred_model=pred_model, h = h)
+ets_model <- predict(forecast::ets(data[1:140]), h)
+ints <- confidence_intervals(data = data[1:140], pred_model = pred_model, h = h)
 
 plot(ets_model)
-lines(x=141:150,y=ints$lower, col='red')
-lines(x=141:150,y=ints$upper, col='red')
+lines(x = 141:150, y = ints$lower, col = "red")
+lines(x = 141:150, y = ints$upper, col = "red")
 }
