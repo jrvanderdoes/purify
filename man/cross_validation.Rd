@@ -47,10 +47,10 @@ for simple application on various data sets.
 }
 \examples{
 n <- 50
-data <- data.frame( Y = NA, X = rnorm(n) )
-data$Y <- 2*data$X + stats::rnorm(nrow(data))
-pred_fn <- function(x_fit, x_pred){
-  as.numeric(predict(lm(Y~X,data=data[-c(1:10),]),data[1:10,]))
+data <- data.frame(Y = NA, X = rnorm(n))
+data$Y <- 2 * data$X + stats::rnorm(nrow(data))
+pred_fn <- function(x_fit, x_pred) {
+  as.numeric(predict(lm(Y ~ X, data = data[-c(1:10), ]), data[1:10, ]))
 }
 cross_validation(data, pred_fn, cv_group_number = 10, cv.dependent = FALSE)
 }

@@ -31,21 +31,24 @@ summ_function <- function(data) {
 We first are interested in the coefficients when estimating the body weight using sex and heart weight, stratified on sex since there are far less female cats observed.
 ```{r strata_plots}
 plot_strata_bar(cats$Sex)
-plot_strata_box(cats[,c('Sex','Hwt')])
-plot_strata_box(cats[,c('Sex','Bwt')])
+plot_strata_box(cats[, c("Sex", "Hwt")])
+plot_strata_box(cats[, c("Sex", "Bwt")])
 
 ggplot() +
-  geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
+  geom_point(aes(x = Bwt, y = Hwt, col = Sex, shape = Sex), data = subcats) +
   theme_bw() +
-  theme(axis.title = element_text(size=22),
-        axis.text = element_text(size=18),
-        legend.position = c(.2, .8),
-        legend.title = element_blank(),
-        legend.text = element_text(size=14)) +
-  scale_color_discrete(labels = c('Female', 'Male')) +
-  scale_shape_manual(labels = c('Female', 'Male'),
-                       values = c(16,3))
-                       
+  theme(
+    axis.title = element_text(size = 22),
+    axis.text = element_text(size = 18),
+    legend.position = c(.2, .8),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 14)
+  ) +
+  scale_color_discrete(labels = c("Female", "Male")) +
+  scale_shape_manual(
+    labels = c("Female", "Male"),
+    values = c(16, 3)
+  )
 ```
 
 Now modeling the data:
@@ -54,8 +57,10 @@ set.seed(1234)
 summ_function(cats)
 
 # Perform resampling
-results <- resample(data = cats, fn = summ_function, M = 1000,
-                    strata='Sex', stratify_sizes=mean)
+results <- resample(
+  data = cats, fn = summ_function, M = 1000,
+  strata = "Sex", stratify_sizes = mean
+)
 summarize_resample(results)
 ```
 
@@ -74,8 +79,10 @@ set.seed(1234)
 summ_function(subcats)
 
 # Perform resampling
-results <- resample(data = subcats, fn = summ_function, M = 1000,
-                             strata='Sex',stratify_sizes=mean)
+results <- resample(
+  data = subcats, fn = summ_function, M = 1000,
+  strata = "Sex", stratify_sizes = mean
+)
 summarize_resample(results)
 ```
 

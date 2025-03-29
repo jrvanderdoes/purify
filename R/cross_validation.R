@@ -1,4 +1,3 @@
-
 #' Cross-Validation
 #'
 #' Run cross-validation on data which may be dependent. Parameters offer choices
@@ -24,34 +23,35 @@
 #'
 #' @examples
 #' n <- 50
-#' data <- data.frame( Y = NA, X = rnorm(n) )
-#' data$Y <- 2*data$X + stats::rnorm(nrow(data))
-#' pred_fn <- function(x_fit, x_pred){
-#'   as.numeric(predict(lm(Y~X,data=data[-c(1:10),]),data[1:10,]))
+#' data <- data.frame(Y = NA, X = rnorm(n))
+#' data$Y <- 2 * data$X + stats::rnorm(nrow(data))
+#' pred_fn <- function(x_fit, x_pred) {
+#'   as.numeric(predict(lm(Y ~ X, data = data[-c(1:10), ]), data[1:10, ]))
 #' }
 #' cross_validation(data, pred_fn, cv_group_number = 10, cv.dependent = FALSE)
 cross_validation <- function(
     data, pred_fn, cv_group_number = nrow(data),
-    error_fn = function(data, pred){ sum((data-pred)^2) },
-    cv.dependent=FALSE, sliding.start = NULL, ...){
-
+    error_fn = function(data, pred) {
+      sum((data - pred)^2)
+    },
+    cv.dependent = FALSE, sliding.start = NULL, ...) {
   ## Define length
   n <- nrow(data)
   data.vector <- FALSE
-  if(is.null(n)) {
+  if (is.null(n)) {
     n <- length(data)
     data.vector <- TRUE
   }
 
   ## Define groups
   cv_group_number <- min(cv_group_number, n)
-  if(!cv.dependent){
+  if (!cv.dependent) {
     cv_groups <- split(1:n, cut(sample(1:n), cv_group_number, labels = FALSE))
-  } else{
-    if(is.null(sliding.start)){
+  } else {
+    if (is.null(sliding.start)) {
       cv_groups <- .getChunks(1:n, n / cv_group_number)
-    } else{
-      pred_choices <- (sliding.start+1):n
+    } else {
+      pred_choices <- (sliding.start + 1):n
       cv_group_number <- min(length(pred_choices), cv_group_number)
       cv_groups <- .getChunks(pred_choices, cv_group_number)
     }
@@ -60,34 +60,30 @@ cross_validation <- function(
   ## Forecast
   errors <- rep(NA, cv_group_number)
 
-  for(i in 1:cv_group_number){
-    if(is.null(sliding.start)){
-
-      if(data.vector){
+  for (i in 1:cv_group_number) {
+    if (is.null(sliding.start)) {
+      if (data.vector) {
         dat_fit <- data[-cv_groups[[i]]]
         dat_cv <- data[cv_groups[[i]]]
-      } else{
-        dat_fit <- data[-cv_groups[[i]],]
-        dat_cv <- data[cv_groups[[i]],]
-
-      }
-
-    } else{
-      if(data.vector){
-        dat_fit <- data[1:( min(cv_groups[[i]])-1 )]
-        dat_cv <- data[cv_groups[[i]]]
-      } else{
-        dat_fit <- data[1:( min(cv_groups[[i]])-1 ), ]
+      } else {
+        dat_fit <- data[-cv_groups[[i]], ]
         dat_cv <- data[cv_groups[[i]], ]
       }
-
+    } else {
+      if (data.vector) {
+        dat_fit <- data[1:(min(cv_groups[[i]]) - 1)]
+        dat_cv <- data[cv_groups[[i]]]
+      } else {
+        dat_fit <- data[1:(min(cv_groups[[i]]) - 1), ]
+        dat_cv <- data[cv_groups[[i]], ]
+      }
     }
 
     preds <- pred_fn(dat_fit, dat_cv, ...)
     err <- error_fn(dat_cv, preds)
-    if(length(err)==1) {
+    if (length(err) == 1) {
       errors[i] <- err
-    } else{
+    } else {
       errors[i] <- mean(err)
     }
   }

@@ -17,5 +17,5 @@ A ggplot2 object of boxplots for data based on strata.
 Produce a boxplot of strata sizes based on data.
 }
 \examples{
-plot_strata_box(data.frame('B'=rbinom(100,2,0.5),'A'=rnorm(100)))
+plot_strata_box(data.frame("B" = rbinom(100, 2, 0.5), "A" = rnorm(100)))
 }

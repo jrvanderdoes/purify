@@ -64,7 +64,7 @@ separate) resampling. Bootstrap and permutation resampling can be performed.
 }
 \examples{
 results <- resample(1:100)
-results <- resample(1:100, fn=mean)
+results <- resample(1:100, fn = mean)
 
 n <- 50
 data <- data.frame(
@@ -72,10 +72,12 @@ data <- data.frame(
   predictor1 = rnorm(n),
   predictor2 = rnorm(n)
 )
-data$output <- 2*data$predictor1-data$predictor2+stats::rnorm(nrow(data))
-results <- resample(data, ignore.columns='output')
+data$output <- 2 * data$predictor1 - data$predictor2 + stats::rnorm(nrow(data))
+results <- resample(data, ignore.columns = "output")
 
-fn <- function(data) { coef(lm(output ~ ., data = data)) }
+fn <- function(data) {
+  coef(lm(output ~ ., data = data))
+}
 # Warning, M is below recommendation for example speed
-results <- resample(data = data, fn = fn, M = 10, ignore.columns='output')
+results <- resample(data = data, fn = fn, M = 10, ignore.columns = "output")
 }

@@ -8,9 +8,9 @@
 #' @export
 #'
 #' @examples
-#' data <- data.frame('A'=rnorm(100),'B'=rbinom(100,2,0.5))
+#' data <- data.frame("A" = rnorm(100), "B" = rbinom(100, 2, 0.5))
 #' plot_strata_bar(data$B)
-plot_strata_bar <- function(data){
+plot_strata_bar <- function(data) {
   ggplot2::ggplot() +
     ggplot2::geom_bar(ggplot2::aes(x = data)) +
     ggplot2::theme_bw() +
@@ -20,9 +20,10 @@ plot_strata_bar <- function(data){
       plot.title = ggplot2::element_text(hjust = 0.5, size = 16),
       axis.title = ggplot2::element_text(size = 14),
       axis.text = ggplot2::element_text(size = 12),
-      legend.position = "none") +
-    ggplot2::xlab('Strata') +
-    ggplot2::ylab('Number of Occurrences')
+      legend.position = "none"
+    ) +
+    ggplot2::xlab("Strata") +
+    ggplot2::ylab("Number of Occurrences")
 }
 
 
@@ -37,11 +38,13 @@ plot_strata_bar <- function(data){
 #' @export
 #'
 #' @examples
-#' plot_strata_box(data.frame('B'=rbinom(100,2,0.5),'A'=rnorm(100)))
-plot_strata_box <- function(data){
+#' plot_strata_box(data.frame("B" = rbinom(100, 2, 0.5), "A" = rnorm(100)))
+plot_strata_box <- function(data) {
   ggplot2::ggplot() +
-    ggplot2::geom_boxplot(ggplot2::aes(x = data[,1], y=data[,2],
-                                       fill=data[,1], group=data[,1])) +
+    ggplot2::geom_boxplot(ggplot2::aes(
+      x = data[, 1], y = data[, 2],
+      fill = data[, 1], group = data[, 1]
+    )) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid.major.x = ggplot2::element_blank(),
@@ -49,7 +52,8 @@ plot_strata_box <- function(data){
       plot.title = ggplot2::element_text(hjust = 0.5, size = 16),
       axis.title = ggplot2::element_text(size = 14),
       axis.text = ggplot2::element_text(size = 12),
-      legend.position = "none") +
-    ggplot2::xlab('Strata') +
-    ggplot2::ylab('Number of Occurrences')
+      legend.position = "none"
+    ) +
+    ggplot2::xlab("Strata") +
+    ggplot2::ylab("Number of Occurrences")
 }

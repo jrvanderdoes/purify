@@ -16,6 +16,6 @@ A ggplot2 object of barplots for strata counts.
 Produce a barplot of strata sizes based on data.
 }
 \examples{
-data <- data.frame('A'=rnorm(100),'B'=rbinom(100,2,0.5))
+data <- data.frame("A" = rnorm(100), "B" = rbinom(100, 2, 0.5))
 plot_strata_bar(data$B)
 }

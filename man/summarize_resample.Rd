@@ -34,8 +34,10 @@ data <- data.frame(
   predictor2 = rnorm(n)
 )
 
-fn <- function(data) { coef(lm(output ~ ., data = data)) }
+fn <- function(data) {
+  coef(lm(output ~ ., data = data))
+}
 # Warning, M is below recommendation for example speed
-resample_data <- resample(data=data, fn=fn, M=10, ignore.columns='output')
+resample_data <- resample(data = data, fn = fn, M = 10, ignore.columns = "output")
 results <- summarize_resample(resample_data)
 }
