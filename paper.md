@@ -42,36 +42,38 @@ statistical significance.
 
 Resampling is fundamental technique in estimating the distribution of a 
 statistic, testing hypotheses, and deriving confidence intervals, especially 
-when analytical solutions are impractical. Standard R packages often provide 
-basic resampling methods but lack specialized support for complex structures, 
-such as dependent and independent variables with flexible resampling schemes. 
-Other packages are devoted to a single type of resampling making testing of 
-various approaches unwieldy. `Purify` fills this gap by enabling data scientists 
-and researchers to perform and compare targeted, customizable resampling while 
-retaining dependencies between variables and using outside models, making it 
+when analytical solutions are impractical. Many R packages often provide 
+basic resampling methods but lack specialized support for complex structures.
+Such structures may contain dependence and variable which should not be resampled.
+Analysis of these structures can be unwieldy to investigate in other packages. 
+`Purify` fills this gap by providing a flexible framework to enable data 
+scientists and researchers to perform and compare targeted, customizable 
+resampling schemes that account for data structure. Further, the methods allow 
+for user-defined functions, allowing use of outside models, making `Purify` 
 ideal for rigorous hypothesis testing and model evaluation. 
 
 The package’s support for stratified and segmented sampling further allows users 
-to address scenarios with grouped or ordered data, providing a critical resource 
-for modern applied statistical research. By incorporating sophisticated 
-resampling techniques, `Purify` enhances the robustness and reliability of 
-statistical inferences drawn from complex (in particular unbalanced) datasets.
+to address scenarios with grouped or ordered data (even under dependence), 
+providing a critical resource for modern applied statistical research. By 
+incorporating sophisticated resampling techniques, `Purify` enhances the 
+robustness and reliability of statistical inferences drawn from complex 
+(in particular unbalanced) datasets.
 
 Permutation tests can be naturally computational intensive and speed is an 
 important consideration throughout `Purify`. Users can use it in a variety of 
-problems. Additional functions are also included to make visualization and 
-understanding of problems easier. Detailed documentation make `Purify` 
-accessible to users of varying statistical understanding.
+problems. Additional functions provide use of resampling in the context of
+cross-validation. Supplemental functions provide visualizations and summary 
+functions to illuminate the methods and results. Detailed documentation makes 
+`Purify` accessible to users of varying statistical understanding.
 
 
 # Package Functionality
 
-A primary function in `Purify` is `resample()` with input parameters breaking 
-down the desired method. This allows for combinations of dependent data, 
-inbalanced data, and resampling to be  performed with and without replacment.
-
-This flexibility enables users to adapt `Purify` to diverse data contexts and 
-hypothesis-testing requirements. 
+A primary function in `Purify` is `resample()` with clear input parameters 
+to simplify the process. The multistep selection allows for combinations of 
+dependent data, inbalanced data, and resampling to be performed with and without 
+replacment. The flexibility enables users to adapt `Purify` to diverse data 
+contexts and hypothesis-testing requirements. See also `cross_validation()`.
 
 Supporting functions such as `summarize_resample()` provide additional 
 information to the user. Visualization such as `plot_strata_bar()` or 
