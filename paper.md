@@ -1,5 +1,5 @@
 ---
-title: 'Purify: A R package for Bootstrapping'
+title: 'Purify: An R package for Bootstrapping'
 tags:
   - R
   - Statistics
@@ -26,39 +26,72 @@ bibliography: paper.bib
 
 # Summary
 
-`Purify` is an R package designed for permutation-based resampling and testing of data, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. `Purify` offers four versatile resampling methods: `simple`, `stratify`, `sliding`, and `segment`, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, `Purify` streamlines the process of hypothesis testing and estimation of statistical significance.
+`Purify` is an R package designed for resampling and testing of data, aimed at 
+researchers and practitioners who analyze complex datasets with a potentially dependent output 
+variable and multiple predictors. This package enables users to perform robust 
+statistical analyses by allowing resampling of variables with and without relation
+to the output variable. Analyses can be focused on results such as 
+statistical summaries (e.g. mean square error) and coefficient estimates of models. 
+`Purify` offers versatile resampling methods, such as simple, block, sliding window, 
+and stratified resampling. Each can be tailored to specific data structures and 
+research questions. With its intuitive interface and customizable options, 
+`Purify` streamlines the process of hypothesis testing and estimation of 
+statistical significance.
 
 # Statement of need
 
-Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. Other packages are devoted to a single type of resampling making testing of various approaches unwieldy. `Purify` fills this gap by enabling data scientists and researchers to perform and compare targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. 
+Resampling is fundamental technique in estimating the distribution of a 
+statistic, testing hypotheses, and deriving confidence intervals, especially 
+when analytical solutions are impractical. Standard R packages often provide 
+basic resampling methods but lack specialized support for complex structures, 
+such as dependent and independent variables with flexible resampling schemes. 
+Other packages are devoted to a single type of resampling making testing of 
+various approaches unwieldy. `Purify` fills this gap by enabling data scientists 
+and researchers to perform and compare targeted, customizable resampling while 
+retaining dependencies between variables and using outside models, making it 
+ideal for rigorous hypothesis testing and model evaluation. 
 
-The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, `Purify` enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.
+The package’s support for stratified and segmented sampling further allows users 
+to address scenarios with grouped or ordered data, providing a critical resource 
+for modern applied statistical research. By incorporating sophisticated 
+resampling techniques, `Purify` enhances the robustness and reliability of 
+statistical inferences drawn from complex (in particular unbalanced) datasets.
 
-Permutation tests can be naturally computational intensive and speed is an important consideration throughout `Purify`. Users can use it in a variety of problems. Additional functions are also included to make visualization and understanding of problems easier. Detailed documentation make `Purify` accessible to users of varying statistical understanding.
+Permutation tests can be naturally computational intensive and speed is an 
+important consideration throughout `Purify`. Users can use it in a variety of 
+problems. Additional functions are also included to make visualization and 
+understanding of problems easier. Detailed documentation make `Purify` 
+accessible to users of varying statistical understanding.
 
 
 # Package Functionality
 
-A primary function in `Purify` is `resample_function()`, with four available resampling methods:
+A primary function in `Purify` is `resample()` with input parameters breaking 
+down the desired method. This allows for combinations of dependent data, 
+inbalanced data, and resampling to be  performed with and without replacment.
 
-1. `Simple`: Standard permutation of predictor variables without additional structure.
-2. `Stratify`: Resampling within specified strata to maintain group structure or change sampling when known inbalances exist.
-3. `Sliding`: Applying a sliding window to generate resamples over time-ordered data.
-4. `Segment`: Dividing data into segments and resampling within each.
+This flexibility enables users to adapt `Purify` to diverse data contexts and 
+hypothesis-testing requirements. 
 
-This flexibility enables users to adapt `Purify` to diverse data contexts and hypothesis-testing requirements. 
-
-Other permutation functions such as `resample()` are included to allow custom modeling for more complex cases. The packages also includes functions for analyzing the resultant data such as `boxplot_strata()` to visualize group sizes in stratified samples.
+Supporting functions such as `summarize_resample()` provide additional 
+information to the user. Visualization such as `plot_strata_bar()` or 
+`plot_strat_box()` visualize group sizes in stratified samples.
 
 
 ## Example
 
-`Purify` provides several in-depth vignettes in the package or at its [website](https://jrvanderdoes.github.io/purify/).
+`Purify` provides several in-depth vignettes in the package or at its 
+[website](https://jrvanderdoes.github.io/purify/).
 
-- An *Introduction* vignette describes the core features of `purify' and includes simulations to demonstrate the functions.
+- An *Introduction* vignette describes the core features of `purify' 
+  and includes simulations and real data examples to demonstrate the functions.
 - A *cats* vignette details a case scenario on real data.
 
-We consider a subset of the cats data set below, where we use sex and body weight to estimate heart weight. In this subset, we drop some female cats so that the data is highly imbalanced, yet if the data is correct then sex and body weight are important. While the sample is small, this mismatch is common in many surveys.
+We consider a subset of the cats data set below, where we use sex and body 
+weight to estimate heart weight. In this subset, we drop some female cats so 
+that the data is highly imbalanced, yet if the data is correct then sex and 
+body weight are important. While the sample is small, this mismatch is common 
+in many surveys.
 ```{r setup, echo=FALSE}
 library(purify)
 library(ggplot2)
@@ -87,24 +120,33 @@ set.seed(1234)
 summ_function(subcats)
 
 # Perform resampling
-results <- resample_function(data = subcats, fn = summ_function, 
-                             M = 1000, method = 'stratify',
-                             strata='Sex',stratify_sizes='mean')
-results$estimates
+results <- resample(data = subcats, fn = summ_function, M = 1000,
+                             strata='Sex',stratify_sizes=mean)
+summarize_resample(results)
 ```
 
-Although the female cats clearly have a lower heart weight even for the same body weight, the traditional linear model does not detect this. The stratified approach does detect the difference without sacrificing estimation of the bodyweight.
+Although the female cats clearly have a lower heart weight even for the same 
+body weight, the traditional linear model does not detect this. The stratified 
+approach does detect the difference without sacrificing estimation of the bodyweight.
 
 # Implementation
 
-`Purify` is implemented in R, following standard stylization and using vectorized operations for efficient computation. The package's modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. `Purify` has been used in @tetui:etal:2022, @scsrubook, and several upcoming papers.
+`Purify` is implemented in R, following standard stylization and using 
+vectorized operations for efficient computation. The package's modular design 
+and clear documentation make it easy to adapt to various research needs, 
+allowing users to integrate their own statistical functions or modify resampling 
+parameters to meet specific analytical requirements. `Purify` has been used 
+in @tetui:etal:2022, @scsrubook, and several upcoming papers.
 
 
 # Acknowledgements
 
-Development of the `Purify` package was inspired by foundational methods in statistical resampling and permutation testing. Special thanks to the open-source R community for support and resources.
+Development of the `Purify` package was inspired by foundational methods in 
+statistical resampling and permutation testing. Special thanks to the 
+open-source R community for support and resources.
 
-Contributions to `Purify` are welcome and notable recognition is given to all who raise awareness of deficiencies in the package via the GitHub repository.
+Contributions to `Purify` are welcome and notable recognition is given to all 
+who raise awareness of deficiencies in the package via the GitHub repository.
 
 
 # References
