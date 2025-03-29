@@ -7,7 +7,7 @@
 #' @param data Data.frame (or vector) to be resampled where the rows are the
 #'  observations and the columns are the variables. Note, all variables are
 #'  permuted not specified in \code{ignore.columns}.
-#' @param M Numeric. Number of permutation iterations.
+#' @param M Numeric. Number of resample iterations.
 #' @param resample_blocks String indicating method of selecting resample blocks.
 #'  Options are 'separate' and 'sliding'. When \code{blocksize} is 1, there is no
 #'  difference. Sliding take sliding groups, thus repeating values, i.e. 1-4,
@@ -15,13 +15,15 @@
 #'  9-12, and so on. Size of each block is defined using \code{blocksize}.
 #' @param replace Boolean. Indicates if the data should be permuted (FALSE) or
 #'  bootstrapped (TRUE). Note that permutation may be impossible with large
-#'  \code{stratify_sizes}.
+#'  \code{sizes}.
 #' @param blocksize Numeric for the size of the blocks.
 #' @param strata String or numeric. This indicate the column to stratify the
 #'  data when \code{method} is stratify. This can be the column number or the
 #'  column name. When NULL the data is not stratified. When given, strata are
 #'  sampled separately.
-#' @param stratify_sizes Option for selecting the sizes of each stata. Can be
+#' @param sizes Option for selecting the resampled size or sizes of each stata.
+#'  When used for non-strata, either numeric or NULL and is taken as the number
+#'  of observations. When used for strate, can be
 #'  numeric (single value or a value for each strata), function (e.g. min or
 #'  max), or NULL (original sizes).
 #' @param fn Function to apply on the resampled data. When NULL, the resampled
@@ -55,8 +57,9 @@
 #' results <- resample(data = data, fn = fn, M = 10, ignore.columns = "output")
 resample <- function(data, M = 1000,
                      resample_blocks = c("separate", "sliding"),
-                     replace = TRUE, blocksize = 1, strata = NULL,
-                     stratify_sizes = NULL, fn = NULL,
+                     replace = TRUE, blocksize = 1,
+                     strata = NULL,
+                     sizes = NULL, fn = NULL,
                      ignore.columns = NULL, ...) {
   # Setup and Verify Input
   types_poss <- c("separate", "sliding")
@@ -73,6 +76,9 @@ resample <- function(data, M = 1000,
     data.vector <- TRUE
   }
 
+  if(is.null(sizes) && is.null(strata))
+    sizes <- n
+
   ## Resample
   if (is.null(strata)) {
     # Get groups
@@ -86,20 +92,23 @@ resample <- function(data, M = 1000,
 
     if (data.vector) {
       X_resampled <-
-        sapply(1:M, function(i, n, X1, replace = replace, blocksize = blocksize) {
-          min_group <- min(sapply(X1, length))
-          size_val <- ifelse(!replace, length(X1), ceiling(n / min_group) + 1)
+        sapply(1:M, function(i, sizes, X1, idxGroups=idxGroups,replace = replace, blocksize = blocksize) {
+          min_group <- min(sapply(idxGroups, length))
+          size_val <- ifelse(!replace, length(idxGroups), ceiling(sizes / min_group) + 1)
 
-          unlist(sample(X1, replace = replace, size = size_val))[1:n]
+          ret_val <- X1[unlist(sample(idxGroups, replace = replace, size = size_val))[1:sizes]]
+          names(ret_val) <- NULL
+
+          ret_val
           # unlist(X1[sample(1:length(X1),replace = replace,
           #                         size = size_val)])[1:n]
-        }, n = n, replace = replace, X1 = idxGroups, blocksize = blocksize, simplify = FALSE)
+        }, sizes = sizes, replace = replace, X1 = data, idxGroups=idxGroups, blocksize = blocksize, simplify = FALSE)
     } else {
       X_resampled <-
-        sapply(1:M, function(i, n, X1, replace = replace, blocksize = blocksize,
+        sapply(1:M, function(i, sizes, X1, replace = replace, blocksize = blocksize,
                              idxGroups = idxGroups, ignore.columns = ignore.columns) {
           min_group <- min(sapply(idxGroups, length))
-          size_val <- ifelse(!replace, length(idxGroups), ceiling(n / min_group) + 1)
+          size_val <- ifelse(!replace, length(idxGroups), ceiling(sizes / min_group) + 1)
 
           data_resample <- X1[
             sample(1:length(idxGroups),
@@ -108,7 +117,7 @@ resample <- function(data, M = 1000,
             ),
             !(colnames(X1) %in% ignore.columns)
           ]
-          data_resample <- data_resample[1:n, ]
+          data_resample <- data_resample[1:sizes, ]
 
           if (!is.null(ignore.columns)) {
             data_resample <- cbind(data[ignore.columns], data_resample)
@@ -116,7 +125,7 @@ resample <- function(data, M = 1000,
           rownames(data_resample) <- NULL
           data_resample
         },
-        n = n, replace = replace, X1 = data, idxGroups = idxGroups, blocksize = blocksize,
+        sizes = sizes, replace = replace, X1 = data, idxGroups = idxGroups, blocksize = blocksize,
         ignore.columns = ignore.columns, simplify = FALSE
         )
     }
@@ -131,22 +140,22 @@ resample <- function(data, M = 1000,
     rownames(X_stacked_stata) <- NULL
 
     # Stratify sizes, based on given number, function, or leaving original
-    sizes <- groups
-    if (is.numeric(stratify_sizes)) {
-      sizes$Freq <- stratify_sizes
-    } else if (is.function(stratify_sizes)) {
-      sizes$Freq <- stratify_sizes(sizes$Freq)
+    sizes_tab <- groups
+    if (is.numeric(sizes)) {
+      sizes_tab$Freq <- sizes
+    } else if (is.function(sizes)) {
+      sizes_tab$Freq <- sizes(sizes_tab$Freq)
     }
 
 
     # Get groups
     idxGroups <- list()
     if (resample_blocks == "separate") {
-      for (n_ind in 1:nrow(sizes)) {
+      for (n_ind in 1:nrow(sizes_tab)) {
         idxGroups[[n_ind]] <- .getChunks(1:groups$Freq[n_ind], groups$Freq[n_ind] / blocksize)
       }
     } else if (resample_blocks == "sliding") {
-      for (n_ind in 1:nrow(sizes)) {
+      for (n_ind in 1:nrow(sizes_tab)) {
         idxGroups[[n_ind]] <-
           sapply(0:(groups$Freq[n_ind] - blocksize), function(x, blocksize) {
             x + 1:blocksize
@@ -156,7 +165,7 @@ resample <- function(data, M = 1000,
 
     ## Stratified sampling
     X_resampled <- sapply(1:M,
-      function(i, n, X1, sizes = sizes, idxGroups = idxGroups,
+      function(i, n, X1, sizes_tab = sizes_tab, idxGroups = idxGroups,
                replace = replace, groups = groups,
                ignore.columns = ignore.columns) {
         return_idxs <- c()
@@ -167,9 +176,9 @@ resample <- function(data, M = 1000,
               return_idxs,
               group_sizes_tmp[j - 1] +
                 unlist(sample(idxGroups[[j - 1]],
-                  size = sizes$Freq[j - 1],
+                  size = sizes_tab$Freq[j - 1],
                   replace = replace
-                ))[1:sizes[j - 1, 2]]
+                ))[1:sizes_tab[j - 1, 2]]
             )
         }
 
@@ -227,7 +236,7 @@ resample <- function(data, M = 1000,
         rownames(data_resample) <- NULL
         data_resample
       },
-      n = n, sizes = sizes, replace = replace, groups = groups,
+      n = n, sizes_tab = sizes_tab, replace = replace, groups = groups,
       idxGroups = idxGroups, X1 = X_stacked_stata,
       ignore.columns = ignore.columns, simplify = FALSE
     )
@@ -248,6 +257,13 @@ resample <- function(data, M = 1000,
     }
   } else {
     result <- X_resampled
+  }
+
+  if(data.vector && !is.data.frame(result)){
+    result <- t(as.data.frame(result))
+    if(nrow(result)==1)
+      result <- t(result)
+    rownames(result) <- NULL
   }
 
   result

@@ -11,7 +11,7 @@ resample(
   replace = TRUE,
   blocksize = 1,
   strata = NULL,
-  stratify_sizes = NULL,
+  sizes = NULL,
   fn = NULL,
   ignore.columns = NULL,
   ...
@@ -22,7 +22,7 @@ resample(
 observations and the columns are the variables. Note, all variables are
 permuted not specified in \code{ignore.columns}.}
 
-\item{M}{Numeric. Number of permutation iterations.}
+\item{M}{Numeric. Number of resample iterations.}
 
 \item{resample_blocks}{String indicating method of selecting resample blocks.
 Options are 'separate' and 'sliding'. When \code{blocksize} is 1, there is no
@@ -32,7 +32,7 @@ difference. Sliding take sliding groups, thus repeating values, i.e. 1-4,
 
 \item{replace}{Boolean. Indicates if the data should be permuted (FALSE) or
 bootstrapped (TRUE). Note that permutation may be impossible with large
-\code{stratify_sizes}.}
+\code{sizes}.}
 
 \item{blocksize}{Numeric for the size of the blocks.}
 
@@ -41,7 +41,9 @@ data when \code{method} is stratify. This can be the column number or the
 column name. When NULL the data is not stratified. When given, strata are
 sampled separately.}
 
-\item{stratify_sizes}{Option for selecting the sizes of each stata. Can be
+\item{sizes}{Option for selecting the resampled size or sizes of each stata.
+When used for non-strata, either numeric or NULL and is taken as the number
+of observations. When used for strate, can be
 numeric (single value or a value for each strata), function (e.g. min or
 max), or NULL (original sizes).}
 

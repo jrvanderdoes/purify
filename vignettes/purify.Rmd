@@ -69,7 +69,7 @@ orig_coefs <- strat_function(data_strat)
 set.seed(1234)
 res <- resample(
   data = data_strat, fn = strat_function,
-  strata = "z", stratify_sizes = "mean"
+  strata = "z", sizes = "mean"
 )
 ```
 

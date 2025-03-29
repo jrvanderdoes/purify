@@ -123,7 +123,7 @@ summ_function(subcats)
 
 # Perform resampling
 results <- resample(data = subcats, fn = summ_function, M = 1000,
-                             strata='Sex',stratify_sizes=mean)
+                             strata='Sex',sizes=mean)
 summarize_resample(results)
 ```
 
