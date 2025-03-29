@@ -30,7 +30,9 @@ summ_function <- function(data) {
 
 We first are interested in the coefficients when estimating the body weight using sex and heart weight, stratified on sex since there are far less female cats observed.
 ```{r strata_plots}
-boxplot_strata(cats,'Sex')
+plot_strata_bar(cats$Sex)
+plot_strata_box(cats[,c('Sex','Hwt')])
+plot_strata_box(cats[,c('Sex','Bwt')])
 
 ggplot() +
   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
@@ -52,19 +54,18 @@ set.seed(1234)
 summ_function(cats)
 
 # Perform resampling
-results <- resample_function(data = cats, fn = summ_function, 
-                             M = 1000, method = 'stratify',
-                             strata='Sex',stratify_sizes='mean')
-results$estimates
+results <- resample(data = cats, fn = summ_function, M = 1000,
+                    strata='Sex', stratify_sizes=mean)
+summarize_resample(results)
 ```
 
-In both methods, the sex was insignificant and body weight was extremely important.
+In both methods, the sex was insignificant and body weight was important.
 
 # Subset Data
 
 We are now interested in the coefficients when estimating the body weight using sex and heart weight, stratified on sex since there are far less female cats observed, with a smaller data set. In practice it is hard to know the exact effect of data sizes, so it is worth examining what may happen. We subset the data such that sex will now be more important
 ```{r substrata_plots}
-boxplot_strata(subcats,'Sex')
+plot_strata_bar(subcats$Sex)
 ```
 
 Now modeling the data:
@@ -73,10 +74,9 @@ set.seed(1234)
 summ_function(subcats)
 
 # Perform resampling
-results <- resample_function(data = subcats, fn = summ_function, 
-                             M = 1000, method = 'stratify',
-                             strata='Sex',stratify_sizes='mean')
-results$estimates
+results <- resample(data = subcats, fn = summ_function, M = 1000,
+                             strata='Sex',stratify_sizes=mean)
+summarize_resample(results)
 ```
 
 In examining the data, we can observe that sex is important, but is hard to see due to the low samples. Traditional linear models miss this; however, a resampled method can capture the importance of sex without losing the effects of body weight.
