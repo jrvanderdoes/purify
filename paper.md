@@ -131,11 +131,11 @@ effects. See vignettes for additional analysis on this and other data.
 # ggplot() +
 #   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=5) +
 #   theme_bw() +
-#   theme(axis.title = element_text(size=26),
-#         axis.text = element_text(size=24),
+#   theme(axis.title = element_text(size=40),
+#         axis.text = element_text(size=36),
 #         legend.position = c(.2, .8),
 #         legend.title = element_blank(),
-#         legend.text = element_text(size=20)) +
+#         legend.text = element_text(size=36)) +
 #   scale_color_discrete(labels = c('Female', 'Male')) +
 #   scale_shape_manual(labels = c('Female', 'Male'),
 #                        values = c(16,3)) +
