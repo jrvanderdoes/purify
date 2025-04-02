@@ -8,7 +8,14 @@
 [![R-CMD-check](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of purify is to …
+Purify provides a robust framework for resampling data with potential
+dependency and / or uneven group sizes. The methods of resampling,
+cross-validation, and forecasting confidence intervals purify the data
+resulting in improved conclusions under a variety of scenarios. The
+functions are robust and flexible permitting direct use or seamless
+integration into the custom analyses. See example uses in Tetui et
+al. (2022) <doi:10.1080/21645515.2022.2089500> and Alexander, K. L.,
+Hall, K., & Chen, Y. M. (2024) <doi:10.29173/jchla29798>.
 
 ## Installation
 
@@ -19,11 +26,5 @@ You can install the development version of purify from
 # install.packages("devtools")
 devtools::install_github("jrvanderdoes/purify")
 ```
-
-## General Notes for development
-
-I will add github actions later, but with regular development, if I add
-it too soon, we will use all of the actions up for the month in a few
-days.
 
 <!-- You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>. -->
