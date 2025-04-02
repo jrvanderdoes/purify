@@ -1,5 +1,5 @@
 Package: purify
-Title: Clean and Analyze Data
+Title: Clean and Analyze Data Using Resampling
 Version: 1.0.0
 Authors@R: c( 
     person("Jeremy", "VanderDoes", email="jeremyvanderdoes@gmail.com", 
