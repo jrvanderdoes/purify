@@ -97,7 +97,7 @@ Yet if the data is correct then sex and body weight are important. In particular
 female cats have low body weights and have a lower heart weight even for the 
 same body weight.
 
-![{\bf Subcats.} Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png)
+![**Subcats.** Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
 
 
 Using the data directly into a linear model with heart weight being predicted by
@@ -108,8 +108,8 @@ has a much larger confidence interval. While additional simulations, or modifyin
 resampling scheme could mitigate such losses, it is important to consider such 
 effects.
 
-[{\bf Subcats models.} Models of subcats data using body weight and sex to predict
-heart weight.\label{tab:cats}]
+![**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
+
 +-------------------+-----------------+----------------+----------------+
 | Model             |Intercept        | Sex (M)        | Body weight    |
 |                   |                 |                |                |
@@ -118,7 +118,7 @@ heart weight.\label{tab:cats}]
 |                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |
 +-------------------+-----------------+----------------+----------------+
 | Resampled model   | -0.214          | 0.900          | 4.155          |
-|                   | (-3.060, 1.023) | (0.000, 3.886)  | (0.000,14.283) |
+|                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |
 +===================+=================+================+================+
 
 
@@ -132,7 +132,7 @@ See vignettes for additional analysis on this and other data.
 # 
 # ```{r example_plot, echo=FALSE}
 # ggplot() +
-#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
+#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=5) +
 #   theme_bw() +
 #   theme(axis.title = element_text(size=22),
 #         axis.text = element_text(size=18),
