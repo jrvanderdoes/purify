@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   cats: cats.html
   purify: purify.html
-last_built: 2025-04-02T07:45Z
+last_built: 2025-04-02T16:44Z
 urls:
   reference: https://jrvanderdoes.github.io/purify/reference
   article: https://jrvanderdoes.github.io/purify/articles
