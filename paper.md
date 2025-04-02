@@ -67,6 +67,8 @@ functions to illuminate the methods and results. Detailed documentation makes
 `Purify` accessible to users of varying statistical understanding.
 
 
+![**Subcats.** Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
+
 # Package Functionality
 
 A primary function in `Purify` is `resample()` with clear input parameters 
@@ -86,7 +88,7 @@ information to the user. Visualization such as `plot_strata_bar()` or
 `Purify` provides several in-depth vignettes in the package or at its 
 [website](https://jrvanderdoes.github.io/purify/).
 
-- An *Introduction* vignette describes the core features of `purify' 
+- A *purify* vignette describes the core features of `purify' 
   and includes simulations and real data examples to demonstrate the functions.
 - A *cats* vignette details a case scenario on real data.
 
@@ -97,9 +99,6 @@ Yet if the data is correct then sex and body weight are important. In particular
 female cats have low body weights and have a lower heart weight even for the 
 same body weight.
 
-![**Subcats.** Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
-
-
 Using the data directly into a linear model with heart weight being predicted by
 body weight and sex, Table \autoref{tab:cats} was constructed. It is clear that 
 the single model is insufficient to capture the effect of sex, while the resampled
@@ -108,18 +107,18 @@ has a much larger confidence interval. While additional simulations, or modifyin
 resampling scheme could mitigate such losses, it is important to consider such 
 effects.
 
-![**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
-
 +-------------------+-----------------+----------------+----------------+
-| Model             |Intercept        | Sex (M)        | Body weight    |
+|                   |Intercept        | Sex (M)        | Body weight    |
 |                   |                 |                |                |
 +:=================:+:===============:+:==============:+:==============:+
-| Single model      | -1.486          | 0.617          | 4.208          |
+| Single model      | -1.486 \        | 0.617 \        | 4.208 \        |
 |                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |
 +-------------------+-----------------+----------------+----------------+
-| Resampled model   | -0.214          | 0.900          | 4.155          |
+| Resampled model   | -0.214 \        | 0.900 <br>     | 4.155 \        |
 |                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |
 +===================+=================+================+================+
+[**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
+
 
 
 See vignettes for additional analysis on this and other data.
