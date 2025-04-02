@@ -1,6 +1,6 @@
 Package: purify
 Title: Clean and Analyze Data
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: c( 
     person("Jeremy", "VanderDoes", email="jeremyvanderdoes@gmail.com", 
            role = c("aut", "cre", "cph"),
