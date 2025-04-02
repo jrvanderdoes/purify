@@ -124,7 +124,7 @@ sized groups based on sex, both sex and body weight are determined to be
 significant. The cost for this simple example is that the confidence interval 
 on body weight is much larger. While additional simulations, or modifying the 
 resampling scheme could mitigate such losses, it is important to consider such 
-effects. Often the prediction errors, e.g. mean square error, is more important 
+effects. Often the prediction errors, e.g. mean square error (MSE), is more important 
 and in this case, the resampled model also performs better. See vignettes for 
 additional analysis on this and other data.
 
