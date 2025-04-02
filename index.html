@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Equalized permutation for statified data • purify</title>
+<title>Clean and Analyze Data • purify</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Equalized permutation for statified data">
-<meta name="description" content="Sample stratified data via permutation methods to standardize group sizes.">
-<meta property="og:description" content="Sample stratified data via permutation methods to standardize group sizes.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Clean and Analyze Data">
+<meta name="description" content="Resampling and related methods for data under dependence and uneven groups. Methods of resampling, cross-validation, and forecasting confidence intervals purify the data by with potential dependence or stratified sampling resulting in improved conclusions under a variety of scenarios. Functions are robust and flexible permitting direct use or seamless integration into the custom analyses. Discussions on bootstrapping, permutation, and cross-validation can be found in works such as Efron, B., &amp; Tibshirani, R. (1993) &lt;doi:10.1201/9780429246593&gt; and Anthony C., &amp; Hinkley, D. V. (1997) &lt;doi:10.2307/1271471&gt;. Sampling methods, with comments on stratification, are found in Thompson, S. K. (2012) &lt;doi:10.1002/9781118162934&gt;. Examples which use this package include Tetui et al. (2022) &lt;doi:10.1080/21645515.2022.2089500&gt; and Alexander, K. L., Hall, K., &amp; Chen, Y. M. (2024) &lt;doi:10.29173/jchla29798&gt;.">
+<meta property="og:description" content="Resampling and related methods for data under dependence and uneven groups. Methods of resampling, cross-validation, and forecasting confidence intervals purify the data by with potential dependence or stratified sampling resulting in improved conclusions under a variety of scenarios. Functions are robust and flexible permitting direct use or seamless integration into the custom analyses. Discussions on bootstrapping, permutation, and cross-validation can be found in works such as Efron, B., &amp; Tibshirani, R. (1993) &lt;doi:10.1201/9780429246593&gt; and Anthony C., &amp; Hinkley, D. V. (1997) &lt;doi:10.2307/1271471&gt;. Sampling methods, with comments on stratification, are found in Thompson, S. K. (2012) &lt;doi:10.1002/9781118162934&gt;. Examples which use this package include Tetui et al. (2022) &lt;doi:10.1080/21645515.2022.2089500&gt; and Alexander, K. L., Hall, K., &amp; Chen, Y. M. (2024) &lt;doi:10.29173/jchla29798&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">purify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,11 +31,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/purify.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/Simulations.html">Simulations</a></li>
+<li><a class="dropdown-item" href="articles/cats.html">cats</a></li>
   </ul>
 </li>
       </ul>
@@ -56,7 +57,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of purify is to …</p>
+<p>Purify provides a robust framework for resampling data with potential dependency and / or uneven group sizes. The methods of resampling, cross-validation, and forecasting confidence intervals purify the data resulting in improved conclusions under a variety of scenarios. The functions are robust and flexible permitting direct use or seamless integration into the custom analyses. See example uses in Tetui et al. (2022) <a href="doi:10.1080/21645515.2022.2089500" class="uri">doi:10.1080/21645515.2022.2089500</a> and Alexander, K. L., Hall, K., &amp; Chen, Y. M. (2024) <a href="doi:10.29173/jchla29798" class="uri">doi:10.29173/jchla29798</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -64,11 +65,6 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jrvanderdoes/purify"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="general-notes-for-development">General Notes for development<a class="anchor" aria-label="anchor" href="#general-notes-for-development"></a>
-</h2>
-<p>I will add github actions later, but with regular development, if I add it too soon, we will use all of the actions up for the month in a few days.</p>
 <!-- You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>. -->
 </div>
 </div>
@@ -99,8 +95,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Jeremy VanderDoes <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0009-0001-9885-3073" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Yuling Chen <br><small class="roles"> Author </small>  </li>
+<li>Jeremy VanderDoes <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0009-0001-9885-3073" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Yuling Chen <br><small class="roles"> Author </small> <a href="https://orcid.org/0009-0000-5713-9255" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 

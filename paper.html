@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">purify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,10 +15,11 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="articles/purify.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/Simulations.html">Simulations</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/cats.html">cats</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
@@ -38,58 +39,46 @@
 
 <div id="summary" class="section level1">
 
-<p><code>Purify</code> is an R package designed for bootstrap resampling and permutation testing, aimed at researchers and practitioners who analyze complex datasets with a dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing permutations of predictor variables while keeping the output variable unchanged. <code>Purify</code> offers four versatile resampling methods: <code>simple</code>, <code>stratify</code>, <code>sliding</code>, and <code>segment</code>, which can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, <code>Purify</code> streamlines the process of hypothesis testing and estimation of statistical significance.</p>
+<p><code>Purify</code> is an R package designed for resampling and testing of data, aimed at researchers and practitioners who analyze complex datasets with a potentially dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing resampling of variables with and without relation to the output variable. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. <code>Purify</code> offers versatile resampling methods, such as simple, block, sliding window, and stratified resampling. Each can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, <code>Purify</code> streamlines the process of hypothesis testing and estimation of statistical significance.</p>
 </div>
 <div class="section level1">
 <h1 id="statement-of-need">Statement of need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a></h1>
-<p>Bootstrap resampling is fundamental for estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Standard R packages often provide basic resampling methods but lack specialized support for complex structures, such as dependent and independent variables with flexible resampling schemes. <code>Purify</code> fills this gap by enabling data scientists and researchers to perform targeted, customizable resampling while retaining dependencies between variables, making it ideal for rigorous hypothesis testing and model evaluation. The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data, providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, <code>Purify</code> enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.</p>
+<p>Resampling is fundamental technique in estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Many R packages often provide basic resampling methods but lack specialized support for complex structures. Such structures may contain dependence and variable which should not be resampled. Analysis of these structures can be unwieldy to investigate in other packages. <code>Purify</code> fills this gap by providing a flexible framework to enable data scientists and researchers to perform and compare targeted, customizable resampling schemes that account for data structure. Further, the methods allow for user-defined functions, allowing use of outside models, making <code>Purify</code> ideal for rigorous hypothesis testing and model evaluation.</p>
+<p>The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data (even under dependence), providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, <code>Purify</code> enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.</p>
+<p>Permutation tests can be naturally computational intensive and speed is an important consideration throughout <code>Purify</code>. Users can use it in a variety of problems. Additional functions provide use of resampling in the context of cross-validation. Supplemental functions provide visualizations and summary functions to illuminate the methods and results. Detailed documentation makes <code>Purify</code> accessible to users of varying statistical understanding.</p>
 </div>
 <div class="section level1">
 <h1 id="package-functionality">Package Functionality<a class="anchor" aria-label="anchor" href="#package-functionality"></a></h1>
-<p>A primary function in <code>Purify</code> is <code><a href="reference/resample_function.html">resample_function()</a></code>, with four available resampling methods:</p>
-<ol style="list-style-type: decimal"><li>
-<code>Simple</code>: Standard permutation of predictor variables without additional structure.</li>
-<li>
-<code>Stratify</code>: Resampling within specified strata to maintain group structure.</li>
-<li>
-<code>Sliding</code>: Applying a sliding window to generate resamples over time-ordered data.</li>
-<li>
-<code>Segment</code>: Dividing data into segments and resampling within each.</li>
-</ol><p>This flexibility enables users to adapt <code>Purify</code> to diverse data contexts and hypothesis-testing requirements.</p>
-<p>Other permutation functions such as  are included for more complex cases. The packages also includes functions for analyzing the resultant data such as <code><a href="reference/boxplot_strata.html">boxplot_strata()</a></code> for stratified samples.</p>
+<p>A primary function in <code>Purify</code> is <code><a href="reference/resample.html">resample()</a></code> with clear input parameters to simplify the process. The multistep selection allows for combinations of dependent data, unbalanced data, and resampling to be performed with and without replacement. The flexibility enables users to adapt <code>Purify</code> to diverse data contexts and hypothesis-testing requirements. See also <code><a href="reference/cross_validation.html">cross_validation()</a></code> and <code><a href="reference/confidence_intervals.html">confidence_intervals()</a></code>.</p>
+<p>Supporting functions such as <code><a href="reference/summarize_resample.html">summarize_resample()</a></code> provide additional information to the user. Visualization such as <code><a href="reference/plot_strata_bar.html">plot_strata_bar()</a></code> or <code>plot_strat_box()</code> visualize group sizes in stratified samples.</p>
 <div class="section level2">
-<h2 id="example-usage">Example Usage<a class="anchor" aria-label="anchor" href="#example-usage"></a></h2>
-<p>The following example demonstrates the use of <code>Purify</code> with simulated data, applying a mean squared error (MSE) calculation over 1,000 resamples using the simple method:</p>
-<p>```{r eval=False} library(purify)</p>
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a></h2>
+<p><code>Purify</code> provides several in-depth vignettes in the package or at its <a href="https://jrvanderdoes.github.io/purify/">website</a>.</p>
+<ul><li>An <em>Introduction</em> vignette describes the core features of `purify’ and includes simulations and real data examples to demonstrate the functions.</li>
+<li>A <em>cats</em> vignette details a case scenario on real data.</li>
+</ul><p>We consider a subset of the cats data set below, where we use sex and body weight to estimate heart weight. In this subset, we drop some female cats so that the data is highly imbalanced, yet if the data is correct then sex and body weight are important. While the sample is small, this mismatch is common in many surveys. <code>{r setup, echo=FALSE} library(purify) library(ggplot2)</code></p>
+<p><code>{r example_plot, echo=FALSE} ggplot() +   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +   theme_bw() +   theme(axis.title = element_text(size=22),         axis.text = element_text(size=18),         legend.position = c(.2, .8),         legend.title = element_blank(),         legend.text = element_text(size=14)) +   scale_color_discrete(labels = c('Female', 'Male')) +   scale_shape_manual(labels = c('Female', 'Male'),                        values = c(16,3))</code></p>
+<p>```{r example}<br>
+summ_function &lt;- function(data) { coef(summary(lm(Hwt ~ ., data = data))) }</p>
+<p>set.seed(1234) summ_function(subcats)</p>
 </div>
 </div>
 <div class="section level1">
-<h1 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a></h1>
-<p>set.seed(123) n &lt;- 100 data &lt;- data.frame( output = rnorm(n), predictor1 = rnorm(n), predictor2 = rnorm(n) )</p>
-</div>
-<div class="section level1">
-<h1 id="define-a-custom-function-to-calculate-mse">Define a custom function to calculate MSE<a class="anchor" aria-label="anchor" href="#define-a-custom-function-to-calculate-mse"></a></h1>
-<p>mse_function &lt;- function(data) { mean((data$output - predict(lm(output ~ ., data = data)))^2) }</p>
-</div>
-<div class="section level1">
-<h1 id="perform-resampling-with-the-simple-method">Perform resampling with the ‘simple’ method<a class="anchor" aria-label="anchor" href="#perform-resampling-with-the-simple-method"></a></h1>
-<p>results &lt;- resample_function(data = data, fn = mse_function, M = 1000, method = ‘simple’) ```</p>
-<p>Model coefficients can also be examined under permutation; see documentation. However, if a use case is too complex for the implemented , the function  can be used to directly return the resampled data.</p>
+<h1 id="perform-resampling">Perform resampling<a class="anchor" aria-label="anchor" href="#perform-resampling"></a></h1>
+<p>results &lt;- resample(data = subcats, fn = summ_function, M = 1000, strata=‘Sex’,sizes=mean) summarize_resample(results) ```</p>
+<p>Although the female cats clearly have a lower heart weight even for the same body weight, the traditional linear model does not detect this. The stratified approach does detect the difference without sacrificing estimation of the bodyweight.</p>
 </div>
 <div class="section level1">
 <h1 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a></h1>
-<p><code>Purify</code> is implemented in R, using vectorized operations for efficient computation. The package’s modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. <code>Purify</code> was used in @tetui:etal:2022 and several upcoming papers.</p>
+<p><code>Purify</code> is implemented in R, following standard stylization and using vectorized operations for efficient computation. The package’s modular design and clear documentation make it easy to adapt to various research needs, allowing users to integrate their own statistical functions or modify resampling parameters to meet specific analytical requirements. <code>Purify</code> has been used in @tetui:etal:2022, @scsrubook, and @alexander:hall:chen:2024.</p>
 </div>
 <div class="section level1">
 <h1 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a></h1>
 <p>Development of the <code>Purify</code> package was inspired by foundational methods in statistical resampling and permutation testing. Special thanks to the open-source R community for support and resources.</p>
+<p>Contributions to <code>Purify</code> are welcome and notable recognition is given to all who raise awareness of deficiencies in the package via the GitHub repository.</p>
 </div>
 <div class="section level1">
 <h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h1>
-</div>
-<div class="section level1">
-<h1 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a></h1>
-<p>Contributions to <code>Purify</code> are welcome. Please submit pull requests or open issues on the GitHub repository.</p>
 <!--The paper should be between 250-1000 words.-->
 <!--See an example paper at [website](https://joss.readthedocs.io/en/latest/example_paper.html).-->
 <!--Format details at [website](https://joss.readthedocs.io/en/latest/paper.html), perhaps also see [website](https://joss.readthedocs.io/en/latest/submitting.html)-->

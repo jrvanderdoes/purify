@@ -1,16 +1,22 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://jrvanderdoes.github.io/purify/404.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/LICENSE.html</loc></url>
-<url><loc>https://jrvanderdoes.github.io/purify/articles/Simulations.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/articles/cats.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/articles/index.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/articles/purify.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/authors.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/index.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/paper.html</loc></url>
-<url><loc>https://jrvanderdoes.github.io/purify/reference/boxplot_strata.html</loc></url>
-<url><loc>https://jrvanderdoes.github.io/purify/reference/dot-convertSamplesToDF.html</loc></url>
-<url><loc>https://jrvanderdoes.github.io/purify/reference/dot-getChunks.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/cats.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/confidence_intervals.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/credit.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/cross_validation.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/reference/index.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/plot_strata_bar.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/plot_strata_box.html</loc></url>
 <url><loc>https://jrvanderdoes.github.io/purify/reference/resample.html</loc></url>
-<url><loc>https://jrvanderdoes.github.io/purify/reference/resample_function.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/subcats.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/summarize_resample.html</loc></url>
+<url><loc>https://jrvanderdoes.github.io/purify/reference/titanic.html</loc></url>
 </urlset>
 
