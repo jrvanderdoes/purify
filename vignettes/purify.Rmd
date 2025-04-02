@@ -1,0 +1,145 @@
+---
+title: "purify"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{purify}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Welcome to `purify'! This vignette will outline the main functions and offer many valuable simulations for these funtions. Real data examples can be found in other vignettes.
+
+`Purify' comes from its purpose of permutation tests and statification for data. It can be used to purify data and mitigate confounding effects, particularly when looking at strata which are much smaller than other strata.
+
+The data can be found on GitHub and can be loaded as:
+```{r setup}
+library(purify)
+```
+
+# Simulations 
+
+Let the data be generated as follows.
+
+```{r stratify_generate}
+set.seed(1234)
+n <- 500
+
+data_strat <- data.frame(
+  "y" = rep(NA, n),
+  "x" = NA,
+  "z" = sample(c("A", "B", "C"), size = n, replace = TRUE, prob = c(0.65, 0.3, 0.05)),
+  "w" = rnorm(n, 75, 50)
+)
+data_strat[data_strat$z == "A", "x"] <- rnorm(length(data_strat[data_strat$z == "A", "x"]), 40, 15)
+data_strat[data_strat$z == "B", "x"] <- rnorm(length(data_strat[data_strat$z == "B", "x"]), 60, 25)
+data_strat[data_strat$z == "C", "x"] <- rnorm(length(data_strat[data_strat$z == "C", "x"]), 100, 25)
+
+data_strat$y <- 10 + 0.1 * data_strat$x + rnorm(n, sd = 10)
+```
+
+We see a major inbalance is the groups.
+```{r, stratify_imbalance}
+plot_strata_bar(data_strat$z)
+plot_strata_box(data_strat[, c("z", "x")])
+```
+
+Suppose we are interested in the following regression model.
+```{r stratify_function}
+strat_function <- function(X) {
+  reg <- lm(y ~ x + z + w, data = X)
+
+  coef(summary(reg))
+}
+```
+
+The model on the original and resampled data can be computed.
+```{r strat_regression}
+set.seed(1234)
+orig_coefs <- strat_function(data_strat)
+
+set.seed(1234)
+res <- resample(
+  data = data_strat, fn = strat_function,
+  strata = "z", sizes = "mean"
+)
+```
+
+The results show resampling improved the estimates.
+```{r comparision}
+orig_coefs
+summarize_resample(res)
+```
+
+# Titanic Example
+
+From a subset of titanic data, it may be natural to try to estimate the survival 
+of a passenger.
+
+```{r titanic}
+# Define a custom function to calculate MSE
+mse_function <- function(data) {
+  pred <- as.numeric(predict(
+    glm(as.factor(Survived) ~ .,
+      data = data,
+      family = binomial(link = "logit")
+    ),
+    type = "response"
+  ) > 0.5)
+  mean(as.numeric(data$Survived != pred))
+}
+
+# Simple resampling
+set.seed(1234)
+results <- resample(
+  data = titanic, fn = mse_function,
+  M = 1000, strata = "Pclass"
+)
+```
+
+Resampling the data lead to lower mean squared error estimates.
+
+```{r errors}
+# Compare resultsx
+mse_function(titanic)
+summarize_resample(results)
+```
+
+# German Credit Information
+
+```{r credit}
+set.seed(1234)
+# Define a custom function to calculate MSE
+mse_function <- function(data) {
+  pred <- unique(data$Class)[
+    as.numeric(
+      predict(
+        glm(as.factor(Class) ~ .,
+          data = data,
+          family = binomial(link = "logit")
+        ),
+        type = "response"
+      ) > 0.5
+    ) + 1
+  ]
+
+  sum(as.numeric(data$Class != pred))
+}
+
+# Perform resampling with the 'simple' method
+results <- resample(
+  data = credit, fn = mse_function,
+  M = 2000, strata = "Job"
+)
+summarize_resample(results)
+mse_function(credit)
+```
+

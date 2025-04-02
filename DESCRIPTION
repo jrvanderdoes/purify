@@ -1,14 +1,26 @@
 Package: purify
-Title: Equalized permutation for statified data
-Version: 0.0.0.9000
+Title: Clean and Analyze Data
+Version: 1.0.0
 Authors@R: c( 
     person("Jeremy", "VanderDoes", email="jeremyvanderdoes@gmail.com", 
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0001-9885-3073")),
-    person("Yuling", "Chen", email="yuling.chen@uwaterloo.ca", role = c("aut") )
+    person("Yuling", "Chen", email="yuling.chen@uwaterloo.ca", 
+           role = c("aut"),
+           comment = c(ORCID = "0009-0000-5713-9255"))
     )
-Description: Sample stratified data via permutation methods to standardize group
-  sizes.
+Description: Resampling and related methods for data under dependence 
+  and uneven groups. Methods of resampling, cross-validation, and forecasting 
+  confidence intervals purify the data by with potential dependence or stratified 
+  sampling resulting in improved conclusions under a variety of scenarios. 
+  Functions are robust and flexible permitting direct use or seamless integration 
+  into the custom analyses. Discussions on bootstrapping, permutation, and 
+  cross-validation can be found in works such as Efron, B., & Tibshirani, R. 
+  (1993) <doi:10.1201/9780429246593> and Anthony C., & Hinkley, D. V. (1997) 
+  <doi:10.2307/1271471>. Sampling methods, with comments on stratification, are 
+  found in Thompson, S. K. (2012) <doi:10.1002/9781118162934>. Examples which use 
+  this package include Tetui et al. (2022) <doi:10.1080/21645515.2022.2089500> 
+  and Alexander, K. L., Hall, K., & Chen, Y. M. (2024) <doi:10.29173/jchla29798>.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -17,8 +29,14 @@ URL: https://github.com/jrvanderdoes/purify,
     https://jrvanderdoes.github.io/purify/
 BugReports: https://github.com/jrvanderdoes/purify/issues
 Suggests: 
+    forecast,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Imports: 
     ggplot2
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Config/testthat/edition: 3
