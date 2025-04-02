@@ -129,7 +129,7 @@ effects. See vignettes for additional analysis on this and other data.
 # ```{r example_plot, echo=FALSE}
 # png('./vignettes/cat_overview.png', width=1200, height=800)
 # ggplot() +
-#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=5) +
+#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=8) +
 #   theme_bw() +
 #   theme(axis.title = element_text(size=40),
 #         axis.text = element_text(size=36),
