@@ -13,7 +13,7 @@ authors:
     corresponding: true
   - name: Yuling Max Chen
     equal-contrib: true # (to be editted)
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0000-5713-9255
     affiliation: 1
 affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
