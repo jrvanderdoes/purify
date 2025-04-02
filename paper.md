@@ -92,7 +92,7 @@ information to the user. Visualization such as `plot_strata_bar()` or
   and includes simulations and real data examples to demonstrate the functions.
 - A *cats* vignette details a case scenario on real data.
 
-We consider a subset of the cats data set below, where we use sex and body 
+We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
 weight to estimate heart weight. See Figure \autoref{fig:cats}. In this 
 data, the data is highly imbalanced, as seen in many real-world examples. 
 Yet if the data is correct then sex and body weight are important. In particular, 
@@ -107,7 +107,6 @@ has a much larger confidence interval. While additional simulations, or modifyin
 resampling scheme could mitigate such losses, it is important to consider such 
 effects. See vignettes for additional analysis on this and other data.
 
-[**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
 +-------------------+-----------------+----------------+----------------+
 |                   | Intercept \     | Sex (M) \      | Body weight \  |
 |                   | 95% Conf Int    | 95% Conf Int   | 95% Conf Int   |
@@ -119,7 +118,7 @@ effects. See vignettes for additional analysis on this and other data.
 |                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |
 +===================+=================+================+================+
 
-
+: **Subcats models.** Models of cats using body weight and sex to predict heart weight.\label{tab:cats}
 <!--
 # ```{r setup, echo=FALSE}
 # library(purify)
