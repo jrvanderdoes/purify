@@ -1,5 +1,5 @@
 ---
-title: 'Purify: An R package for Bootstrapping'
+title: 'Purify: An R package for Resampling'
 tags:
   - R
   - Statistics
