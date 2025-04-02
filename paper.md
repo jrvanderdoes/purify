@@ -32,9 +32,10 @@ variable and multiple predictors. This package enables users to perform robust
 statistical analyses by allowing resampling of variables with and without relation
 to the output variable. Analyses can be focused on results such as 
 statistical summaries (e.g. mean square error) and coefficient estimates of models. 
-`Purify` offers versatile resampling methods, such as simple, block, sliding window, 
-and stratified resampling. Each can be tailored to specific data structures and 
-research questions. With its intuitive interface and customizable options, 
+`Purify` offers versatile resampling methods, including block, sliding window, 
+and stratified resampling. These methods are also extended to cross-validation 
+and prediction confidence intervals. Each can be tailored to specific data 
+structures and research questions. With its intuitive interface and customizable options, 
 `Purify` streamlines the process of hypothesis testing and estimation of 
 statistical significance.
 
@@ -42,9 +43,9 @@ statistical significance.
 
 Resampling is fundamental technique in estimating the distribution of a 
 statistic, testing hypotheses, and deriving confidence intervals, especially 
-when analytical solutions are impractical. Many R packages often provide 
+when analytical solutions are impractical. Many R packages provide 
 basic resampling methods but lack specialized support for complex structures.
-Such structures may contain dependence and variable which should not be resampled.
+Such structures may contain dependence and variables which should not be resampled.
 Analysis of these structures can be unwieldy to investigate in other packages. 
 `Purify` fills this gap by providing a flexible framework to enable data 
 scientists and researchers to perform and compare targeted, customizable 
@@ -67,12 +68,12 @@ functions to illuminate the methods and results. Detailed documentation makes
 `Purify` accessible to users of varying statistical understanding.
 
 
-![**Subcats.** Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
+![**Subcats.** Body and heart weights of cats with respect to their sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
 
 # Package Functionality
 
-A primary function in `Purify` is `resample()` with clear input parameters 
-to simplify the process. The multistep selection allows for combinations of 
+A primary function in `Purify` is `resample()`. The function offers clear input parameters 
+to simplify the process of selecting the correct methodology. The multistep selection allows for combinations of 
 dependent data, unbalanced data, and resampling to be performed with and without 
 replacement. The flexibility enables users to adapt `Purify` to diverse data 
 contexts and hypothesis-testing requirements. See also `cross_validation()` and
@@ -86,26 +87,19 @@ information to the user. Visualization such as `plot_strata_bar()` or
 ## Example
 
 `Purify` provides several in-depth vignettes in the package or at its 
-[website](https://jrvanderdoes.github.io/purify/).
+[website](https://jrvanderdoes.github.io/purify/). For example,
 
-- A *purify* vignette describes the core features of `purify' 
+- The *purify* vignette describes the core features of `purify' 
   and includes simulations and real data examples to demonstrate the functions.
-- A *cats* vignette details a case scenario on real data.
+- The *cats* vignette details a case scenario on real data.
 
 We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
-weight to estimate heart weight. See Figure \autoref{fig:cats}. In this 
-data, the data is highly imbalanced, as seen in many real-world examples. 
-Yet if the data is correct then sex and body weight are important. In particular, 
-female cats have low body weights and have a lower heart weight even for the 
-same body weight.
+weight to estimate heart weight. See \autoref{fig:cats}. As seen in many real-world 
+examples, the data is highly imbalanced. Nonetheless, sex and body weight are 
+both useful in understanding heart weight. In particular, female cats have lower 
+body weights and have a lower heart weight even for the same body weight when 
+compared to male cats.
 
-Using the data directly into a linear model with heart weight being predicted by
-body weight and sex, Table \autoref{tab:cats} was constructed. It is clear that 
-the single model is insufficient to capture the effect of sex, while the resampled
-model does capture its effect. In this model, the cost is that body weight now
-has a much larger confidence interval. While additional simulations, or modifying the 
-resampling scheme could mitigate such losses, it is important to consider such 
-effects. See vignettes for additional analysis on this and other data.
 
 +-------------------+-----------------+----------------+----------------+
 |                   | Intercept \     | Sex (M) \      | Body weight \  |
@@ -119,6 +113,19 @@ effects. See vignettes for additional analysis on this and other data.
 +===================+=================+================+================+
 
 : **Subcats models.** Models of cats using body weight and sex to predict heart weight.\label{tab:cats}
+
+
+Let the linear model be defined as heart weight being predicted by a intercept,
+body weight and sex. Estimates for the coefficients and the confidence intervals
+for each parameter are given in \autoref{tab:cats}. When applying the linear 
+model directly on the data, only body weights appear to significantly impact 
+heart weight. For resampled data, where samples are taken to create more evenly
+sized groups based on sex, both sex and body weight are determined to be 
+significant. The cost for this simple example is that the confidence interval 
+on body weight is much larger. While additional simulations, or modifying the 
+resampling scheme could mitigate such losses, it is important to consider such 
+effects. See vignettes for additional analysis on this and other data.
+
 <!--
 # ```{r setup, echo=FALSE}
 # library(purify)
