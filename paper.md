@@ -12,7 +12,7 @@ authors:
     affiliation: 1 # (Multiple affiliations must be quoted)
     corresponding: true
   - name: Yuling Max Chen
-    equal-contrib: true # (to be editted)
+    equal-contrib: true # (to be edited)
     orcid: 0009-0000-5713-9255
     affiliation: 1
 affiliations:
@@ -139,7 +139,7 @@ vectorized operations for efficient computation. The package's modular design
 and clear documentation make it easy to adapt to various research needs, 
 allowing users to integrate their own statistical functions or modify resampling 
 parameters to meet specific analytical requirements. `Purify` has been used 
-in @tetui:etal:2022, @scsrubook, and several upcoming papers.
+in @tetui:etal:2022, @scsrubook, and @alexander:hall:chen:2024.
 
 
 # Acknowledgements
