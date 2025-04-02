@@ -91,46 +91,80 @@ information to the user. Visualization such as `plot_strata_bar()` or
 - A *cats* vignette details a case scenario on real data.
 
 We consider a subset of the cats data set below, where we use sex and body 
-weight to estimate heart weight. In this subset, we drop some female cats so 
-that the data is highly imbalanced, yet if the data is correct then sex and 
-body weight are important. While the sample is small, this mismatch is common 
-in many surveys.
-```{r setup, echo=FALSE}
-library(purify)
-library(ggplot2)
-```
+weight to estimate heart weight. See Figure \autoref{fig:cats}. In this 
+data, the data is highly imbalanced, as seen in many real-world examples. 
+Yet if the data is correct then sex and body weight are important. In particular, 
+female cats have low body weights and have a lower heart weight even for the 
+same body weight.
 
-```{r example_plot, echo=FALSE}
-ggplot() +
-  geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
-  theme_bw() +
-  theme(axis.title = element_text(size=22),
-        axis.text = element_text(size=18),
-        legend.position = c(.2, .8),
-        legend.title = element_blank(),
-        legend.text = element_text(size=14)) +
-  scale_color_discrete(labels = c('Female', 'Male')) +
-  scale_shape_manual(labels = c('Female', 'Male'),
-                       values = c(16,3))
-```
+![{\bf Subcats.} Overview of the body weight and heart weight of cats with respect to the sex.\label{fig:cats}](vignettes/cat_overview.png)
 
+
+Using the data directly into a linear model with heart weight being predicted by
+body weight and sex, Table \autoref{tab:cats} was constructed. It is clear that 
+the single model is insufficient to capture the effect of sex, while the resampled
+model does capture its effect. In this model, the cost is that body weight now
+has a much larger confidence interval. While additional simulations, or modifying the 
+resampling scheme could mitigate such losses, it is important to consider such 
+effects.
+
+[{\bf Subcats models.} Models of subcats data using body weight and sex to predict
+heart weight.\label{tab:cats}]
++-------------------+-----------------+----------------+----------------+
+| Model             |Intercept        | Sex (M)        | Body weight    |
+|                   |                 |                |                |
++:=================:+:===============:+:==============:+:==============:+
+| Single model      | -1.486          | 0.617          | 4.208          |
+|                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |
++-------------------+-----------------+----------------+----------------+
+| Resampled model   | -0.214          | 0.900          | 4.155          |
+|                   | (-3.060, 1.023) | (0.000, 3.886)  | (0.000,14.283) |
++===================+=================+================+================+
+
+
+See vignettes for additional analysis on this and other data.
+
+<!--
+# ```{r setup, echo=FALSE}
+# library(purify)
+# library(ggplot2)
+# ```
+# 
+# ```{r example_plot, echo=FALSE}
+# ggplot() +
+#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
+#   theme_bw() +
+#   theme(axis.title = element_text(size=22),
+#         axis.text = element_text(size=18),
+#         legend.position = c(.2, .8),
+#         legend.title = element_blank(),
+#         legend.text = element_text(size=14)) +
+#   scale_color_discrete(labels = c('Female', 'Male')) +
+#   scale_shape_manual(labels = c('Female', 'Male'),
+#                        values = c(16,3)) +
+#   xlab('Body weight (kg)') +
+#   ylab('Heart weight (g)')
+# ```
+-->
+
+<!--
 ```{r example}  
 summ_function <- function(data) {
   coef(summary(lm(Hwt ~ ., data = data)))
 }
 
 set.seed(1234)
+tmp <- lm(Hwt ~ ., data =subcats)
+coef(summary(tmp))
+confint(tmp)
 summ_function(subcats)
 
 # Perform resampling
 results <- resample(data = subcats, fn = summ_function, M = 1000,
                              strata='Sex',sizes=mean)
-summarize_resample(results)
+summarize_resample(results, alpha=0.01)
 ```
-
-Although the female cats clearly have a lower heart weight even for the same 
-body weight, the traditional linear model does not detect this. The stratified 
-approach does detect the difference without sacrificing estimation of the bodyweight.
+-->
 
 # Implementation
 
@@ -153,12 +187,4 @@ who raise awareness of deficiencies in the package via the GitHub repository.
 
 
 # References
-
-
-<!--The paper should be between 250-1000 words.-->
-
-<!--See an example paper at [website](https://joss.readthedocs.io/en/latest/example_paper.html).-->
-
-<!--Format details at [website](https://joss.readthedocs.io/en/latest/paper.html), perhaps also see [website](https://joss.readthedocs.io/en/latest/submitting.html)-->
-
 
