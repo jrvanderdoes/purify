@@ -101,16 +101,16 @@ body weights and have a lower heart weight even for the same body weight when
 compared to male cats.
 
 
-+-------------------+-----------------+----------------+----------------+
-|                   | Intercept \     | Sex (M) \      | Body weight \  |
-|                   | 95% Conf Int    | 95% Conf Int   | 95% Conf Int   |
-+:=================:+:===============:+:==============:+:==============:+
-| Single model      | -1.486 \        | 0.617 \        | 4.208 \        |
-|                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |
-+-------------------+-----------------+----------------+----------------+
-| Resampled model   | -0.214 \        | 0.900 \        | 4.155 \        |
-|                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |
-+===================+=================+================+================+
++-------------------+-----------------+----------------+----------------+----------------+
+|                   | Intercept \     | Sex (M) \      | Body weight \  | MSE            |
+|                   | 95% Conf Int    | 95% Conf Int   | 95% Conf Int   |                |
++:=================:+:===============:+:==============:+:==============:+:==============:+
+| Single model      | -1.486 \        | 0.617 \        | 4.208 \        | 2.255          |
+|                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |                |
++-------------------+-----------------+----------------+----------------+----------------+
+| Resampled model   | -0.214 \        | 0.900 \        | 4.155 \        | 2.076          |
+|                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |                |
++===================+=================+================+================+================+
 
 : **Subcats models.** Models of cats using body weight and sex to predict heart weight.\label{tab:cats}
 
@@ -124,7 +124,9 @@ sized groups based on sex, both sex and body weight are determined to be
 significant. The cost for this simple example is that the confidence interval 
 on body weight is much larger. While additional simulations, or modifying the 
 resampling scheme could mitigate such losses, it is important to consider such 
-effects. See vignettes for additional analysis on this and other data.
+effects. Often the prediction errors, e.g. mean square error, is more important 
+and in this case, the resampled model also performs better. See vignettes for 
+additional analysis on this and other data.
 
 <!--
 # ```{r setup, echo=FALSE}
