@@ -105,23 +105,20 @@ the single model is insufficient to capture the effect of sex, while the resampl
 model does capture its effect. In this model, the cost is that body weight now
 has a much larger confidence interval. While additional simulations, or modifying the 
 resampling scheme could mitigate such losses, it is important to consider such 
-effects.
+effects. See vignettes for additional analysis on this and other data.
 
+[**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
 +-------------------+-----------------+----------------+----------------+
-|                   |Intercept        | Sex (M)        | Body weight    |
-|                   |                 |                |                |
+|                   | Intercept \     | Sex (M) \      | Body weight \  |
+|                   | 95% Conf Int    | 95% Conf Int   | 95% Conf Int   |
 +:=================:+:===============:+:==============:+:==============:+
 | Single model      | -1.486 \        | 0.617 \        | 4.208 \        |
 |                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |
 +-------------------+-----------------+----------------+----------------+
-| Resampled model   | -0.214 \        | 0.900 <br>     | 4.155 \        |
+| Resampled model   | -0.214 \        | 0.900 \        | 4.155 \        |
 |                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |
 +===================+=================+================+================+
-[**Subcats models.** Models of subcats data using body weight and sex to predict heart weight.\label{tab:cats}]
 
-
-
-See vignettes for additional analysis on this and other data.
 
 <!--
 # ```{r setup, echo=FALSE}
@@ -130,19 +127,21 @@ See vignettes for additional analysis on this and other data.
 # ```
 # 
 # ```{r example_plot, echo=FALSE}
+# png('./vignettes/cat_overview.png', width=1200, height=800)
 # ggplot() +
-#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=5) +
+#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=8) +
 #   theme_bw() +
-#   theme(axis.title = element_text(size=22),
-#         axis.text = element_text(size=18),
+#   theme(axis.title = element_text(size=40),
+#         axis.text = element_text(size=36),
 #         legend.position = c(.2, .8),
 #         legend.title = element_blank(),
-#         legend.text = element_text(size=14)) +
+#         legend.text = element_text(size=36)) +
 #   scale_color_discrete(labels = c('Female', 'Male')) +
 #   scale_shape_manual(labels = c('Female', 'Male'),
 #                        values = c(16,3)) +
 #   xlab('Body weight (kg)') +
 #   ylab('Heart weight (g)')
+# dev.off()
 # ```
 -->
 
