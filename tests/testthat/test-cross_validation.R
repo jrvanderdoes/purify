@@ -8,7 +8,8 @@ test_that("Cross-validation Tests", {
     cv_group_number = 10,
     cv.dependent = TRUE, sliding.start = 100
   )
-  expect_equal(round(tmp, 3), 225.096)
+  expect_equal(round(tmp[[1]], 3), 225.096)
+  expect_equal(round(tmp[[2]], 3), 200.79)
 
   set.seed(123)
   data <- cumsum(rnorm(150))
@@ -19,7 +20,8 @@ test_that("Cross-validation Tests", {
     cv_group_number = 10,
     cv.dependent = TRUE
   )
-  expect_equal(round(tmp, 3), 429.058)
+  expect_equal(round(tmp[[1]], 3), 429.058)
+  expect_equal(round(tmp[[2]], 3), 325.388)
 
   set.seed(1234)
   n <- 50
@@ -35,5 +37,6 @@ test_that("Cross-validation Tests", {
     cv_group_number = 10,
     cv.dependent = FALSE
   )
-  expect_equal(round(tmp, 3), 52.875)
+  expect_equal(round(tmp[[1]], 3), 52.875)
+  expect_equal(round(tmp[[2]], 3), 27.598)
 })
