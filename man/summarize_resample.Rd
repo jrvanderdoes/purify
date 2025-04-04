@@ -23,8 +23,8 @@ resampled data.
 }
 }
 \description{
-Summarize the results of function calls from resampled data. Such data is
-returned from \code{resample()} when \code{fn()} is given.
+Summarize the results of resampled data. Such data is
+returned from \code{resample()}, typically when \code{fn()} is given.
 }
 \examples{
 n <- 50

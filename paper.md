@@ -12,13 +12,13 @@ authors:
     affiliation: 1 # (Multiple affiliations must be quoted)
     corresponding: true
   - name: Yuling Max Chen
-    equal-contrib: true # (to be edited)
+    equal-contrib: true
     orcid: 0009-0000-5713-9255
     affiliation: 1
 affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
     index: 1
-date: 13 January 2025
+date: 4 April 2025
 nocite: | 
   @*
 bibliography: paper.bib
@@ -72,12 +72,12 @@ functions to illuminate the methods and results. Detailed documentation makes
 
 # Package Functionality
 
-A primary function in `Purify` is `resample()`. The function offers clear input parameters 
-to simplify the process of selecting the correct methodology. The multistep selection allows for combinations of 
-dependent data, unbalanced data, and resampling to be performed with and without 
-replacement. The flexibility enables users to adapt `Purify` to diverse data 
-contexts and hypothesis-testing requirements. See also `cross_validation()` and
-`confidence_intervals()`.
+A primary function in `Purify` is `resample()`. The function offers clear input 
+parameters to simplify the process of selecting the correct methodology. The 
+multistep selection allows for combinations of dependent data, unbalanced data, 
+and resampling to be performed with and without replacement. The flexibility 
+enables users to adapt `Purify` to diverse data contexts and hypothesis-testing
+requirements. See also `cross_validation()` and `confidence_intervals()`.
 
 Supporting functions such as `summarize_resample()` provide additional 
 information to the user. Visualization such as `plot_strata_bar()` or 
@@ -91,10 +91,10 @@ information to the user. Visualization such as `plot_strata_bar()` or
 
 - The *purify* vignette describes the core features of `purify' 
   and includes simulations and real data examples to demonstrate the functions.
-- The *cats* vignette details a case scenario on real data.
+- The *cats* vignette details investigation on real data.
 
 We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
-weight to estimate heart weight. See \autoref{fig:cats}. As seen in many real-world 
+weight to estimate heart weight; see \autoref{fig:cats}. As seen in many real-world 
 examples, the data is highly imbalanced. Nonetheless, sex and body weight are 
 both useful in understanding heart weight. In particular, female cats have lower 
 body weights and have a lower heart weight even for the same body weight when 
@@ -105,11 +105,11 @@ compared to male cats.
 |                   | Intercept \     | Sex (M) \      | Body weight \  | MSE            |
 |                   | 95% Conf Int    | 95% Conf Int   | 95% Conf Int   |                |
 +:=================:+:===============:+:==============:+:==============:+:==============:+
-| Single model      | -1.486 \        | 0.617 \        | 4.208 \        | 2.255          |
+| Single model      | -1.486 \        | 0.617 \        | 4.208 \        | 2.258          |
 |                   | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) |                |
 +-------------------+-----------------+----------------+----------------+----------------+
-| Resampled model   | -0.214 \        | 0.900 \        | 4.155 \        | 2.076          |
-|                   | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) |                |
+| Resampled model   | -1.427 \        | 0.620 \        | 4.186 \        | 2.192          |
+|                   | (-3.603, 0.610) | (0.051, 1.167) | (3.425, 5.005) |                |
 +===================+=================+================+================+================+
 
 : **Subcats models.** Models of cats using body weight and sex to predict heart weight.\label{tab:cats}
@@ -122,39 +122,32 @@ model directly on the data, only body weights appear to significantly impact
 heart weight. For resampled data, where samples are taken to create more evenly
 sized groups based on sex, both sex and body weight are determined to be 
 significant. The cost for this simple example is that the confidence interval 
-on body weight is much larger. While additional simulations, or modifying the 
-resampling scheme could mitigate such losses, it is important to consider such 
+on body weight is larger. While additional simulations, or modifying the 
+resampling scheme may mitigate such losses, it is important to consider such 
 effects. Often the prediction errors, e.g. mean square error (MSE), is more important 
 and in this case, the resampled model also performs better. See vignettes for 
 additional analysis on this and other data.
 
 <!--
-# ```{r setup, echo=FALSE}
-# library(purify)
-# library(ggplot2)
-# ```
-# 
-# ```{r example_plot, echo=FALSE}
-# png('./vignettes/cat_overview.png', width=1200, height=800)
-# ggplot() +
-#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=8) +
-#   theme_bw() +
-#   theme(axis.title = element_text(size=40),
-#         axis.text = element_text(size=36),
-#         legend.position = c(.2, .8),
-#         legend.title = element_blank(),
-#         legend.text = element_text(size=36)) +
-#   scale_color_discrete(labels = c('Female', 'Male')) +
-#   scale_shape_manual(labels = c('Female', 'Male'),
-#                        values = c(16,3)) +
-#   xlab('Body weight (kg)') +
-#   ylab('Heart weight (g)')
-# dev.off()
-# ```
--->
+library(purify)
+library(ggplot2)
 
-<!--
-```{r example}  
+png('./vignettes/cat_overview.png', width=1200, height=800)
+ggplot() +
+  geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=8) +
+  theme_bw() +
+  theme(axis.title = element_text(size=40),
+        axis.text = element_text(size=36),
+        legend.position = c(.2, .8),
+        legend.title = element_blank(),
+        legend.text = element_text(size=36)) +
+  scale_color_discrete(labels = c('Female', 'Male')) +
+  scale_shape_manual(labels = c('Female', 'Male'),
+                       values = c(16,3)) +
+  xlab('Body weight (kg)') +
+  ylab('Heart weight (g)')
+dev.off()
+
 summ_function <- function(data) {
   coef(summary(lm(Hwt ~ ., data = data)))
 }
@@ -163,13 +156,48 @@ set.seed(1234)
 tmp <- lm(Hwt ~ ., data =subcats)
 coef(summary(tmp))
 confint(tmp)
-summ_function(subcats)
+# summ_function(subcats)
 
-# Perform resampling
-results <- resample(data = subcats, fn = summ_function, M = 1000,
-                             strata='Sex',sizes=mean)
-summarize_resample(results, alpha=0.01)
-```
+# # Perform resampling
+# results <- resample(data = subcats, fn = summ_function, M = 1000,
+#                              strata='Sex',sizes=mean)
+# summarize_resample(results)
+
+###########
+
+# Does CV on each sample so that we get result comparable to CV
+#   e.g. fitting on one less data and predicting the missing
+mse_function1 <- function(data) {
+  
+  cv <- cross_validation(data = data,
+                 pred_fn = function(data,nd){
+                   as.numeric(predict(lm(Hwt ~ ., data = data),newdata = nd) )
+                 },
+                 error_fn = function(true,est){
+                   mean((true$Hwt - est)^2)
+                 })
+  mod <- lm(Hwt ~ ., data=data)
+  c(cv[[1]], as.numeric(coef(summary(mod))[,1]) )
+  
+  # mod <- lm(Hwt ~ ., data=data)
+  # pred <- as.numeric(predict( mod , new_data=cv_data) )
+  # c(mean((data$Hwt - pred)^2), as.numeric(coef(summary(mod))[,1]) )
+}
+
+set.seed(1234)
+results <- resample(
+  data = subcats, fn = mse_function1,
+  M = 1000, strata = "Sex"
+)
+
+cross_validation(data = subcats,
+                 pred_fn = function(data,nd){
+                   as.numeric(predict(lm(Hwt ~ ., data = data),newdata = nd) )
+                 },
+                 error_fn = function(true,est){
+                   mean((true$Hwt - est)^2)
+                 })
+summarize_resample(results)
 -->
 
 # Implementation

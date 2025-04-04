@@ -108,12 +108,50 @@ results <- resample(
 Resampling the data lead to lower mean squared error estimates.
 
 ```{r errors}
-# Compare resultsx
+# Does CV on each sample
+#   Note, MSE uses all data while resample will be missing the CV part
+#   See cats vignette for modifications
+mse_function1 <- function(data) {
+  cv <- cross_validation(
+    data = data,
+    pred_fn = function(data, nd) {
+      as.numeric(predict(
+        glm(as.factor(Survived) ~ .,
+          data = data,
+          family = binomial(link = "logit")
+        ),
+        type = "response", newdata = nd
+      ))
+    },
+    error_fn = function(data, pred) {
+      mean(as.numeric(data$Survived != pred))
+    }
+  )
+  mod <- glm(as.factor(Survived) ~ .,
+    data = data,
+    family = binomial(link = "logit")
+  )
+
+  c(cv[[1]], as.numeric(coef(summary(mod))[, 1]))
+
+  # mod <- lm(Hwt ~ ., data=data)
+  # pred <- as.numeric(predict( mod , new_data=cv_data) )
+  # c(mean((data$Hwt - pred)^2), as.numeric(coef(summary(mod))[,1]) )
+}
+
+set.seed(1234)
+results <- resample(
+  data = titanic, fn = mse_function,
+  M = 1000, strata = "Pclass"
+)
+
 mse_function(titanic)
 summarize_resample(results)
 ```
 
 # German Credit Information
+
+Below is a simple analysis of German credit data.
 
 ```{r credit}
 set.seed(1234)
@@ -135,6 +173,8 @@ mse_function <- function(data) {
 }
 
 # Perform resampling with the 'simple' method
+#   Note, MSE uses all data while resample will be missing the CV part
+#   See cats vignette for modifications
 results <- resample(
   data = credit, fn = mse_function,
   M = 2000, strata = "Job"

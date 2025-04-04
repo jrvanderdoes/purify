@@ -1,7 +1,7 @@
 #' Summarize Resampled Data
 #'
-#' Summarize the results of function calls from resampled data. Such data is
-#'  returned from \code{resample()} when \code{fn()} is given.
+#' Summarize the results of resampled data. Such data is
+#'  returned from \code{resample()}, typically when \code{fn()} is given.
 #'
 #' @param data Data.frame of resampled data from [resample()].
 #' @param alpha Significance level for confidence intervals.

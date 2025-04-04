@@ -18,7 +18,7 @@
 #'  fit, then data is slowly added and predicted.
 #' @param ... Additional parameters for \code{pred_fn()}
 #'
-#' @returns Mean of the errors
+#' @returns Vector with (1) mean of the errors and (2) sd of the errors.
 #' @export
 #'
 #' @examples
@@ -88,5 +88,5 @@ cross_validation <- function(
     }
   }
 
-  mean(errors)
+  c("est" = mean(errors), "sd" = stats::sd(errors))
 }

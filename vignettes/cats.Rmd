@@ -16,13 +16,23 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette examines the cats data set. The goal of this analysis is to see the effect sex has on the body and heart weight measures.
+This vignette examines the cats data set. The goal of this analysis is to see the effect sex has on the body and heart weight measures. This analysis goes further than that in the purify vignette by adding cross-validation to the summary function. This comes at the cost of computational time.
 ```{r setup}
 library(purify)
 library(ggplot2)
 
 summ_function <- function(data) {
-  coef(summary(lm(Hwt ~ ., data = data)))
+  cv <- cross_validation(
+    data = data,
+    pred_fn = function(data, nd) {
+      as.numeric(predict(lm(Hwt ~ ., data = data), newdata = nd))
+    },
+    error_fn = function(true, est) {
+      mean((true$Hwt - est)^2)
+    }
+  )
+  mod <- lm(Hwt ~ ., data = data)
+  c(cv[[1]], as.numeric(coef(summary(mod))[, 1]))
 }
 ```
 
@@ -35,20 +45,22 @@ plot_strata_box(cats[, c("Sex", "Hwt")])
 plot_strata_box(cats[, c("Sex", "Bwt")])
 
 ggplot() +
-  geom_point(aes(x = Bwt, y = Hwt, col = Sex, shape = Sex), data = subcats) +
+  geom_point(aes(x = Bwt, y = Hwt, col = Sex, shape = Sex), data = cats, size = 8) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 22),
-    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 40),
+    axis.text = element_text(size = 36),
     legend.position = c(.2, .8),
     legend.title = element_blank(),
-    legend.text = element_text(size = 14)
+    legend.text = element_text(size = 36)
   ) +
   scale_color_discrete(labels = c("Female", "Male")) +
   scale_shape_manual(
     labels = c("Female", "Male"),
     values = c(16, 3)
-  )
+  ) +
+  xlab("Body weight (kg)") +
+  ylab("Heart weight (g)")
 ```
 
 Now modeling the data:
@@ -56,9 +68,9 @@ Now modeling the data:
 set.seed(1234)
 summ_function(cats)
 
-# Perform resampling
+# Perform resampling (with CV included so a bit time consuming)
 results <- resample(
-  data = cats, fn = summ_function, M = 1000,
+  data = cats, fn = summ_function, M = 500,
   strata = "Sex", sizes = mean
 )
 summarize_resample(results)
@@ -75,16 +87,31 @@ plot_strata_bar(subcats$Sex)
 
 Now modeling the data:
 ```{r subestimate}
+# Original model
 set.seed(1234)
-summ_function(subcats)
+tmp <- lm(Hwt ~ ., data = subcats)
+coef(summary(tmp))
+confint(tmp)
 
-# Perform resampling
+## CV for both
+set.seed(1234)
 results <- resample(
-  data = subcats, fn = summ_function, M = 1000,
-  strata = "Sex", sizes = mean
+  data = subcats, fn = summ_function,
+  M = 500, strata = "Sex"
+)
+
+cross_validation(
+  data = subcats,
+  pred_fn = function(data, nd) {
+    as.numeric(predict(lm(Hwt ~ ., data = data), newdata = nd))
+  },
+  error_fn = function(true, est) {
+    mean((true$Hwt - est)^2)
+  }
 )
 summarize_resample(results)
 ```
 
-In examining the data, we can observe that sex is important, but is hard to see due to the low samples. Traditional linear models miss this; however, a resampled method can capture the importance of sex without losing the effects of body weight.
+In examining the data, we can observe that sex is important, but is hard to see due to the low samples. Traditional linear models miss this; however, a resampled method can capture the importance of sex without losing the effects of body weight. The resampled
+method also improves estimation in terms of mean squared error.
 
