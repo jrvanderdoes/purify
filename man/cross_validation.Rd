@@ -39,7 +39,7 @@ fit, then data is slowly added and predicted.}
 \item{...}{Additional parameters for \code{pred_fn()}}
 }
 \value{
-Mean of the errors
+Vector with (1) mean of the errors and (2) sd of the errors.
 }
 \description{
 Run cross-validation on data which may be dependent. Parameters offer choices
