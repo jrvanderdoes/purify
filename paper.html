@@ -39,54 +39,75 @@
 
 <div id="summary" class="section level1">
 
-<p><code>Purify</code> is an R package designed for resampling and testing of data, aimed at researchers and practitioners who analyze complex datasets with a potentially dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing resampling of variables with and without relation to the output variable. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. <code>Purify</code> offers versatile resampling methods, such as simple, block, sliding window, and stratified resampling. Each can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, <code>Purify</code> streamlines the process of hypothesis testing and estimation of statistical significance.</p>
+<p><code>Purify</code> is an R package designed for resampling and testing of data, aimed at researchers and practitioners who analyze complex datasets with a potentially dependent output variable and multiple predictors. This package enables users to perform robust statistical analyses by allowing resampling of variables with and without relation to the output variable. Analyses can be focused on results such as statistical summaries (e.g. mean square error) and coefficient estimates of models. <code>Purify</code> offers versatile resampling methods, including block, sliding window, and stratified resampling. These methods are also extended to cross-validation and prediction confidence intervals. Each can be tailored to specific data structures and research questions. With its intuitive interface and customizable options, <code>Purify</code> streamlines the process of hypothesis testing and estimation of statistical significance.</p>
 </div>
 <div class="section level1">
 <h1 id="statement-of-need">Statement of need<a class="anchor" aria-label="anchor" href="#statement-of-need"></a></h1>
-<p>Resampling is fundamental technique in estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Many R packages often provide basic resampling methods but lack specialized support for complex structures. Such structures may contain dependence and variable which should not be resampled. Analysis of these structures can be unwieldy to investigate in other packages. <code>Purify</code> fills this gap by providing a flexible framework to enable data scientists and researchers to perform and compare targeted, customizable resampling schemes that account for data structure. Further, the methods allow for user-defined functions, allowing use of outside models, making <code>Purify</code> ideal for rigorous hypothesis testing and model evaluation.</p>
+<p>Resampling is fundamental technique in estimating the distribution of a statistic, testing hypotheses, and deriving confidence intervals, especially when analytical solutions are impractical. Many R packages provide basic resampling methods but lack specialized support for complex structures. Such structures may contain dependence and variables which should not be resampled. Analysis of these structures can be unwieldy to investigate in other packages. <code>Purify</code> fills this gap by providing a flexible framework to enable data scientists and researchers to perform and compare targeted, customizable resampling schemes that account for data structure. Further, the methods allow for user-defined functions, allowing use of outside models, making <code>Purify</code> ideal for rigorous hypothesis testing and model evaluation.</p>
 <p>The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data (even under dependence), providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, <code>Purify</code> enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.</p>
 <p>Permutation tests can be naturally computational intensive and speed is an important consideration throughout <code>Purify</code>. Users can use it in a variety of problems. Additional functions provide use of resampling in the context of cross-validation. Supplemental functions provide visualizations and summary functions to illuminate the methods and results. Detailed documentation makes <code>Purify</code> accessible to users of varying statistical understanding.</p>
+<div class="float">
+<img src="articles/cat_overview.png" style="width:100.0%" alt="Subcats. Body and heart weights of cats with respect to their sex."><div class="figcaption">
+<strong>Subcats.</strong> Body and heart weights of cats with respect to their sex.</div>
+</div>
 </div>
 <div class="section level1">
 <h1 id="package-functionality">Package Functionality<a class="anchor" aria-label="anchor" href="#package-functionality"></a></h1>
-<p>A primary function in <code>Purify</code> is <code><a href="reference/resample.html">resample()</a></code> with clear input parameters to simplify the process. The multistep selection allows for combinations of dependent data, unbalanced data, and resampling to be performed with and without replacement. The flexibility enables users to adapt <code>Purify</code> to diverse data contexts and hypothesis-testing requirements. See also <code><a href="reference/cross_validation.html">cross_validation()</a></code> and <code><a href="reference/confidence_intervals.html">confidence_intervals()</a></code>.</p>
+<p>A primary function in <code>Purify</code> is <code><a href="reference/resample.html">resample()</a></code>. The function offers clear input parameters to simplify the process of selecting the correct methodology. The multistep selection allows for combinations of dependent data, unbalanced data, and resampling to be performed with and without replacement. The flexibility enables users to adapt <code>Purify</code> to diverse data contexts and hypothesis-testing requirements. See also <code><a href="reference/cross_validation.html">cross_validation()</a></code> and <code><a href="reference/confidence_intervals.html">confidence_intervals()</a></code>.</p>
 <p>Supporting functions such as <code><a href="reference/summarize_resample.html">summarize_resample()</a></code> provide additional information to the user. Visualization such as <code><a href="reference/plot_strata_bar.html">plot_strata_bar()</a></code> or <code>plot_strat_box()</code> visualize group sizes in stratified samples.</p>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a></h2>
-<p><code>Purify</code> provides several in-depth vignettes in the package or at its <a href="https://jrvanderdoes.github.io/purify/">website</a>.</p>
-<ul><li>An <em>Introduction</em> vignette describes the core features of `purify’ and includes simulations and real data examples to demonstrate the functions.</li>
-<li>A <em>cats</em> vignette details a case scenario on real data.</li>
-</ul><p>We consider a subset of the cats data set below, where we use sex and body weight to estimate heart weight. See Figure . In this data, the data is highly imbalanced, as seen in many real-world examples. Yet if the data is correct then sex and body weight are important. In particular, female cats have low body weights and have a lower heart weight even for the same body weight.</p>
-<div class="float">
-<img src="articles/cat_overview.png" alt="{} Overview of the body weight and heart weight of cats with respect to the sex."><div class="figcaption">{} Overview of the body weight and heart weight of cats with respect to the sex.</div>
-</div>
-<p>Using the data directly into a linear model with heart weight being predicted by body weight and sex, Table  was constructed. It is clear that the single model is insufficient to capture the effect of sex, while the resampled model does capture its effect. In this model, the cost is that body weight now has a much larger confidence interval. While additional simulations, or modifying the resampling scheme could mitigate such losses, it is important to consider such effects.</p>
-<p>[{} Models of subcats data using body weight and sex to predict heart weight.] +——————-+—————–+—————-+—————-+ | Model |Intercept | Sex (M) | Body weight | | | | | | +:=================:+:===============:+:==============:+:==============:+ | Single model | -1.486 | 0.617 | 4.208 | | | (-3.236, 0.264) | (-0.139, 1.372)| (3.573, 4.843) | +——————-+—————–+—————-+—————-+ | Resampled model | -0.214 | 0.900 | 4.155 | | | (-3.060, 1.023) | (0.000, 3.886) | (0.000,14.283) | +===================+=================+================+================+</p>
-<p>See vignettes for additional analysis on this and other data.</p>
+<p><code>Purify</code> provides several in-depth vignettes in the package or at its <a href="https://jrvanderdoes.github.io/purify/">website</a>. For example,</p>
+<ul><li>The <em>purify</em> vignette describes the core features of `purify’ and includes simulations and real data examples to demonstrate the functions.</li>
+<li>The <em>cats</em> vignette details investigation on real data.</li>
+</ul><p>We consider a subset of the cats (<em>subcats</em>) data set below, where we use sex and body weight to estimate heart weight; see . As seen in many real-world examples, the data is highly imbalanced. Nonetheless, sex and body weight are both useful in understanding heart weight. In particular, female cats have lower body weights and have a lower heart weight even for the same body weight when compared to male cats.</p>
+<table style="width:97%;" class="table"><caption>
+<strong>Subcats models.</strong> Models of cats using body weight and sex to predict heart weight.</caption>
+<colgroup><col width="21%"><col width="19%"><col width="18%"><col width="18%"><col width="18%"></colgroup><thead><tr class="header"><th align="center"></th>
+<th align="center">Intercept<br>
+95% Conf Int</th>
+<th align="center">Sex (M)<br>
+95% Conf Int</th>
+<th align="center">Body weight<br>
+95% Conf Int</th>
+<th align="center">MSE</th>
+</tr></thead><tbody></tbody><tfoot><tr class="odd"><td align="center">Single model</td>
+<td align="center">-1.486<br>
+(-3.236, 0.264)</td>
+<td align="center">0.617<br>
+(-0.139, 1.372)</td>
+<td align="center">4.208<br>
+(3.573, 4.843)</td>
+<td align="center">2.258</td>
+</tr><tr class="even"><td align="center">Resampled model</td>
+<td align="center">-1.427<br>
+(-3.603, 0.610)</td>
+<td align="center">0.620<br>
+(0.051, 1.167)</td>
+<td align="center">4.186<br>
+(3.425, 5.005)</td>
+<td align="center">2.192</td>
+</tr></tfoot></table><p>Let the linear model be defined as heart weight being predicted by a intercept, body weight and sex. Estimates for the coefficients and the confidence intervals for each parameter are given in . When applying the linear model directly on the data, only body weights appear to significantly impact heart weight. For resampled data, where samples are taken to create more evenly sized groups based on sex, both sex and body weight are determined to be significant. The cost for this simple example is that the confidence interval on body weight is larger. While additional simulations, or modifying the resampling scheme may mitigate such losses, it is important to consider such effects. Often the prediction errors, e.g. mean square error (MSE), is more important and in this case, the resampled model also performs better. See vignettes for additional analysis on this and other data.</p>
 <!--
-# ```{r setup, echo=FALSE}
-# library(purify)
-# library(ggplot2)
-# ```
-#
-# ```{r example_plot, echo=FALSE}
-# ggplot() +
-#   geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats) +
-#   theme_bw() +
-#   theme(axis.title = element_text(size=22),
-#         axis.text = element_text(size=18),
-#         legend.position = c(.2, .8),
-#         legend.title = element_blank(),
-#         legend.text = element_text(size=14)) +
-#   scale_color_discrete(labels = c('Female', 'Male')) +
-#   scale_shape_manual(labels = c('Female', 'Male'),
-#                        values = c(16,3)) +
-#   xlab('Body weight (kg)') +
-#   ylab('Heart weight (g)')
-# ```
--->
-<!--
-```{r example}
+library(purify)
+library(ggplot2)
+
+png('./vignettes/cat_overview.png', width=1200, height=800)
+ggplot() +
+  geom_point(aes(x=Bwt, y=Hwt, col=Sex,shape = Sex),data=subcats, size=8) +
+  theme_bw() +
+  theme(axis.title = element_text(size=40),
+        axis.text = element_text(size=36),
+        legend.position = c(.2, .8),
+        legend.title = element_blank(),
+        legend.text = element_text(size=36)) +
+  scale_color_discrete(labels = c('Female', 'Male')) +
+  scale_shape_manual(labels = c('Female', 'Male'),
+                       values = c(16,3)) +
+  xlab('Body weight (kg)') +
+  ylab('Heart weight (g)')
+dev.off()
+
 summ_function <- function(data) {
   coef(summary(lm(Hwt ~ ., data = data)))
 }
@@ -95,13 +116,48 @@ set.seed(1234)
 tmp <- lm(Hwt ~ ., data =subcats)
 coef(summary(tmp))
 confint(tmp)
-summ_function(subcats)
+# summ_function(subcats)
 
-# Perform resampling
-results <- resample(data = subcats, fn = summ_function, M = 1000,
-                             strata='Sex',sizes=mean)
-summarize_resample(results, alpha=0.01)
-```
+# # Perform resampling
+# results <- resample(data = subcats, fn = summ_function, M = 1000,
+#                              strata='Sex',sizes=mean)
+# summarize_resample(results)
+
+###########
+
+# Does CV on each sample so that we get result comparable to CV
+#   e.g. fitting on one less data and predicting the missing
+mse_function1 <- function(data) {
+
+  cv <- cross_validation(data = data,
+                 pred_fn = function(data,nd){
+                   as.numeric(predict(lm(Hwt ~ ., data = data),newdata = nd) )
+                 },
+                 error_fn = function(true,est){
+                   mean((true$Hwt - est)^2)
+                 })
+  mod <- lm(Hwt ~ ., data=data)
+  c(cv[[1]], as.numeric(coef(summary(mod))[,1]) )
+
+  # mod <- lm(Hwt ~ ., data=data)
+  # pred <- as.numeric(predict( mod , new_data=cv_data) )
+  # c(mean((data$Hwt - pred)^2), as.numeric(coef(summary(mod))[,1]) )
+}
+
+set.seed(1234)
+results <- resample(
+  data = subcats, fn = mse_function1,
+  M = 1000, strata = "Sex"
+)
+
+cross_validation(data = subcats,
+                 pred_fn = function(data,nd){
+                   as.numeric(predict(lm(Hwt ~ ., data = data),newdata = nd) )
+                 },
+                 error_fn = function(true,est){
+                   mean((true$Hwt - est)^2)
+                 })
+summarize_resample(results)
 -->
 </div>
 </div>
