@@ -68,7 +68,7 @@ functions to illuminate the methods and results. Detailed documentation makes
 `Purify` accessible to users of varying statistical understanding.
 
 
-![**Subcats.** Body and heart weights of cats with respect to their sex.\label{fig:cats}](vignettes/cat_overview.png){ width=100% }
+![**Subcats.** Body and heart weights of cats with respect to their sex.\label{fig:cats}](vignettes/articles/cat_overview.png){ width=100% }
 
 # Package Functionality
 
@@ -86,12 +86,12 @@ information to the user. Visualization such as `plot_strata_bar()` or
 
 ## Example
 
-`Purify` provides several in-depth vignettes in the package or at its 
+`Purify` provides in-depth articles on the package 
 [website](https://jrvanderdoes.github.io/purify/). For example,
 
-- The *purify* vignette describes the core features of `purify' 
+- The *purify* article describes the core features of `purify' 
   and includes simulations and real data examples to demonstrate the functions.
-- The *cats* vignette details investigation on real data.
+- The *cats* article details investigation on real data.
 
 We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
 weight to estimate heart weight; see \autoref{fig:cats}. As seen in many real-world 
@@ -125,7 +125,7 @@ significant. The cost for this simple example is that the confidence interval
 on body weight is larger. While additional simulations, or modifying the 
 resampling scheme may mitigate such losses, it is important to consider such 
 effects. Often the prediction errors, e.g. mean square error (MSE), is more important 
-and in this case, the resampled model also performs better. See vignettes for 
+and in this case, the resampled model also performs better. See articles for 
 additional analysis on this and other data.
 
 <!--
