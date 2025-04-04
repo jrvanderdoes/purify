@@ -1,10 +1,5 @@
 ---
 title: "purify"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{purify}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -16,7 +11,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Welcome to `purify'! This vignette will outline the main functions and offer many valuable simulations for these funtions. Real data examples can be found in other vignettes.
+Welcome to `purify'! This article will outline the main functions and offer many valuable simulations for these funtions. Real data examples can be found in other articles.
 
 `Purify' comes from its purpose of permutation tests and statification for data. It can be used to purify data and mitigate confounding effects, particularly when looking at strata which are much smaller than other strata.
 
@@ -110,7 +105,7 @@ Resampling the data lead to lower mean squared error estimates.
 ```{r errors}
 # Does CV on each sample
 #   Note, MSE uses all data while resample will be missing the CV part
-#   See cats vignette for modifications
+#   See cats article for modifications
 mse_function1 <- function(data) {
   cv <- cross_validation(
     data = data,
@@ -174,7 +169,7 @@ mse_function <- function(data) {
 
 # Perform resampling with the 'simple' method
 #   Note, MSE uses all data while resample will be missing the CV part
-#   See cats vignette for modifications
+#   See cats article for modifications
 results <- resample(
   data = credit, fn = mse_function,
   M = 2000, strata = "Job"

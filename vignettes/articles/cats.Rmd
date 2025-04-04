@@ -1,10 +1,5 @@
 ---
 title: "cats"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{cats}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -16,7 +11,7 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette examines the cats data set. The goal of this analysis is to see the effect sex has on the body and heart weight measures. This analysis goes further than that in the purify vignette by adding cross-validation to the summary function. This comes at the cost of computational time.
+This article examines data on cats, includes as *cats* and *subcats* in the package. The goal of this analysis is to see the effect sex has on the body and heart weight measures. This analysis goes further than that in the purify article by adding cross-validation to the summary function. This comes at the cost of computational time.
 ```{r setup}
 library(purify)
 library(ggplot2)
@@ -45,14 +40,14 @@ plot_strata_box(cats[, c("Sex", "Hwt")])
 plot_strata_box(cats[, c("Sex", "Bwt")])
 
 ggplot() +
-  geom_point(aes(x = Bwt, y = Hwt, col = Sex, shape = Sex), data = cats, size = 8) +
+  geom_point(aes(x = Bwt, y = Hwt, col = Sex, shape = Sex), data = cats, size = 5) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 40),
-    axis.text = element_text(size = 36),
+    axis.title = element_text(size = 30),
+    axis.text = element_text(size = 26),
     legend.position = c(.2, .8),
     legend.title = element_blank(),
-    legend.text = element_text(size = 36)
+    legend.text = element_text(size = 26)
   ) +
   scale_color_discrete(labels = c("Female", "Male")) +
   scale_shape_manual(
@@ -114,4 +109,3 @@ summarize_resample(results)
 
 In examining the data, we can observe that sex is important, but is hard to see due to the low samples. Traditional linear models miss this; however, a resampled method can capture the importance of sex without losing the effects of body weight. The resampled
 method also improves estimation in terms of mean squared error.
-
