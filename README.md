@@ -14,8 +14,10 @@ cross-validation, and forecasting confidence intervals purify the data
 resulting in improved conclusions under a variety of scenarios. The
 functions are robust and flexible permitting direct use or seamless
 integration into the custom analyses. See example uses in Tetui et
-al. (2022) <doi:10.1080/21645515.2022.2089500> and Alexander, K. L.,
-Hall, K., & Chen, Y. M. (2024) <doi:10.29173/jchla29798>.
+al. (2022) \<<a href="doi:10.1080/21645515.2022.2089500\"
+class="uri">doi:10.1080/21645515.2022.2089500\</a>\> and Alexander, K.
+L., Hall, K., & Chen, Y. M. (2024) \<<a href="doi:10.29173/jchla29798\"
+class="uri">doi:10.29173/jchla29798\</a>\>.
 
 ## Installation
 
