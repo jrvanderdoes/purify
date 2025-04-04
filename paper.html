@@ -47,7 +47,7 @@
 <p>The package’s support for stratified and segmented sampling further allows users to address scenarios with grouped or ordered data (even under dependence), providing a critical resource for modern applied statistical research. By incorporating sophisticated resampling techniques, <code>Purify</code> enhances the robustness and reliability of statistical inferences drawn from complex (in particular unbalanced) datasets.</p>
 <p>Permutation tests can be naturally computational intensive and speed is an important consideration throughout <code>Purify</code>. Users can use it in a variety of problems. Additional functions provide use of resampling in the context of cross-validation. Supplemental functions provide visualizations and summary functions to illuminate the methods and results. Detailed documentation makes <code>Purify</code> accessible to users of varying statistical understanding.</p>
 <div class="float">
-<img src="articles/cat_overview.png" style="width:100.0%" alt="Subcats. Body and heart weights of cats with respect to their sex."><div class="figcaption">
+<img src="articles/articles/cat_overview.png" style="width:100.0%" alt="Subcats. Body and heart weights of cats with respect to their sex."><div class="figcaption">
 <strong>Subcats.</strong> Body and heart weights of cats with respect to their sex.</div>
 </div>
 </div>
@@ -57,9 +57,9 @@
 <p>Supporting functions such as <code><a href="reference/summarize_resample.html">summarize_resample()</a></code> provide additional information to the user. Visualization such as <code><a href="reference/plot_strata_bar.html">plot_strata_bar()</a></code> or <code>plot_strat_box()</code> visualize group sizes in stratified samples.</p>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a></h2>
-<p><code>Purify</code> provides several in-depth vignettes in the package or at its <a href="https://jrvanderdoes.github.io/purify/">website</a>. For example,</p>
-<ul><li>The <em>purify</em> vignette describes the core features of `purify’ and includes simulations and real data examples to demonstrate the functions.</li>
-<li>The <em>cats</em> vignette details investigation on real data.</li>
+<p><code>Purify</code> provides in-depth articles on the package <a href="https://jrvanderdoes.github.io/purify/">website</a>. For example,</p>
+<ul><li>The <em>purify</em> article describes the core features of `purify’ and includes simulations and real data examples to demonstrate the functions.</li>
+<li>The <em>cats</em> article details investigation on real data.</li>
 </ul><p>We consider a subset of the cats (<em>subcats</em>) data set below, where we use sex and body weight to estimate heart weight; see . As seen in many real-world examples, the data is highly imbalanced. Nonetheless, sex and body weight are both useful in understanding heart weight. In particular, female cats have lower body weights and have a lower heart weight even for the same body weight when compared to male cats.</p>
 <table style="width:97%;" class="table"><caption>
 <strong>Subcats models.</strong> Models of cats using body weight and sex to predict heart weight.</caption>
@@ -87,7 +87,7 @@
 <td align="center">4.186<br>
 (3.425, 5.005)</td>
 <td align="center">2.192</td>
-</tr></tfoot></table><p>Let the linear model be defined as heart weight being predicted by a intercept, body weight and sex. Estimates for the coefficients and the confidence intervals for each parameter are given in . When applying the linear model directly on the data, only body weights appear to significantly impact heart weight. For resampled data, where samples are taken to create more evenly sized groups based on sex, both sex and body weight are determined to be significant. The cost for this simple example is that the confidence interval on body weight is larger. While additional simulations, or modifying the resampling scheme may mitigate such losses, it is important to consider such effects. Often the prediction errors, e.g. mean square error (MSE), is more important and in this case, the resampled model also performs better. See vignettes for additional analysis on this and other data.</p>
+</tr></tfoot></table><p>Let the linear model be defined as heart weight being predicted by a intercept, body weight and sex. Estimates for the coefficients and the confidence intervals for each parameter are given in . When applying the linear model directly on the data, only body weights appear to significantly impact heart weight. For resampled data, where samples are taken to create more evenly sized groups based on sex, both sex and body weight are determined to be significant. The cost for this simple example is that the confidence interval on body weight is larger. While additional simulations, or modifying the resampling scheme may mitigate such losses, it is important to consider such effects. Often the prediction errors, e.g. mean square error (MSE), is more important and in this case, the resampled model also performs better. See articles for additional analysis on this and other data.</p>
 <!--
 library(purify)
 library(ggplot2)

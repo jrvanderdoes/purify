@@ -59,7 +59,7 @@
       <h1>purify</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/jrvanderdoes/purify/blob/main/vignettes/purify.Rmd" class="external-link"><code>vignettes/purify.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/jrvanderdoes/purify/blob/main/vignettes/articles/purify.Rmd" class="external-link"><code>vignettes/articles/purify.Rmd</code></a></small>
       <div class="d-none name"><code>purify.Rmd</code></div>
     </div>
 
@@ -68,9 +68,9 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Welcome to `purify’! This vignette will outline the main functions
-and offer many valuable simulations for these funtions. Real data
-examples can be found in other vignettes.</p>
+<p>Welcome to `purify’! This article will outline the main functions and
+offer many valuable simulations for these funtions. Real data examples
+can be found in other articles.</p>
 <p>`Purify’ comes from its purpose of permutation tests and
 statification for data. It can be used to purify data and mitigate
 confounding effects, particularly when looking at strata which are much
@@ -167,7 +167,7 @@ the survival of a passenger.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Does CV on each sample</span></span>
 <span><span class="co">#   Note, MSE uses all data while resample will be missing the CV part</span></span>
-<span><span class="co">#   See cats vignette for modifications</span></span>
+<span><span class="co">#   See cats article for modifications</span></span>
 <span><span class="va">mse_function1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_validation.html">cross_validation</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">data</span>,</span>
@@ -233,7 +233,7 @@ the survival of a passenger.</p>
 <span></span>
 <span><span class="co"># Perform resampling with the 'simple' method</span></span>
 <span><span class="co">#   Note, MSE uses all data while resample will be missing the CV part</span></span>
-<span><span class="co">#   See cats vignette for modifications</span></span>
+<span><span class="co">#   See cats article for modifications</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample.html">resample</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">credit</span>, fn <span class="op">=</span> <span class="va">mse_function</span>,</span>
 <span>  M <span class="op">=</span> <span class="fl">2000</span>, strata <span class="op">=</span> <span class="st">"Job"</span></span>
