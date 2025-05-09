@@ -11,9 +11,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Welcome to `purify'! This article will outline the main functions and offer many valuable simulations for these funtions. Real data examples can be found in other articles.
+Welcome to `purify'! This article will outline the main functions and offer many valuable simulations for these functions. Real data examples can be found in other articles.
 
-`Purify' comes from its purpose of permutation tests and statification for data. It can be used to purify data and mitigate confounding effects, particularly when looking at strata which are much smaller than other strata.
+`Purify' comes from its purpose of permutation tests and stratification for data. It can be used to purify data and mitigate confounding effects, particularly when looking at strata which are much smaller than other strata.
 
 The data can be found on GitHub and can be loaded as:
 ```{r setup}
