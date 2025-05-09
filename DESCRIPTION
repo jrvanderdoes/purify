@@ -35,7 +35,18 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Imports: 
-    ggplot2
+    agricolae,
+    BayesFactor,
+    Bolstad,
+    car,
+    dunn.test,
+    ggplot2,
+    MASS,
+    multcomp,
+    multcompView,
+    nortest,
+    patchwork,
+    PMCMRplus
 Depends: 
     R (>= 2.10)
 LazyData: true

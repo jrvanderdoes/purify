@@ -1,10 +1,11 @@
 ---
-title: 'Purify: An R package for Resampling'
+title: 'Purify: An R package for Resampling and Balancing Data'
 tags:
   - R
   - Statistics
   - Permutation and Bootstrap Resampling
   - Simulation
+  - Unbalanced Data
 authors:
   - name: Jeremy VanderDoes
     orcid: 0009-0001-9885-3073
@@ -18,7 +19,7 @@ authors:
 affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
     index: 1
-date: 4 April 2025
+date: 9 May 2025
 nocite: | 
   @*
 bibliography: paper.bib
@@ -27,61 +28,82 @@ bibliography: paper.bib
 # Summary
 
 `Purify` is an R package designed for resampling and testing of data, aimed at 
-researchers and practitioners who analyze complex datasets with a potentially dependent output 
-variable and multiple predictors. This package enables users to perform robust 
-statistical analyses by allowing resampling of variables with and without relation
-to the output variable. Analyses can be focused on results such as 
-statistical summaries (e.g. mean square error) and coefficient estimates of models. 
-`Purify` offers versatile resampling methods, including block, sliding window, 
-and stratified resampling. These methods are also extended to cross-validation 
-and prediction confidence intervals. Each can be tailored to specific data 
-structures and research questions. With its intuitive interface and customizable options, 
-`Purify` streamlines the process of hypothesis testing and estimation of 
-statistical significance.
+researchers and practitioners who analyze complex, often unbalanced, datasets 
+with a potentially dependent output variable and multiple predictors. This 
+package enables users to perform robust statistical analyses by allowing 
+resampling of variables with and without relation to the output and other
+stratification variables. Resampling analyses can be conducted on statistical summaries 
+(e.g. mean square error), coefficient estimates of models, forecasts, or model 
+statistics. `Purify` offers versatile resampling settings, including block, 
+sliding window, and stratified permutation and bootstrapping. These methods are 
+also extended to cross-validation and prediction confidence intervals. Each method can 
+be tailored to specific data structures and research questions. With its 
+intuitive interface and customizable options, `Purify` streamlines the process 
+of hypothesis testing and estimation of statistical significance.
 
 # Statement of need
 
-Resampling is fundamental technique in estimating the distribution of a 
-statistic, testing hypotheses, and deriving confidence intervals, especially 
-when analytical solutions are impractical. Many R packages provide 
-basic resampling methods but lack specialized support for complex structures.
-Such structures may contain dependence and variables which should not be resampled.
-Analysis of these structures can be unwieldy to investigate in other packages. 
-`Purify` fills this gap by providing a flexible framework to enable data 
-scientists and researchers to perform and compare targeted, customizable 
-resampling schemes that account for data structure. Further, the methods allow 
-for user-defined functions, allowing use of outside models, making `Purify` 
-ideal for rigorous hypothesis testing and model evaluation. 
+Unbalanced data are widely observed, yet methods for analysis can be unwieldy,
+overly complex, or missing implementations. `Purify` fills this gap by providing 
+and organizing many statistical tests robust to various assumptions and an 
+extensive collection of resampling methodology. Among others, a myriad of 
+normality, two-sample, anova, and effect quantification statistics are included 
+in the package.
+
+Resampling is a fundamental technique in estimating the distribution of 
+statistics, testing hypotheses, and deriving confidence intervals, especially 
+when analytical solutions are impractical. When assumptions for statistical
+tests are under question, resampling provides another tool to assess their 
+effectiveness. Many R packages provide basic resampling methods but lack 
+specialized support for complex structures. Such structures may contain 
+dependence and variables which should not be resampled. Analysis of these 
+structures can be unwieldy to investigate in other packages. `Purify` offers a 
+flexible framework to enable data scientists and researchers to perform and 
+compare targeted, customizable resampling schemes that account for data structure. 
+Further, the methods allow for user-defined functions, allowing use of outside 
+models, making `Purify` ideal for rigorous hypothesis testing and model evaluation. 
 
 The package’s support for stratified and segmented sampling further allows users 
 to address scenarios with grouped or ordered data (even under dependence), 
 providing a critical resource for modern applied statistical research. By 
 incorporating sophisticated resampling techniques, `Purify` enhances the 
-robustness and reliability of statistical inferences drawn from complex 
-(in particular unbalanced) datasets.
+robustness and reliability of statistical inferences drawn from complex, and 
+potentially unbalanced, datasets.
 
-Permutation tests can be naturally computational intensive and speed is an 
+Permutation tests can be naturally computationally intensive and speed is an 
 important consideration throughout `Purify`. Users can use it in a variety of 
 problems. Additional functions provide use of resampling in the context of
-cross-validation. Supplemental functions provide visualizations and summary 
-functions to illuminate the methods and results. Detailed documentation makes 
-`Purify` accessible to users of varying statistical understanding.
+cross-validation and forecasting. Supplemental functions provide visualizations 
+and summary functions to illuminate the methods and results. Detailed 
+documentation makes `Purify` accessible to users of varying statistical 
+understanding.
 
 
 ![**Subcats.** Body and heart weights of cats with respect to their sex.\label{fig:cats}](vignettes/articles/cat_overview.png){ width=100% }
 
 # Package Functionality
 
+Assessing whether data has homogeneity in its variance, displaying normality, and
+tests for differences based on stratification often requires extensive testing.
+`Purify` offers functions such as `normality_tests()`, `variance_tests()`, and
+`group_tests()` to investigate several test statistics at once. Resampled versions
+of many of these are provided to evalaute estimates and offer confidence intervals
+with fewer assumptions, e.g. see `resample_variance()`.
+
 A primary function in `Purify` is `resample()`. The function offers clear input 
-parameters to simplify the process of selecting the correct methodology. The 
-multistep selection allows for combinations of dependent data, unbalanced data, 
+parameters to simplify the process of selecting or evaluating the correct 
+methodology, even for functions not included in the package. The multistep 
+selection allows for combinations of dependent data, unbalanced data, 
 and resampling to be performed with and without replacement. The flexibility 
 enables users to adapt `Purify` to diverse data contexts and hypothesis-testing
 requirements. See also `cross_validation()` and `confidence_intervals()`.
 
-Supporting functions such as `summarize_resample()` provide additional 
-information to the user. Visualization such as `plot_strata_bar()` or 
-`plot_strat_box()` visualize group sizes in stratified samples.
+
+Supporting functions offer additional insight into data. Functions such as 
+`summarize_resample()` provide information to the user on resampling, and other 
+functions highlight the probability of the observed data. The functions 
+`plot_strata_bar()` and `plot_strat_box()` visualize group sizes in stratified 
+samples. 
 
 
 ## Example
@@ -94,7 +116,7 @@ information to the user. Visualization such as `plot_strata_bar()` or
 - The *cats* article details investigation on real data.
 
 We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
-weight to estimate heart weight; see \autoref{fig:cats}. As seen in many real-world 
+weight to estimate heart weight; see \autoref{fig:cats}. Similar to many real-world 
 examples, the data is highly imbalanced. Nonetheless, sex and body weight are 
 both useful in understanding heart weight. In particular, female cats have lower 
 body weights and have a lower heart weight even for the same body weight when 
@@ -126,7 +148,7 @@ on body weight is larger. While additional simulations, or modifying the
 resampling scheme may mitigate such losses, it is important to consider such 
 effects. Often the prediction errors, e.g. mean square error (MSE), is more important 
 and in this case, the resampled model also performs better. See articles for 
-additional analysis on this and other data.
+information on other functions and additional analysis on this and other data.
 
 <!--
 library(purify)
@@ -206,7 +228,7 @@ summarize_resample(results)
 vectorized operations for efficient computation. The package's modular design 
 and clear documentation make it easy to adapt to various research needs, 
 allowing users to integrate their own statistical functions or modify resampling 
-parameters to meet specific analytical requirements. `Purify` has been used 
+parameters to meet specific analytic requirements. `Purify` has been used 
 in @tetui:etal:2022, @scsrubook, and @alexander:hall:chen:2024.
 
 
