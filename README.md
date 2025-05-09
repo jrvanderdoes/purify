@@ -8,16 +8,14 @@
 [![R-CMD-check](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jrvanderdoes/purify/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-Purify provides a robust framework for resampling data with potential
-dependency and / or uneven group sizes. The methods of resampling,
-cross-validation, and forecasting confidence intervals purify the data
-resulting in improved conclusions under a variety of scenarios. The
-functions are robust and flexible permitting direct use or seamless
-integration into the custom analyses. See example uses in Tetui et
-al. (2022) \<<a href="doi:10.1080/21645515.2022.2089500\"
-class="uri">doi:10.1080/21645515.2022.2089500\</a>\> and Alexander, K.
-L., Hall, K., & Chen, Y. M. (2024) \<<a href="doi:10.29173/jchla29798\"
-class="uri">doi:10.29173/jchla29798\</a>\>.
+Purify provides a robust framework for resampling data with other
+statistics for potential dependency and / or uneven group sizes. The
+methods of resampling, cross-validation, and forecasting confidence
+intervals purify the data resulting in improved conclusions under a
+variety of scenarios. The functions are robust and flexible permitting
+direct use or seamless integration into the custom analyses. See example
+uses in Tetui et al. (2022) and Alexander, K. L., Hall, K., & Chen, Y.
+M. (2024).
 
 ## Installation
 
