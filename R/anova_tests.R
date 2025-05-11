@@ -25,43 +25,47 @@
 #'  [stats::kruskal.test()], [PMCMRplus::medianTest()]
 #'
 #' @examples
-#' data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-#'                    'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+#' data <- data.frame(
+#'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+#'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+#' )
 #' anova_tests(data)
 anova_tests <- function(data,
-                        tests=c('anova','welch','bayes','kruskal','median') ){
+                        tests = c("anova", "welch", "bayes", "kruskal", "median")) {
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
   groups <- tmp$groups
   form <- tmp$form
 
-  means <- tapply(data[,1], data[,2], mean)
-  medians <- tapply(data[,1], data[,2], stats::median)
+  means <- tapply(data[, 1], data[, 2], mean)
+  medians <- tapply(data[, 1], data[, 2], stats::median)
 
   # ANOVA Tests
-  res <- list('means'=means,
-              'medians'=medians)
+  res <- list(
+    "means" = means,
+    "medians" = medians
+  )
 
-  if('anova' %in% tolower(tests) ){
-    anova_res <- stats::aov(form,data)
-    res <- append(res, list('anova'=summary(anova_res)[[1]]$`Pr(>F)`[1]))
+  if ("anova" %in% tolower(tests)) {
+    anova_res <- stats::aov(form, data)
+    res <- append(res, list("anova" = summary(anova_res)[[1]]$`Pr(>F)`[1]))
   }
-  if('welch' %in% tolower(tests) ){
-    welch_res <- stats::oneway.test(form,data = data,var.equal=FALSE)
-    res <- append(res, list('welch'=welch_res$p.value))
+  if ("welch" %in% tolower(tests)) {
+    welch_res <- stats::oneway.test(form, data = data, var.equal = FALSE)
+    res <- append(res, list("welch" = welch_res$p.value))
   }
-  if('bayes' %in% tolower(tests) ){
-    bayes_res <- BayesFactor::anovaBF(form, data=data,progress = FALSE)
-    res <- append(res, list('bayes'=BayesFactor::extractBF(bayes_res)[[1]]))
+  if ("bayes" %in% tolower(tests)) {
+    bayes_res <- BayesFactor::anovaBF(form, data = data, progress = FALSE)
+    res <- append(res, list("bayes" = BayesFactor::extractBF(bayes_res)[[1]]))
   }
-  if('kruskal' %in% tolower(tests) ){
-    kruskal <- stats::kruskal.test(form,data)
-    res <- append(res, list('kruskal'=kruskal$p.value))
+  if ("kruskal" %in% tolower(tests)) {
+    kruskal <- stats::kruskal.test(form, data)
+    res <- append(res, list("kruskal" = kruskal$p.value))
   }
-  if('median' %in% tolower(tests) ){
-    medn <- suppressWarnings( PMCMRplus::medianTest(formula=form, data=data,p.adjust.method = "bonferroni") )
-    res <- append(res, list('median'=medn$p.value))
+  if ("median" %in% tolower(tests)) {
+    medn <- suppressWarnings(PMCMRplus::medianTest(formula = form, data = data, p.adjust.method = "bonferroni"))
+    res <- append(res, list("median" = medn$p.value))
   }
 
 
@@ -82,12 +86,14 @@ anova_tests <- function(data,
 #' @export
 #'
 #' @examples
-#' data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-#'                    'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+#' data <- data.frame(
+#'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+#'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+#' )
 #' resample_welch_anova(data)
-resample_welch_anova <- function(data, var.equal=FALSE, M=1000) {
-  grp <- as.factor(data[,2])
-  obs <- data[,1]
+resample_welch_anova <- function(data, var.equal = FALSE, M = 1000) {
+  grp <- as.factor(data[, 2])
+  obs <- data[, 1]
 
   grp_unique <- unique(grp)
 
@@ -96,30 +102,34 @@ resample_welch_anova <- function(data, var.equal=FALSE, M=1000) {
   groups <- length(ns)
   means <- tapply(obs, grp, mean)
   data_null <- data
-  data_null[,1] <- data_null[,1] - means[grp]
+  data_null[, 1] <- data_null[, 1] - means[grp]
 
   # True
-  stat_true <- stats::oneway.test(data[,1]~data[,2],var.equal=FALSE)$statistic
+  stat_true <- stats::oneway.test(data[, 1] ~ data[, 2], var.equal = FALSE)$statistic
 
   # Sim Null
   statistics <- sapply(1:M,
-                       function(x, data_null, grp_unique, var.equal) {
-                         # resample
-                         dat <- data.frame()
-                         for(i in 1:length(grp_unique)){
-                           dat <-
-                             rbind(dat,
-                                   data.frame(
-                                     'value' =
-                                       sample(data_null[data_null[,2]==grp_unique[i],1],
-                                           replace = TRUE),
-                                     'group' = grp_unique[i] )
-                             )
-                         }
+    function(x, data_null, grp_unique, var.equal) {
+      # resample
+      dat <- data.frame()
+      for (i in 1:length(grp_unique)) {
+        dat <-
+          rbind(
+            dat,
+            data.frame(
+              "value" =
+                sample(data_null[data_null[, 2] == grp_unique[i], 1],
+                  replace = TRUE
+                ),
+              "group" = grp_unique[i]
+            )
+          )
+      }
 
-                         stats::oneway.test(value~group,dat,var.equal=var.equal)$statistic
-                       },
-                       data_null=data_null, grp_unique=grp_unique, var.equal=var.equal)
+      stats::oneway.test(value ~ group, dat, var.equal = var.equal)$statistic
+    },
+    data_null = data_null, grp_unique = grp_unique, var.equal = var.equal
+  )
 
   # Bootstrapped p-value
   mean(stat_true <= statistics)
