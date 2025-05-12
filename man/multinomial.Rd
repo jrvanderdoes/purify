@@ -39,10 +39,10 @@ Generate multinomially distributed random number vectors and compute
 multinomial probabilities.
 }
 \examples{
-pmultinomial(c(2,2,2),c(1/3,1/3,1/3),6)
-pmultinomial(c(3,1,2),c(1/2,1/4,1/4),4)
-dmultinomial(c(1,2,3),c(1,2,3))
-dmultinomial(c(1,2,3),c(1/3,1/3,1/3))
-rmultinomial(10, 5, c(1/2,1/4,1/4))
-rmultinomial(5, 8, c(10,2,4))
+pmultinomial(c(2, 2, 2), c(1 / 3, 1 / 3, 1 / 3), 6)
+pmultinomial(c(3, 1, 2), c(1 / 2, 1 / 4, 1 / 4), 4)
+dmultinomial(c(1, 2, 3), c(1, 2, 3))
+dmultinomial(c(1, 2, 3), c(1 / 3, 1 / 3, 1 / 3))
+rmultinomial(10, 5, c(1 / 2, 1 / 4, 1 / 4))
+rmultinomial(5, 8, c(10, 2, 4))
 }

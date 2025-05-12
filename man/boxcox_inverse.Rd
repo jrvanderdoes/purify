@@ -22,8 +22,10 @@ Compute the reverse Box-Cox transformation for improvement
 of the Normality and residual assumptions.
 }
 \examples{
-data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-                   'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+data <- data.frame(
+  "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+  "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+)
 tmp <- boxcox_transformation(data)
-boxcox_inverse(tmp$data[,1],tmp$lambda, tmp$shift)
+boxcox_inverse(tmp$data[, 1], tmp$lambda, tmp$shift)
 }

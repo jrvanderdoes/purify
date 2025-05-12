@@ -34,8 +34,10 @@ variances
 \emph{factor}: Bayesian factor approach to a t-test
 }
 \examples{
-data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(10,mean=2)),
-                   'group'=c(rep('A',14),rep('B',10)) )
+data <- data.frame(
+  "value" = c(rnorm(14, sd = 2), rnorm(10, mean = 2)),
+  "group" = c(rep("A", 14), rep("B", 10))
+)
 two_group_tests(data)
 }
 \seealso{

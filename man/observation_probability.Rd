@@ -24,12 +24,12 @@ than the probability of the given event.
 }
 \examples{
 observation_probability(
-  data.frame('counts'=c(15,5),c(0.5,0.5))
+  data.frame("counts" = c(15, 5), c(0.5, 0.5))
 )
 observation_probability(
-  data.frame('counts'=c(15,5),c(0.9,0.1))
+  data.frame("counts" = c(15, 5), c(0.9, 0.1))
 )
 observation_probability(
-  data.frame('counts'=c(10,10),c(0.5,0.5))
+  data.frame("counts" = c(10, 10), c(0.5, 0.5))
 )
 }

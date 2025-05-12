@@ -35,8 +35,10 @@ that if this ratio is less than 4, no major violations are observed
 \emph{Hartley}: Requires normal distribution and equal number of observations.
 }
 \examples{
-data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-                   'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+data <- data.frame(
+  "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+  "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+)
 variance_tests(data)
 }
 \seealso{

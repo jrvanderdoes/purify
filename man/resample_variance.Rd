@@ -21,7 +21,9 @@ Matrix with variance and alpha-confidence intervals for each group
 Estimate variance for each group and bootstrap the alpha-confidence intervals.
 }
 \examples{
-data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-                   'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+data <- data.frame(
+  "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+  "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+)
 resample_variance(data)
 }

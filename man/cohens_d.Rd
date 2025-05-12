@@ -38,8 +38,8 @@ Compute the Cohen's d and Hedges' g effect size statistics.
 \examples{
 x <- rnorm(10, mean = 1, sd = 1)
 y <- rnorm(40, mean = 3, sd = 10)
-cohens_d(x, y, var.type = 'unequal')
-cohens_d(x, y, var.type = 'pooled', hedges.correction=TRUE)
+cohens_d(x, y, var.type = "unequal")
+cohens_d(x, y, var.type = "pooled", hedges.correction = TRUE)
 }
 \references{
 Cohen, J. (1988). Statistical Power Analysis for the Behavioral

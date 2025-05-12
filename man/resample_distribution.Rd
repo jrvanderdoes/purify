@@ -41,8 +41,11 @@ Resample Distributions
 \examples{
 resample_distribution(rnorm(100))
 resample_distribution(
-  data.frame('data'=c(rnorm(100),rnorm(50,mean=10)),
-             'strata'=c(rep('A',100),rep('B',50))),
-  strata = 'strata' )
-resample_distribution(rnorm(100), fn = mean )
+  data.frame(
+    "data" = c(rnorm(100), rnorm(50, mean = 10)),
+    "strata" = c(rep("A", 100), rep("B", 50))
+  ),
+  strata = "strata"
+)
+resample_distribution(rnorm(100), fn = mean)
 }
