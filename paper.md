@@ -1,5 +1,5 @@
 ---
-title: 'Purify: An R package for Resampling and Balancing Data'
+title: 'Purify: An R package for resampling and stratified data'
 tags:
   - R
   - Statistics
@@ -19,7 +19,7 @@ authors:
 affiliations:
   - name: Department of Statistics, University of Waterloo, Waterloo, ON, Canada
     index: 1
-date: 9 May 2025
+date: 12 May 2025
 nocite: | 
   @*
 bibliography: paper.bib
@@ -28,15 +28,15 @@ bibliography: paper.bib
 # Summary
 
 `Purify` is an R package designed for resampling and testing of data, aimed at 
-researchers and practitioners who analyze complex, often unbalanced, datasets 
-with a potentially dependent output variable and multiple predictors. This 
-package enables users to perform robust statistical analyses by allowing 
-resampling of variables with and without relation to the output and other
-stratification variables. Resampling analyses can be conducted on statistical summaries 
+researchers and practitioners who analyze complex datasets, often with 
+unbalanced strata, multiple predictors, or a dependent output variable. This 
+package enables users to perform robust statistical analyses by test statistics
+and resampling of variables with and without relation to the output and other
+stratification variables. The resampling analysis can be conducted on statistical summaries 
 (e.g. mean square error), coefficient estimates of models, forecasts, or model 
 statistics. `Purify` offers versatile resampling settings, including block, 
-sliding window, and stratified permutation and bootstrapping. These methods are 
-also extended to cross-validation and prediction confidence intervals. Each method can 
+sliding window, and stratified resampling with and without replacement. These methods are 
+also extended to cross-validation and confidence intervals. Each method can 
 be tailored to specific data structures and research questions. With its 
 intuitive interface and customizable options, `Purify` streamlines the process 
 of hypothesis testing and estimation of statistical significance.
@@ -46,9 +46,9 @@ of hypothesis testing and estimation of statistical significance.
 Unbalanced data are widely observed, yet methods for analysis can be unwieldy,
 overly complex, or missing implementations. `Purify` fills this gap by providing 
 and organizing many statistical tests robust to various assumptions and an 
-extensive collection of resampling methodology. Among others, a myriad of 
-normality, two-sample, anova, and effect quantification statistics are included 
-in the package.
+extensive collection of resampling methodology. These tests include normality, 
+anova, and two-sample tests along with statistics to quantify stratification 
+effects.
 
 Resampling is a fundamental technique in estimating the distribution of 
 statistics, testing hypotheses, and deriving confidence intervals, especially 
@@ -60,15 +60,15 @@ dependence and variables which should not be resampled. Analysis of these
 structures can be unwieldy to investigate in other packages. `Purify` offers a 
 flexible framework to enable data scientists and researchers to perform and 
 compare targeted, customizable resampling schemes that account for data structure. 
-Further, the methods allow for user-defined functions, allowing use of outside 
+The methods are compatible for user-defined functions and outside 
 models, making `Purify` ideal for rigorous hypothesis testing and model evaluation. 
 
 The package’s support for stratified and segmented sampling further allows users 
 to address scenarios with grouped or ordered data (even under dependence), 
 providing a critical resource for modern applied statistical research. By 
 incorporating sophisticated resampling techniques, `Purify` enhances the 
-robustness and reliability of statistical inferences drawn from complex, and 
-potentially unbalanced, datasets.
+robustness and reliability of statistical inferences drawn from complex and 
+potentially unbalanced datasets.
 
 Permutation tests can be naturally computationally intensive and speed is an 
 important consideration throughout `Purify`. Users can use it in a variety of 
@@ -83,21 +83,20 @@ understanding.
 
 # Package Functionality
 
-Assessing whether data has homogeneity in its variance, displaying normality, and
-tests for differences based on stratification often requires extensive testing.
+Assessing whether the data is homogeneous in its variance, exhibits normality, or
+has significant differences between strata often requires extensive testing.
 `Purify` offers functions such as `normality_tests()`, `variance_tests()`, and
 `group_tests()` to investigate several test statistics at once. Resampled versions
-of many of these are provided to evalaute estimates and offer confidence intervals
+of statistics are provided to determine estimates and confidence intervals
 with fewer assumptions, e.g. see `resample_variance()`.
 
-A primary function in `Purify` is `resample()`. The function offers clear input 
+A primary function in `Purify` is `resample()`. This function offers clear input 
 parameters to simplify the process of selecting or evaluating the correct 
-methodology, even for functions not included in the package. The multistep 
+methodology, even for user-defined functions. The multistep 
 selection allows for combinations of dependent data, unbalanced data, 
 and resampling to be performed with and without replacement. The flexibility 
 enables users to adapt `Purify` to diverse data contexts and hypothesis-testing
 requirements. See also `cross_validation()` and `confidence_intervals()`.
-
 
 Supporting functions offer additional insight into data. Functions such as 
 `summarize_resample()` provide information to the user on resampling, and other 
@@ -115,7 +114,7 @@ samples.
   and includes simulations and real data examples to demonstrate the functions.
 - The *cats* article details investigation on real data.
 
-We consider a subset of the cats (*subcats*) data set below, where we use sex and body 
+We consider a subset of the cats (*subcats*) data set below. We use sex and body 
 weight to estimate heart weight; see \autoref{fig:cats}. Similar to many real-world 
 examples, the data is highly imbalanced. Nonetheless, sex and body weight are 
 both useful in understanding heart weight. In particular, female cats have lower 
@@ -137,14 +136,14 @@ compared to male cats.
 : **Subcats models.** Models of cats using body weight and sex to predict heart weight.\label{tab:cats}
 
 
-Let the linear model be defined as heart weight being predicted by a intercept,
-body weight and sex. Estimates for the coefficients and the confidence intervals
+Let the linear model be defined as heart weight predicted by an intercept,
+body weight, and sex. Estimates for the coefficients and the confidence intervals
 for each parameter are given in \autoref{tab:cats}. When applying the linear 
 model directly on the data, only body weights appear to significantly impact 
 heart weight. For resampled data, where samples are taken to create more evenly
 sized groups based on sex, both sex and body weight are determined to be 
 significant. The cost for this simple example is that the confidence interval 
-on body weight is larger. While additional simulations, or modifying the 
+on body weight is larger. While additional simulations or modifying the 
 resampling scheme may mitigate such losses, it is important to consider such 
 effects. Often the prediction errors, e.g. mean square error (MSE), is more important 
 and in this case, the resampled model also performs better. See articles for 
@@ -235,8 +234,9 @@ in @tetui:etal:2022, @scsrubook, and @alexander:hall:chen:2024.
 # Acknowledgements
 
 Development of the `Purify` package was inspired by foundational methods in 
-statistical resampling and permutation testing. Special thanks to the 
-open-source R community for support and resources.
+statistical resampling and permutation testing along with the rich literature on
+stratified data. Special thanks to the open-source R community for support and 
+resources.
 
 Contributions to `Purify` are welcome and notable recognition is given to all 
 who raise awareness of deficiencies in the package via the GitHub repository.
