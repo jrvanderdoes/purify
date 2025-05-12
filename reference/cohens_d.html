@@ -100,9 +100,9 @@ psychology. <em>Journal of Open Source Software</em>, <em>8</em>(87), 5466.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">1</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, mean <span class="op">=</span> <span class="fl">3</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">cohens_d</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, var.type <span class="op">=</span> <span class="st">'unequal'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cohens_d</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, var.type <span class="op">=</span> <span class="st">"unequal"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1905781</span>
-<span class="r-in"><span><span class="fu">cohens_d</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, var.type <span class="op">=</span> <span class="st">'pooled'</span>, hedges.correction<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cohens_d</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, var.type <span class="op">=</span> <span class="st">"pooled"</span>, hedges.correction <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1475207</span>
 </code></pre></div>
     </div>
