@@ -25,11 +25,13 @@
 #'  [stats::fligner.test()], [PMCMRplus::hartleyTest()]
 #'
 #' @examples
-#' data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-#'                    'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+#' data <- data.frame(
+#'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+#'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+#' )
 #' variance_tests(data)
-variance_tests <- function(data, tests=c('ratio','levene','bartlett', 'fligner'),
-                           ratio.threshold=4){
+variance_tests <- function(data, tests = c("ratio", "levene", "bartlett", "fligner"),
+                           ratio.threshold = 4) {
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
@@ -37,28 +39,28 @@ variance_tests <- function(data, tests=c('ratio','levene','bartlett', 'fligner')
   form <- tmp$form
 
   # Variance Tests
-  vars <- tapply(data[,1], data[,2], stats::var, na.rm=TRUE)
-  res <- list('var' = vars)
+  vars <- tapply(data[, 1], data[, 2], stats::var, na.rm = TRUE)
+  res <- list("var" = vars)
 
-  if('ratio' %in% tolower(tests) ){
-    ratio <- max(vars)/min(vars)
-    res <- append(res, list('ratio'=ratio, 'ratio.threshold'=ratio.threshold))
+  if ("ratio" %in% tolower(tests)) {
+    ratio <- max(vars) / min(vars)
+    res <- append(res, list("ratio" = ratio, "ratio.threshold" = ratio.threshold))
   }
-  if('levene' %in% tolower(tests) ){
-    levene <- car::leveneTest(form, data=data)
-    res <- append(res, list('levene_pvalue'=levene$`Pr(>F)`[1]))
+  if ("levene" %in% tolower(tests)) {
+    levene <- car::leveneTest(form, data = data)
+    res <- append(res, list("levene_pvalue" = levene$`Pr(>F)`[1]))
   }
-  if('bartlett' %in% tolower(tests) ){
-    bartlett <- stats::bartlett.test(formula=form, data=data)
-    res <- append(res, list('bartlett_pvalue'=bartlett$p.value))
+  if ("bartlett" %in% tolower(tests)) {
+    bartlett <- stats::bartlett.test(formula = form, data = data)
+    res <- append(res, list("bartlett_pvalue" = bartlett$p.value))
   }
-  if('fligner' %in% tolower(tests) ){
-    fligner <- stats::fligner.test(formula=form, data)
-    res <- append(res, list('fligner_pvalue'=fligner$p.value))
+  if ("fligner" %in% tolower(tests)) {
+    fligner <- stats::fligner.test(formula = form, data)
+    res <- append(res, list("fligner_pvalue" = fligner$p.value))
   }
-  if('hartley' %in% tolower(tests) ){
-    hartley <- suppressWarnings( PMCMRplus::hartleyTest(formula=form, data=data) )
-    res <- append(res, list('hartley_pvalue'=hartley$p.value))
+  if ("hartley" %in% tolower(tests)) {
+    hartley <- suppressWarnings(PMCMRplus::hartleyTest(formula = form, data = data))
+    res <- append(res, list("hartley_pvalue" = hartley$p.value))
   }
 
 
@@ -79,42 +81,51 @@ variance_tests <- function(data, tests=c('ratio','levene','bartlett', 'fligner')
 #' @export
 #'
 #' @examples
-#' data <- data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-#'                    'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+#' data <- data.frame(
+#'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+#'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+#' )
 #' resample_variance(data)
-resample_variance <- function(data, alphas=0.05, M=1000) {
+resample_variance <- function(data, alphas = 0.05, M = 1000) {
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
   groups <- tmp$groups
 
-  grp_unique <- unique(data[,2])
+  grp_unique <- unique(data[, 2])
 
   # True
-  vars <- tapply(data[,1], data[,2], stats::var, na.rm=TRUE)
+  vars <- tapply(data[, 1], data[, 2], stats::var, na.rm = TRUE)
 
   # Sim data
   statistics <- sapply(1:M,
-                       function(x, data, grp_unique) {
-                         # resample
-                         dat <- data.frame()
-                         for(i in 1:length(grp_unique)){
-                           dat <-
-                             rbind(dat,
-                                   data.frame(
-                                     'value' =
-                                       stats::var(sample(data[data[,2]==grp_unique[i],1],
-                                              replace = TRUE)),
-                                     'group' = grp_unique[i] )
-                             )
-                         }
-                         dat$value
-                       },
-                       data=data, grp_unique=grp_unique)
+    function(x, data, grp_unique) {
+      # resample
+      dat <- data.frame()
+      for (i in 1:length(grp_unique)) {
+        dat <-
+          rbind(
+            dat,
+            data.frame(
+              "value" =
+                stats::var(sample(data[data[, 2] == grp_unique[i], 1],
+                  replace = TRUE
+                )),
+              "group" = grp_unique[i]
+            )
+          )
+      }
+      dat$value
+    },
+    data = data, grp_unique = grp_unique
+  )
 
   # Bootstrapped confidence intervals
-  rbind(vars,
-        apply(statistics, MARGIN = 1, stats::quantile,
-              prob=c(alphas/2, rev(1-alphas/2)))
-        )
+  rbind(
+    vars,
+    apply(statistics,
+      MARGIN = 1, stats::quantile,
+      prob = c(alphas / 2, rev(1 - alphas / 2))
+    )
+  )
 }

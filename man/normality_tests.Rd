@@ -33,7 +33,7 @@ Tests require independent data unless otherwise specified.
 \emph{sf}: Shapiro-Francia test
 }
 \examples{
-x <- c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2))
+x <- c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2))
 normality_tests(x)
 }
 \seealso{

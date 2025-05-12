@@ -34,5 +34,5 @@ normal distribution is called a QQ-plot.
 }
 \examples{
 distribution_plot(rnorm(100))
-distribution_plot(rexp(100), dist='exp')
+distribution_plot(rexp(100), dist = "exp")
 }

@@ -45,18 +45,20 @@ NULL
 #' @export
 #'
 #' @examples
-#' pmultinomial(c(2,2,2),c(1/3,1/3,1/3),6)
-#' pmultinomial(c(3,1,2),c(1/2,1/4,1/4),4)
-pmultinomial <- function(qs, probs, size=sum(qs)){
-  if(length(probs)!=length(qs)) stop('qs and probs must be same length')
+#' pmultinomial(c(2, 2, 2), c(1 / 3, 1 / 3, 1 / 3), 6)
+#' pmultinomial(c(3, 1, 2), c(1 / 2, 1 / 4, 1 / 4), 4)
+pmultinomial <- function(qs, probs, size = sum(qs)) {
+  if (length(probs) != length(qs)) stop("qs and probs must be same length")
   # Weight in case it does not sum to 1
   probs <- probs / sum(probs)
 
   ## Start recursion
-  possible_outcomes <- expand.grid( sapply(qs, function(x){0:x},simplify = F))
-  possible_outcomes <- possible_outcomes[rowSums(possible_outcomes)==size,]
+  possible_outcomes <- expand.grid(sapply(qs, function(x) {
+    0:x
+  }, simplify = F))
+  possible_outcomes <- possible_outcomes[rowSums(possible_outcomes) == size, ]
 
-  sum(apply(possible_outcomes, MARGIN = 1, dmultinomial, probs=probs))
+  sum(apply(possible_outcomes, MARGIN = 1, dmultinomial, probs = probs))
 }
 
 # #' Recursion to find all possible options upto maximum
@@ -90,17 +92,19 @@ pmultinomial <- function(qs, probs, size=sum(qs)){
 #' @export
 #'
 #' @examples
-#' dmultinomial(c(1,2,3),c(1,2,3))
-#' dmultinomial(c(1,2,3),c(1/3,1/3,1/3))
-dmultinomial <- function(xs, probs){
+#' dmultinomial(c(1, 2, 3), c(1, 2, 3))
+#' dmultinomial(c(1, 2, 3), c(1 / 3, 1 / 3, 1 / 3))
+dmultinomial <- function(xs, probs) {
   xs <- as.numeric(xs)
 
-  if(length(probs)!=length(xs)) stop('xs and probs must be same length')
+  if (length(probs) != length(xs)) stop("xs and probs must be same length")
   # Weight in case it does not sum to 1
   probs <- probs / sum(probs)
 
   factorial(sum(xs)) / prod(sapply(xs, factorial)) *
-    prod( apply(data.frame(probs,xs),MARGIN = 1, function(x){ x[1]^x[2] }) )
+    prod(apply(data.frame(probs, xs), MARGIN = 1, function(x) {
+      x[1]^x[2]
+    }))
 }
 
 
@@ -112,8 +116,8 @@ dmultinomial <- function(xs, probs){
 #' @export
 #'
 #' @examples
-#' rmultinomial(10, 5, c(1/2,1/4,1/4))
-#' rmultinomial(5, 8, c(10,2,4))
+#' rmultinomial(10, 5, c(1 / 2, 1 / 4, 1 / 4))
+#' rmultinomial(5, 8, c(10, 2, 4))
 rmultinomial <- function(n, size, probs) {
   stats::rmultinom(n, size, probs)
 }

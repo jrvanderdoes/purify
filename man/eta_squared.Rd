@@ -17,8 +17,10 @@ Table with eta-squared attached to classic ANOVA decomposition
 Compute the Eta squared effect size statistic.
 }
 \examples{
-data = data.frame('value'=c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2)),
-                  'group'=c(rep('A',14),rep('B',6), rep('C',20)))
+data <- data.frame(
+  "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+  "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+)
 eta_squared(data)
 }
 \references{
