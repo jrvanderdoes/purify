@@ -25,42 +25,45 @@
 #'  [nortest::sf.test()]
 #'
 #' @examples
-#' x <- c(rnorm(14,sd = 2), rnorm(6), rnorm(20,mean=2))
+#' x <- c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2))
 #' normality_tests(x)
 normality_tests <- function(x,
-                        tests=c('shapiro','ks','ad','cvm','lilliefors',
-                                'pearson', 'sf') ){
+                            tests = c(
+                              "shapiro", "ks", "ad", "cvm", "lilliefors",
+                              "pearson", "sf"
+                            )) {
   # Normality Tests
   res <- list(
-    'qqplot' = distribution_plot(x))
+    "qqplot" = distribution_plot(x)
+  )
 
-  if('shapiro' %in% tolower(tests) ){
+  if ("shapiro" %in% tolower(tests)) {
     shapiro <- stats::shapiro.test(x)
-    res <- append(res, list('shapiro'=shapiro$p.value))
+    res <- append(res, list("shapiro" = shapiro$p.value))
   }
-  if('ks' %in% tolower(tests) ){
+  if ("ks" %in% tolower(tests)) {
     ks <- stats::ks.test(x, "pnorm")
-    res <- append(res, list('ks'=ks$p.value))
+    res <- append(res, list("ks" = ks$p.value))
   }
-  if('ad' %in% tolower(tests) ){
+  if ("ad" %in% tolower(tests)) {
     ad <- nortest::ad.test(x)
-    res <- append(res, list('ad'=ad$p.value))
+    res <- append(res, list("ad" = ad$p.value))
   }
-  if('cvm' %in% tolower(tests) ){
+  if ("cvm" %in% tolower(tests)) {
     cvm <- nortest::cvm.test(x)
-    res <- append(res, list('cvm'=cvm$p.value))
+    res <- append(res, list("cvm" = cvm$p.value))
   }
-  if('lilliefors' %in% tolower(tests) ){
+  if ("lilliefors" %in% tolower(tests)) {
     lillie <- nortest::lillie.test(x)
-    res <- append(res, list('lilliefors'=lillie$p.value))
+    res <- append(res, list("lilliefors" = lillie$p.value))
   }
-  if('pearson' %in% tolower(tests) ){
+  if ("pearson" %in% tolower(tests)) {
     pearson <- nortest::pearson.test(x)
-    res <- append(res, list('pearson'=pearson$p.value))
+    res <- append(res, list("pearson" = pearson$p.value))
   }
-  if('sf' %in% tolower(tests) ){
+  if ("sf" %in% tolower(tests)) {
     sf <- nortest::sf.test(x)
-    res <- append(res, list('sf'=sf$p.value))
+    res <- append(res, list("sf" = sf$p.value))
   }
 
 

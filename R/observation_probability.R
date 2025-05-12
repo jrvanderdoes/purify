@@ -16,21 +16,21 @@
 #'
 #' @examples
 #' observation_probability(
-#'   data.frame('counts'=c(15,5),c(0.5,0.5))
+#'   data.frame("counts" = c(15, 5), c(0.5, 0.5))
 #' )
 #' observation_probability(
-#'   data.frame('counts'=c(15,5),c(0.9,0.1))
+#'   data.frame("counts" = c(15, 5), c(0.9, 0.1))
 #' )
 #' observation_probability(
-#'   data.frame('counts'=c(10,10),c(0.5,0.5))
+#'   data.frame("counts" = c(10, 10), c(0.5, 0.5))
 #' )
-observation_probability <- function(strata_info){
-  if(ncol(strata_info)!=2) stop('Parameter strata_info must be a 2-column object.')
+observation_probability <- function(strata_info) {
+  if (ncol(strata_info) != 2) stop("Parameter strata_info must be a 2-column object.")
   # Get information from the df
-  freq <- strata_info[,1]
+  freq <- strata_info[, 1]
   size <- sum(freq)
 
-  probs <- strata_info[,2]
+  probs <- strata_info[, 2]
   # Weight in case it does not sum to 1
   probs <- probs / sum(probs)
 
@@ -46,27 +46,30 @@ observation_probability <- function(strata_info){
   # }
 
   ideal_freq <- round(size * probs)
-  if(sum(ideal_freq) != size)
-    stop('Internal error. Please report so we can fix this.')
+  if (sum(ideal_freq) != size) {
+    stop("Internal error. Please report so we can fix this.")
+  }
 
-  diff_ideal <- abs(ideal_freq-freq)
+  diff_ideal <- abs(ideal_freq - freq)
 
   ## Compute possible more extreme outcomes
   possible_outcomes <-
-    expand.grid( sapply(1:length(freq),
-                        function(idx, size, ideal_freq, diff_ideal){
-                          # Compute all possible counts
-                          poss_diffs <- abs(0:size - ideal_freq[idx])
+    expand.grid(sapply(1:length(freq),
+      function(idx, size, ideal_freq, diff_ideal) {
+        # Compute all possible counts
+        poss_diffs <- abs(0:size - ideal_freq[idx])
 
-                          # Return values more extreme than those observed
-                          (0:size)[poss_diffs >= diff_ideal[idx]]
-                        },size=size, ideal_freq=ideal_freq, diff_ideal=diff_ideal,
-                        simplify = F))
-  possible_outcomes <- possible_outcomes[rowSums(possible_outcomes)==size,]
+        # Return values more extreme than those observed
+        (0:size)[poss_diffs >= diff_ideal[idx]]
+      },
+      size = size, ideal_freq = ideal_freq, diff_ideal = diff_ideal,
+      simplify = F
+    ))
+  possible_outcomes <- possible_outcomes[rowSums(possible_outcomes) == size, ]
 
   ## Compute probabilities and only sum those that are <= to the observed
-  true_prob <- dmultinomial(freq,probs)
-  poss_probs <- apply(possible_outcomes, MARGIN = 1, dmultinomial, probs=probs)
+  true_prob <- dmultinomial(freq, probs)
+  poss_probs <- apply(possible_outcomes, MARGIN = 1, dmultinomial, probs = probs)
 
-  sum(poss_probs[poss_probs<=true_prob])
+  sum(poss_probs[poss_probs <= true_prob])
 }
