@@ -110,7 +110,7 @@ structured resampling and simulation methods.
 
 ![**Subcats.** Body and heart weights of cats with respect to their sex.\label{fig:cats}](vignettes/articles/cat_overview.png){ width=100% }
 
-# Package Functionality
+# Package functionality
 
 Assessing whether the data is homogeneous in its variance, exhibits normality, or
 has significant differences between strata often requires extensive testing.
