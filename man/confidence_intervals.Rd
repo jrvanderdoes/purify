@@ -55,5 +55,5 @@ ints <- confidence_intervals(data = data[1:90], pred_model = pred_model, h = h, 
 
 plot(ets_model)
 lines(x = 91:100, y = ints$lower, col = "red")
-lines(x = 91:100, y = ints$upper, col = "red")>
+lines(x = 91:100, y = ints$upper, col = "red")
 }

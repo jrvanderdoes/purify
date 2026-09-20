@@ -24,8 +24,9 @@
 #' @param sizes Option for selecting the resampled size or sizes of each stata.
 #'  When used for non-strata, either numeric or NULL and is taken as the number
 #'  of observations. When used for strate, can be
-#'  numeric (single value or a value for each strata), function (e.g. min or
-#'  max), or NULL (original sizes).
+#'  numeric (single value or a value for each strata), function (e.g. min, max,
+#'  or mean), or NULL (original sizes). Function results are rounded to the
+#'  nearest integer with a warning when necessary.
 #' @param fn Function to apply on the resampled data. When NULL, the resampled
 #'  data are directly returned.
 #' @param ignore.columns Name or column numbers to ignore when resampling data.
@@ -287,6 +288,21 @@ resample <- function(data, M = 1000,
           sizes_tab$Freq <- sizes
         } else if (is.function(sizes)) {
           sizes_tab$Freq <- sizes(sizes_tab$Freq)
+          if (length(sizes_tab$Freq) == 1) {
+            sizes_tab$Freq <- rep(sizes_tab$Freq, nrow(groups))
+          }
+          if (!is.numeric(sizes_tab$Freq)) {
+            stop("The `sizes` function must return numeric values.", call. = FALSE)
+          }
+          if (length(sizes_tab$Freq) == nrow(groups) &&
+              any(is.finite(sizes_tab$Freq) &
+                  sizes_tab$Freq != round(sizes_tab$Freq), na.rm = TRUE)) {
+            warning(
+              "The `sizes` function returned non-integer values; rounding to the nearest integer.",
+              call. = FALSE
+            )
+            sizes_tab$Freq <- round(sizes_tab$Freq)
+          }
         }
 
         if (length(sizes_tab$Freq) != nrow(groups) ||

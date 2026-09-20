@@ -31,7 +31,7 @@
 #'
 #' plot(ets_model)
 #' lines(x = 91:100, y = ints$lower, col = "red")
-#' lines(x = 91:100, y = ints$upper, col = "red")>
+#' lines(x = 91:100, y = ints$upper, col = "red")
 confidence_intervals <- function(data, pred_model, h, train = 0.8, M = 1000,
                                  alpha = 0.05, output = NULL, ...) {
   if (length(h) != 1 ||

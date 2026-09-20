@@ -64,7 +64,7 @@ orig_coefs <- strat_function(data_strat)
 set.seed(1234)
 res <- resample(
   data = data_strat, fn = strat_function,
-  strata = "z", sizes = "mean"
+  strata = "z", sizes = function(x) round(mean(x))
 )
 ```
 
@@ -177,4 +177,3 @@ results <- resample(
 summarize_resample(results)
 mse_function(credit)
 ```
-
