@@ -1,0 +1,110 @@
+# Resample data
+
+Function to allow various resampling of data, and application to a
+function as desired. Choices for simple, stratified, and block (both
+sliding and separate) resampling. Bootstrap and permutation resampling
+can be performed.
+
+## Usage
+
+``` r
+resample(
+  data,
+  M = 1000,
+  resample_blocks = c("separate", "sliding"),
+  replace = TRUE,
+  blocksize = 1,
+  strata = NULL,
+  sizes = NULL,
+  fn = NULL,
+  ignore.columns = NULL,
+  ...
+)
+```
+
+## Arguments
+
+- data:
+
+  Data.frame (or vector) to be resampled where the rows are the
+  observations and the columns are the variables. Note, all variables
+  are permuted not specified in `ignore.columns`.
+
+- M:
+
+  Numeric. Number of resample iterations.
+
+- resample_blocks:
+
+  String indicating method of selecting resample blocks. Options are
+  'separate' and 'sliding'. When `blocksize` is 1, there is no
+  difference. Sliding take sliding groups, thus repeating values, i.e.
+  1-4, 2-5, 3-6, and so on. Separate does not repeat the values, i.e.
+  1-4, 5-8, 9-12, and so on. Size of each block is defined using
+  `blocksize`.
+
+- replace:
+
+  Boolean. Indicates if the data should be permuted (FALSE) or
+  bootstrapped (TRUE). Note that permutation may be impossible with
+  large `sizes`.
+
+- blocksize:
+
+  Numeric for the size of the blocks.
+
+- strata:
+
+  String or numeric. This indicate the column to stratify the data when
+  `method` is stratify. This can be the column number or the column
+  name. When NULL the data is not stratified. When given, strata are
+  sampled separately.
+
+- sizes:
+
+  Option for selecting the resampled size or sizes of each stata. When
+  used for non-strata, either numeric or NULL and is taken as the number
+  of observations. When used for strate, can be numeric (single value or
+  a value for each strata), function (e.g. min or max), or NULL
+  (original sizes).
+
+- fn:
+
+  Function to apply on the resampled data. When NULL, the resampled data
+  are directly returned.
+
+- ignore.columns:
+
+  Name or column numbers to ignore when resampling data. These are not
+  permuted. Note that if less/more samples are collected than the
+  original, these are permuted separately.
+
+- ...:
+
+  Additional parameters for `fn`.
+
+## Value
+
+Resampled data sets or function applied to resampled data.
+
+## Examples
+
+``` r
+results <- resample(1:100, M = 100)
+results <- resample(1:100, fn = mean, M = 100)
+
+n <- 50
+data <- data.frame(
+  output = NA,
+  predictor1 = rnorm(n),
+  predictor2 = rnorm(n)
+)
+data$output <- 2 * data$predictor1 - data$predictor2 + stats::rnorm(nrow(data))
+results <- resample(data, ignore.columns = "output", M = 100)
+
+fn <- function(data) {
+  coef(lm(output ~ ., data = data))
+}
+# Warning, M is below recommendation for example speed
+results <- resample(data = data, fn = fn, M = 10, ignore.columns = "output")
+```

@@ -1,0 +1,63 @@
+# purify
+
+Purify provides a robust framework for resampling data with other
+statistics for potential dependency and / or uneven group sizes. The
+methods of resampling, cross-validation, and forecasting confidence
+intervals purify the data resulting in improved conclusions under a
+variety of scenarios. The functions are robust and flexible permitting
+direct use or seamless integration into the custom analyses. See example
+uses in Tetui et al. (2022) and Alexander, K. L., Hall, K., & Chen, Y.
+M. (2024).
+
+## Installation
+
+You can install the development version of purify from
+[GitHub](https://github.com/) with:
+
+``` r
+
+# install.packages("devtools")
+devtools::install_github("jrvanderdoes/purify")
+```
+
+## Quick start
+
+Grouped analysis functions expect a data frame with the response in the
+first column and group labels in the second column.
+
+``` r
+
+library(purify)
+
+data <- data.frame(
+  value = c(1, 2, 3, 4, 5, 6),
+  group = rep(c("A", "B"), each = 3)
+)
+
+# Resample observations
+resampled <- resample(data, M = 1000)
+
+# Compare groups
+anova_tests(data)
+games_howell(data)
+
+# Estimate pairwise differences
+resample_differences(data, M = 1000)
+```
+
+## Interpreting results
+
+For pairwise resampling results, `diff` is the mean of the second group
+minus the mean of the first group. The `se` column is the estimated
+standard error, and `lwr` and `upr` are the lower and upper percentile
+bootstrap confidence limits.
+
+``` r
+
+result <- resample_differences(data, M = 1000)
+
+result$diff
+result$se
+result$lwr
+result$upr
+```
