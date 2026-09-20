@@ -91,9 +91,12 @@ test_that("stratified size functions can return one common size", {
     strata = c("A", "A", "A", "B", "B")
   )
   expect_warning(
-    result <- resample(unequal, M = 1, strata = "strata", sizes = mean),
+    resample(unequal, M = 1, strata = "strata", sizes = mean),
     "rounding"
   )
+  result <- suppressWarnings(
+    resample(unequal, M = 1, strata = "strata", sizes = mean)
+  )[[1]]
   expect_equal(as.integer(table(result$strata)), c(2L, 2L))
 })
 
