@@ -71,6 +71,32 @@ test_that("stratified ignored columns handle unchanged group sizes", {
   expect_true(all(result$id[result$strata == "B"] %in% letters[4:6]))
 })
 
+test_that("stratified size functions can return one common size", {
+  dat <- data.frame(
+    value = 1:6,
+    strata = rep(c("A", "B"), each = 3)
+  )
+
+  result <- resample(
+    dat,
+    M = 1,
+    strata = "strata",
+    sizes = mean
+  )[[1]]
+
+  expect_equal(as.integer(table(result$strata)), c(3L, 3L))
+
+  unequal <- data.frame(
+    value = 1:5,
+    strata = c("A", "A", "A", "B", "B")
+  )
+  expect_warning(
+    result <- resample(unequal, M = 1, strata = "strata", sizes = mean),
+    "rounding"
+  )
+  expect_equal(as.integer(table(result$strata)), c(2L, 2L))
+})
+
 test_that("resample validates basic arguments", {
   expect_error(resample(1:10, M = 0), "`M` must be a positive integer")
   expect_error(resample(1:10, M = 2.5), "`M` must be a positive integer")
