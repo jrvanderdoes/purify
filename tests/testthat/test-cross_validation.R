@@ -40,3 +40,21 @@ test_that("Cross-validation Tests", {
   expect_equal(round(tmp[[1]], 3), 52.875)
   expect_equal(round(tmp[[2]], 3), 27.598)
 })
+
+test_that("cross_validation validates control arguments", {
+  expect_no_error(
+    cross_validation(1:5, pred_fn = function(x_fit, x_pred) x_pred)
+  )
+  expect_error(
+    cross_validation(1:5, pred_fn = identity, cv_group_number = 0),
+    "integer of at least 2"
+  )
+  expect_error(
+    cross_validation(1:5, pred_fn = identity, sliding.start = 5),
+    "integer from 1 to n - 1"
+  )
+  expect_error(
+    cross_validation(numeric(0), pred_fn = identity),
+    "at least 2 observations"
+  )
+})

@@ -31,6 +31,17 @@
 #' )
 #' games_howell(data)
 games_howell <- function(data, alpha = 0.05) {
+  data <- .validate_group_data(data)
+  .validate_group_variances(data)
+
+  if (length(alpha) != 1 ||
+      !is.numeric(alpha) ||
+      !is.finite(alpha) ||
+      alpha <= 0 ||
+      alpha >= 1) {
+    stop("`alpha` must be strictly between 0 and 1.", call. = FALSE)
+  }
+
   group_vector <- data[, 2]
   sample_vector <- data[, 1]
 

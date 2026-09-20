@@ -33,6 +33,11 @@ that if this ratio is less than 4, no major violations are observed
 \emph{Bartlett}: Requires normally distributed data and no major outliers
 \emph{Fligner}: Also called Fligner-Killeen. Non-parametric test
 \emph{Hartley}: Requires normal distribution and equal number of observations.
+
+By default, ratio, Levene, Bartlett, and Fligner tests are run. Use \code{tests}
+to select a subset. The tests have different assumptions, so results should
+be interpreted in light of the study design rather than by selecting the
+smallest p-value.
 }
 \examples{
 data <- data.frame(

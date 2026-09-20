@@ -8,3 +8,5 @@
 ^\.github$
 ^data-raw$
 ^vignettes/articles$
+^paper\.bib$
+^paper\.md$

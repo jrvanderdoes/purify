@@ -45,3 +45,120 @@ test_that("Confidence Intervals works", {
   # lines(x=(150-h+1):150,y=ints$lower, col='red')
   # lines(x=(150-h+1):150,y=ints$upper, col='red')
 })
+
+test_that("confidence_intervals passes extra arguments for data frames", {
+  dat <- data.frame(value = 1:20)
+
+  pred_model <- function(x, h, offset) {
+    rep(offset, h)
+  }
+
+  expect_no_error(
+    confidence_intervals(
+      data = dat,
+      pred_model = pred_model,
+      h = 2,
+      train = 0.5,
+      M = 10,
+      output = "value",
+      offset = 0
+    )
+  )
+})
+
+test_that("confidence intervals handles fractional training sizes", {
+  dat <- data.frame(value = 1:10)
+
+  pred_model <- function(x, h) {
+    rep(mean(x[[1]]), h)
+  }
+
+  expect_no_error(
+    confidence_intervals(
+      data = dat,
+      pred_model = pred_model,
+      h = 2,
+      train = 0.75,
+      M = 10,
+      output = "value"
+    )
+  )
+})
+
+test_that("confidence_intervals handles a single forecast horizon", {
+  dat <- data.frame(value = 1:10)
+
+  pred_model <- function(x, h) {
+    rep(mean(x[[1]]), h)
+  }
+
+  expect_no_error(
+    confidence_intervals(
+      data = dat,
+      pred_model = pred_model,
+      h = 1,
+      train = 0.5,
+      M = 10,
+      output = "value"
+    )
+  )
+})
+
+test_that("confidence_intervals validates h, M, and alpha", {
+  pred_model <- function(x, h) {
+    rep(0, h)
+  }
+
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 0, M = 10),
+    "`h` must be a positive integer"
+  )
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1.5, M = 10),
+    "`h` must be a positive integer"
+  )
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1, M = 0),
+    "`M` must be a positive integer"
+  )
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1, M = 10, alpha = 0),
+    "`alpha` must be strictly between 0 and 1"
+  )
+})
+
+test_that("confidence_intervals rejects settings with no validation windows", {
+  pred_model <- function(x, h) {
+    rep(0, h)
+  }
+
+  expect_error(
+    confidence_intervals(
+      data = 1:10,
+      pred_model = pred_model,
+      train = 0.9,
+      h = 2,
+      M = 10
+    ),
+    "leaves no validation windows"
+  )
+})
+
+test_that("confidence_intervals validates train", {
+  pred_model <- function(x, h) {
+    rep(0, h)
+  }
+
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1, M = 10, train = NA_real_),
+    "train.*between 0 and 1"
+  )
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1, M = 10, train = c(0.5, 0.6)),
+    "train.*between 0 and 1"
+  )
+  expect_error(
+    confidence_intervals(1:10, pred_model, h = 1, M = 10, train = 1.1),
+    "train.*between 0 and 1"
+  )
+})

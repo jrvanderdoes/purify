@@ -13,6 +13,11 @@
 #' *median*: Also called Brown-Mood median test. Non-parametric test with
 #'  Bonferroni correction
 #'
+#' By default, all five tests are run. Use `tests` to request only selected
+#' tests. Running multiple tests does not replace choosing a test based on the
+#' study design and assumptions, and the returned p-values are not a single
+#' multiplicity-adjusted decision across all methods.
+#'
 #' @param data Data.frame with the first column the values and the second column
 #'  the group names
 #' @param tests Vector of strings, or a string, indicating the tests to check.
@@ -29,9 +34,14 @@
 #'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
 #'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
 #' )
-#' anova_tests(data)
+#' anova_tests(data, tests = c("anova", "welch", "kruskal", "median"))
 anova_tests <- function(data,
                         tests = c("anova", "welch", "bayes", "kruskal", "median")) {
+  tests <- .validate_tests(
+    tests,
+    c("anova", "welch", "bayes", "kruskal", "median")
+  )
+
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
@@ -47,23 +57,23 @@ anova_tests <- function(data,
     "medians" = medians
   )
 
-  if ("anova" %in% tolower(tests)) {
+  if ("anova" %in% tests) {
     anova_res <- stats::aov(form, data)
     res <- append(res, list("anova" = summary(anova_res)[[1]]$`Pr(>F)`[1]))
   }
-  if ("welch" %in% tolower(tests)) {
+  if ("welch" %in% tests) {
     welch_res <- stats::oneway.test(form, data = data, var.equal = FALSE)
     res <- append(res, list("welch" = welch_res$p.value))
   }
-  if ("bayes" %in% tolower(tests)) {
+  if ("bayes" %in% tests) {
     bayes_res <- BayesFactor::anovaBF(form, data = data, progress = FALSE)
     res <- append(res, list("bayes" = BayesFactor::extractBF(bayes_res)[[1]]))
   }
-  if ("kruskal" %in% tolower(tests)) {
+  if ("kruskal" %in% tests) {
     kruskal <- stats::kruskal.test(form, data)
     res <- append(res, list("kruskal" = kruskal$p.value))
   }
-  if ("median" %in% tolower(tests)) {
+  if ("median" %in% tests) {
     medn <- suppressWarnings(PMCMRplus::medianTest(formula = form, data = data, p.adjust.method = "bonferroni"))
     res <- append(res, list("median" = medn$p.value))
   }
@@ -90,8 +100,24 @@ anova_tests <- function(data,
 #'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
 #'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
 #' )
-#' resample_welch_anova(data)
+#' resample_welch_anova(data, M = 100)
 resample_welch_anova <- function(data, var.equal = FALSE, M = 1000) {
+  if (length(M) != 1 ||
+      !is.numeric(M) ||
+      !is.finite(M) ||
+      M < 1 ||
+      M != round(M)) {
+    stop("`M` must be a positive integer.", call. = FALSE)
+  }
+  M <- as.integer(M)
+
+  if (length(var.equal) != 1 || !is.logical(var.equal) || is.na(var.equal)) {
+    stop("`var.equal` must be a single TRUE or FALSE value.", call. = FALSE)
+  }
+
+  data <- .validate_group_data(data)
+  .validate_group_variances(data)
+
   grp <- as.factor(data[, 2])
   obs <- data[, 1]
 
@@ -105,7 +131,8 @@ resample_welch_anova <- function(data, var.equal = FALSE, M = 1000) {
   data_null[, 1] <- data_null[, 1] - means[grp]
 
   # True
-  stat_true <- stats::oneway.test(data[, 1] ~ data[, 2], var.equal = FALSE)$statistic
+  stat_true <- stats::oneway.test(data[, 1] ~ data[, 2],
+                                  var.equal = var.equal)$statistic
 
   # Sim Null
   statistics <- sapply(1:M,

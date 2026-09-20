@@ -29,13 +29,18 @@ robust to varying group sizes
 \emph{kruskal}: Also called the Krukal-wallis test. Non-parametric test
 \emph{median}: Also called Brown-Mood median test. Non-parametric test with
 Bonferroni correction
+
+By default, all five tests are run. Use \code{tests} to request only selected
+tests. Running multiple tests does not replace choosing a test based on the
+study design and assumptions, and the returned p-values are not a single
+multiplicity-adjusted decision across all methods.
 }
 \examples{
 data <- data.frame(
   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
 )
-anova_tests(data)
+anova_tests(data, tests = c("anova", "welch", "kruskal", "median"))
 }
 \seealso{
 \code{\link[stats:aov]{stats::aov()}}, \code{\link[stats:oneway.test]{stats::oneway.test()}}, \code{\link[BayesFactor:anovaBF]{BayesFactor::anovaBF()}},

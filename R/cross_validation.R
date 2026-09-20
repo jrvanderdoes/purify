@@ -30,7 +30,7 @@
 #' }
 #' cross_validation(data, pred_fn, cv_group_number = 10, cv.dependent = FALSE)
 cross_validation <- function(
-    data, pred_fn, cv_group_number = nrow(data),
+    data, pred_fn, cv_group_number = NULL,
     error_fn = function(data, pred) {
       sum((data - pred)^2)
     },
@@ -42,6 +42,38 @@ cross_validation <- function(
     n <- length(data)
     data.vector <- TRUE
   }
+
+  if (n < 2) {
+    stop("`data` must contain at least 2 observations.", call. = FALSE)
+  }
+  if (is.null(cv_group_number)) {
+    cv_group_number <- n
+  }
+  if (!is.function(pred_fn) || !is.function(error_fn)) {
+    stop("`pred_fn` and `error_fn` must be functions.", call. = FALSE)
+  }
+  if (length(cv_group_number) != 1 ||
+      !is.numeric(cv_group_number) ||
+      !is.finite(cv_group_number) ||
+      cv_group_number < 2 ||
+      cv_group_number != round(cv_group_number)) {
+    stop("`cv_group_number` must be an integer of at least 2.", call. = FALSE)
+  }
+  if (length(cv.dependent) != 1 ||
+      !is.logical(cv.dependent) ||
+      is.na(cv.dependent)) {
+    stop("`cv.dependent` must be a single TRUE or FALSE value.", call. = FALSE)
+  }
+  if (!is.null(sliding.start) &&
+      (length(sliding.start) != 1 ||
+       !is.numeric(sliding.start) ||
+       !is.finite(sliding.start) ||
+       sliding.start < 1 ||
+       sliding.start >= n ||
+       sliding.start != round(sliding.start))) {
+    stop("`sliding.start` must be an integer from 1 to n - 1.", call. = FALSE)
+  }
+  cv_group_number <- as.integer(cv_group_number)
 
   ## Define groups
   cv_group_number <- min(cv_group_number, n)

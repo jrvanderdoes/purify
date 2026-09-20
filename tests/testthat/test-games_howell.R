@@ -8,3 +8,25 @@ test_that("Games Howell", {
   expect_equal(dim(tmp), c(3, 7))
   expect_equal(round(tmp[1, 1], 3), 1.027)
 })
+
+test_that("games_howell validates grouped data and alpha", {
+  dat <- data.frame(
+    value = c(1, 2, 3, 4),
+    group = rep(c("A", "B"), each = 2)
+  )
+
+  expect_error(games_howell(dat, alpha = 0), "strictly between 0 and 1")
+  expect_error(
+    games_howell(transform(dat, value = c(1, NA, 3, 4))),
+    "cannot contain missing values"
+  )
+})
+
+test_that("games_howell rejects zero-variance groups", {
+  dat <- data.frame(
+    value = c(1, 1, 2, 3),
+    group = rep(c("A", "B"), each = 2)
+  )
+
+  expect_error(games_howell(dat), "positive, finite variance")
+})

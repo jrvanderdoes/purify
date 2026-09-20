@@ -25,12 +25,16 @@ Compute and return information on tests for the normality of data.
 \details{
 Tests require independent data unless otherwise specified.
 \emph{shapiro}: Shapiro-Wilk test
-\emph{ks}: Kolmogorov-Smirnov test
+\emph{ks}: Kolmogorov-Smirnov test against the standard normal distribution
+\eqn{N(0, 1)}
 \emph{ad}: Anderson-Darling test
 \emph{cvm}: Cramer-von Mises test
 \emph{lilliefors}: lilliefors test
 \emph{pearson}: Pearson chi-square test
 \emph{sf}: Shapiro-Francia test
+
+The input must be a finite numeric vector with at least three observations.
+The Shapiro-Wilk test additionally supports at most 5000 observations.
 }
 \examples{
 x <- c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2))

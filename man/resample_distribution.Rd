@@ -39,13 +39,12 @@ if a function is used, they many not be describing the same thing
 Resample Distributions
 }
 \examples{
-resample_distribution(rnorm(100))
 resample_distribution(
   data.frame(
     "data" = c(rnorm(100), rnorm(50, mean = 10)),
     "strata" = c(rep("A", 100), rep("B", 50))
   ),
-  strata = "strata"
+  strata = "strata", M = 10
 )
-resample_distribution(rnorm(100), fn = mean)
+resample_distribution(rnorm(100), fn = mean, M = 10)
 }

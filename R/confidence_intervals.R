@@ -21,20 +21,50 @@
 #' @export
 #'
 #' @examples
-#' data <- cumsum(rnorm(150))
+#' data <- cumsum(rnorm(100))
 #' pred_model <- function(x, h) {
 #'   predict(forecast::ets(x), h = h)$mean
 #' }
 #' h <- 10
-#' ets_model <- predict(forecast::ets(data[1:140]), h)
-#' ints <- confidence_intervals(data = data[1:140], pred_model = pred_model, h = h)
+#' ets_model <- predict(forecast::ets(data[1:90]), h)
+#' ints <- confidence_intervals(data = data[1:90], pred_model = pred_model, h = h, M = 50)
 #'
 #' plot(ets_model)
-#' lines(x = 141:150, y = ints$lower, col = "red")
-#' lines(x = 141:150, y = ints$upper, col = "red")
+#' lines(x = 91:100, y = ints$lower, col = "red")
+#' lines(x = 91:100, y = ints$upper, col = "red")>
 confidence_intervals <- function(data, pred_model, h, train = 0.8, M = 1000,
                                  alpha = 0.05, output = NULL, ...) {
-  if (train > 1 || train < 0) {
+  if (length(h) != 1 ||
+      !is.numeric(h) ||
+      !is.finite(h) ||
+      h < 1 ||
+      h != round(h)) {
+    stop("`h` must be a positive integer.", call. = FALSE)
+  }
+  h <- as.integer(h)
+
+  if (length(M) != 1 ||
+      !is.numeric(M) ||
+      !is.finite(M) ||
+      M < 1 ||
+      M != round(M)) {
+    stop("`M` must be a positive integer.", call. = FALSE)
+  }
+  M <- as.integer(M)
+
+  if (length(alpha) != 1 ||
+      !is.numeric(alpha) ||
+      !is.finite(alpha) ||
+      alpha <= 0 ||
+      alpha >= 1) {
+    stop("`alpha` must be strictly between 0 and 1.", call. = FALSE)
+  }
+
+  if (length(train) != 1 ||
+      !is.numeric(train) ||
+      !is.finite(train) ||
+      train < 0 ||
+      train > 1) {
     stop("The parameter `train` should be between 0 and 1.", call. = FALSE)
   }
   # Data size
@@ -45,12 +75,26 @@ confidence_intervals <- function(data, pred_model, h, train = 0.8, M = 1000,
     data.vector <- TRUE
   }
 
+  train_n <- floor(train * n)
+
+  if (train_n < 1) {
+    stop("`train` must provide at least one training observation.",
+         call. = FALSE)
+  }
+
   # Create sliding h chunks
   i <- 1
   cv_groups <- list()
-  while (train * n + i + h <= n) {
-    cv_groups[[i]] <- train * n + i + 1:h
+  while (train_n + i + h <= n) {
+    cv_groups[[i]] <- train_n + i + 1:h
     i <- i + 1
+  }
+
+  if (length(cv_groups) == 0) {
+    stop(
+      "The combination of `train`, `h`, and data length leaves no validation windows.",
+      call. = FALSE
+    )
   }
 
   # Get forecast errors
@@ -68,15 +112,22 @@ confidence_intervals <- function(data, pred_model, h, train = 0.8, M = 1000,
     }
 
     for (i in 1:length(cv_groups)) {
-      preds <- pred_model(data[1:(min(cv_groups[[i]]) - 1), ], h)
+      preds <- pred_model(
+        data[1:(min(cv_groups[[i]]) - 1), ],
+        h,
+        ...
+      )
       resids[i, ] <- preds - data[cv_groups[[i]], output]
     }
   }
 
   # Resample
-  resampled_resids <- apply(resids, MARGIN = 2, function(x, M) {
-    sample(x, M, replace = TRUE)
-  }, M = M)
+  resampled_resids <- do.call(
+    cbind,
+    lapply(seq_len(h), function(j) {
+      sample(resids[, j], M, replace = TRUE)
+    })
+  )
 
   # Significance
   quants <- apply(resampled_resids,

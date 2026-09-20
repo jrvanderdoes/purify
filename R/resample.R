@@ -38,8 +38,8 @@
 #' @export
 #'
 #' @examples
-#' results <- resample(1:100)
-#' results <- resample(1:100, fn = mean)
+#' results <- resample(1:100, M = 100)
+#' results <- resample(1:100, fn = mean, M = 100)
 #'
 #' n <- 50
 #' data <- data.frame(
@@ -48,7 +48,7 @@
 #'   predictor2 = rnorm(n)
 #' )
 #' data$output <- 2 * data$predictor1 - data$predictor2 + stats::rnorm(nrow(data))
-#' results <- resample(data, ignore.columns = "output")
+#' results <- resample(data, ignore.columns = "output", M = 100)
 #'
 #' fn <- function(data) {
 #'   coef(lm(output ~ ., data = data))
@@ -63,9 +63,41 @@ resample <- function(data, M = 1000,
                      ignore.columns = NULL, ...) {
   # Setup and Verify Input
   types_poss <- c("separate", "sliding")
-  resample_blocks <- types_poss[min(pmatch(resample_blocks, types_poss))]
-  M <- round(M)
-  if (M <= 0) stop("The variable `M` must be positive", call. = FALSE)
+
+  if (length(resample_blocks) == length(types_poss) &&
+      identical(resample_blocks, types_poss)) {
+    resample_blocks <- types_poss[1]
+  } else if (length(resample_blocks) != 1 ||
+             is.na(pmatch(resample_blocks, types_poss))) {
+    stop(
+      "`resample_blocks` must be either 'separate' or 'sliding'.",
+      call. = FALSE
+    )
+  } else {
+    resample_blocks <- types_poss[pmatch(resample_blocks, types_poss)]
+  }
+
+  if (length(M) != 1 ||
+      !is.numeric(M) ||
+      !is.finite(M) ||
+      M < 1 ||
+      M != round(M)) {
+    stop("`M` must be a positive integer.", call. = FALSE)
+  }
+  M <- as.integer(M)
+
+  if (length(blocksize) != 1 ||
+      !is.numeric(blocksize) ||
+      !is.finite(blocksize) ||
+      blocksize < 1 ||
+      blocksize != round(blocksize)) {
+    stop("`blocksize` must be a positive integer.", call. = FALSE)
+  }
+  blocksize <- as.integer(blocksize)
+
+  if (length(replace) != 1 || !is.logical(replace) || is.na(replace)) {
+    stop("`replace` must be TRUE or FALSE.", call. = FALSE)
+  }
   # size <- round(size)
   # if(size <= 0) stop('The variable `size` must be positive', call. = FALSE)
 
@@ -76,8 +108,65 @@ resample <- function(data, M = 1000,
     data.vector <- TRUE
   }
 
+  if (n < 1) {
+    stop("`data` must contain at least one observation.", call. = FALSE)
+  }
+
+  if (blocksize > n) {
+    stop(
+      "`blocksize` cannot exceed the number of observations.",
+      call. = FALSE
+    )
+  }
+
+  if (!is.null(strata)) {
+    if (length(strata) != 1 ||
+        (!is.character(strata) && !is.numeric(strata))) {
+      stop("`strata` must be one column name or column index.", call. = FALSE)
+    }
+
+    if (is.numeric(strata) &&
+        (strata != round(strata) || strata < 1 || strata > ncol(data))) {
+      stop("`strata` must refer to an existing column.", call. = FALSE)
+    }
+
+    if (is.character(strata) &&
+        (is.null(colnames(data)) || !strata %in% colnames(data))) {
+      stop("`strata` must refer to an existing column.", call. = FALSE)
+    }
+  }
+
   if (is.null(sizes) && is.null(strata)) {
     sizes <- n
+  }
+
+  if (is.null(strata)) {
+    if (length(sizes) != 1 ||
+        !is.numeric(sizes) ||
+        !is.finite(sizes) ||
+        sizes < 1 ||
+        sizes != round(sizes)) {
+      stop(
+        "`sizes` must be one positive integer for non-stratified resampling.",
+        call. = FALSE
+      )
+    }
+
+    sizes <- as.integer(sizes)
+
+    if (!replace && sizes > n) {
+      stop(
+        "`sizes` cannot exceed the number of observations when `replace = FALSE`.",
+        call. = FALSE
+      )
+    }
+  } else if (!is.null(sizes) &&
+             !is.numeric(sizes) &&
+             !is.function(sizes)) {
+    stop(
+      "`sizes` must be numeric, a function, or NULL for stratified resampling.",
+      call. = FALSE
+    )
   }
 
   ## Resample
@@ -106,32 +195,73 @@ resample <- function(data, M = 1000,
         }, sizes = sizes, replace = replace, X1 = data, idxGroups = idxGroups, blocksize = blocksize, simplify = FALSE)
     } else {
       X_resampled <-
-        sapply(1:M, function(i, sizes, X1, replace = replace, blocksize = blocksize,
-                             idxGroups = idxGroups, ignore.columns = ignore.columns) {
-          min_group <- min(sapply(idxGroups, length))
-          size_val <- ifelse(!replace, length(idxGroups), ceiling(sizes / min_group) + 1)
+        sapply(
+          1:M,
+          function(i, sizes, X1, replace = replace, blocksize = blocksize,
+                   idxGroups = idxGroups, ignore.columns = ignore.columns) {
 
-          data_resample <- X1[
-            sample(1:length(idxGroups),
-              replace = replace,
-              size = size_val
-            ),
-            !(colnames(X1) %in% ignore.columns)
-          ]
-          data_resample <- data_resample[1:sizes, ]
+            sampled_rows <- integer(0)
 
-          if (!is.null(ignore.columns)) {
-            data_resample <- cbind(data[ignore.columns], data_resample)
-          }
-          rownames(data_resample) <- NULL
-          data_resample
-        },
-        sizes = sizes, replace = replace, X1 = data, idxGroups = idxGroups, blocksize = blocksize,
-        ignore.columns = ignore.columns, simplify = FALSE
+            if (replace) {
+              while (length(sampled_rows) < sizes) {
+                sampled_rows <- c(
+                  sampled_rows,
+                  unlist(
+                    sample(idxGroups, size = 1, replace = TRUE),
+                    use.names = FALSE
+                  )
+                )
+              }
+            } else {
+              if (sizes > nrow(X1)) {
+                stop(
+                  "`sizes` cannot exceed the number of rows when `replace = FALSE`.",
+                  call. = FALSE
+                )
+              }
+
+              sampled_rows <- unlist(
+                sample(
+                  idxGroups,
+                  size = length(idxGroups),
+                  replace = FALSE
+                ),
+                use.names = FALSE
+              )
+            }
+
+            sampled_rows <- sampled_rows[seq_len(sizes)]
+
+            data_resample <- X1[
+              sampled_rows,
+              !(colnames(X1) %in% ignore.columns),
+              drop = FALSE
+            ]
+
+            if (!is.null(ignore.columns)) {
+              data_resample <- cbind(data[ignore.columns], data_resample)
+            }
+
+            rownames(data_resample) <- NULL
+            data_resample
+          },
+          sizes = sizes,
+          replace = replace,
+          X1 = data,
+          idxGroups = idxGroups,
+          ignore.columns = ignore.columns,
+          simplify = FALSE
         )
     }
   } else {
     groups <- as.data.frame(table(data[[strata]]))
+
+    if (any(groups$Freq < blocksize)) {
+      stop(
+        "`blocksize` cannot exceed the number of observations in any stratum.",
+        call. = FALSE
+      )
+    }
 
     # Group Strata together
     X_stacked_stata <- data.frame()
@@ -142,11 +272,41 @@ resample <- function(data, M = 1000,
 
     # Stratify sizes, based on given number, function, or leaving original
     sizes_tab <- groups
-    if (is.numeric(sizes)) {
-      sizes_tab$Freq <- sizes
-    } else if (is.function(sizes)) {
-      sizes_tab$Freq <- sizes(sizes_tab$Freq)
-    }
+        if (is.numeric(sizes)) {
+          if (length(sizes) == 1) {
+            sizes <- rep(sizes, nrow(groups))
+          }
+
+          if (length(sizes) != nrow(groups)) {
+            stop(
+              "Numeric `sizes` must contain one value per stratum, or one value to use for all strata.",
+              call. = FALSE
+            )
+          }
+
+          sizes_tab$Freq <- sizes
+        } else if (is.function(sizes)) {
+          sizes_tab$Freq <- sizes(sizes_tab$Freq)
+        }
+
+        if (length(sizes_tab$Freq) != nrow(groups) ||
+            any(!is.finite(sizes_tab$Freq)) ||
+            any(sizes_tab$Freq < 1) ||
+            any(sizes_tab$Freq != round(sizes_tab$Freq))) {
+          stop(
+            "`sizes` must contain one positive integer per stratum.",
+            call. = FALSE
+          )
+        }
+
+        sizes_tab$Freq <- as.integer(sizes_tab$Freq)
+
+        if (!replace && any(sizes_tab$Freq > groups$Freq)) {
+          stop(
+            "A requested stratum size exceeds the original size when `replace = FALSE`.",
+            call. = FALSE
+          )
+        }
 
 
     # Get groups
@@ -203,28 +363,35 @@ resample <- function(data, M = 1000,
               idxs_orig <- data[[strata]] == groups$Var1[j]
               # tmp <- data[idxs_orig,
               #             ignore.columns,drop=FALSE]
-              if (sum(idxs) != sum(idxs_orig)) {
-                if (sum(idxs) > sum(idxs_orig)) {
-                  # resample longer than original
-                  add_dat <- data[idxs_orig,
-                    ignore.columns,
-                    drop = FALSE
-                  ]
-                  add_dat <- add_dat[
-                    sample(1:sum(idxs_orig),
-                      size = sum(idxs),
-                      replace = TRUE
-                    ), ,
-                    drop = FALSE
-                  ]
-                } else {
-                  # resample shorter than original
-                  add_dat <- data[idxs_orig,
-                    ignore.columns,
-                    drop = FALSE
-                  ]
-                  add_dat <- add_dat[sample(1:sum(idxs)), , drop = FALSE]
-                }
+              if (sum(idxs) == sum(idxs_orig)) {
+                add_dat <- data[idxs_orig,
+                  ignore.columns,
+                  drop = FALSE
+                ]
+              } else if (sum(idxs) > sum(idxs_orig)) {
+                # resample longer than original
+                add_dat <- data[idxs_orig,
+                  ignore.columns,
+                  drop = FALSE
+                ]
+                add_dat <- add_dat[
+                  sample(seq_len(sum(idxs_orig)),
+                    size = sum(idxs),
+                    replace = TRUE
+                  ), ,
+                  drop = FALSE
+                ]
+              } else {
+                # resample shorter than original
+                add_dat <- data[idxs_orig,
+                  ignore.columns,
+                  drop = FALSE
+                ]
+                add_dat <- add_dat[
+                  sample(seq_len(sum(idxs)), size = sum(idxs)),
+                  ,
+                  drop = FALSE
+                ]
               }
 
               data_resample[

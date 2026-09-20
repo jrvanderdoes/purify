@@ -20,3 +20,39 @@ test_that("Observation Probability Verified", {
   )
   expect_equal(res, 1)
 })
+
+test_that("observation probability handles fractional expected counts", {
+  result <- observation_probability(
+    data.frame(
+      counts = c(1, 2),
+      probability = c(0.5, 0.5)
+    )
+  )
+
+  expect_true(is.numeric(result))
+  expect_true(result >= 0)
+  expect_true(result <= 1)
+})
+
+test_that("observation_probability validates counts and probabilities", {
+  expect_error(
+    observation_probability(data.frame(counts = c(10, -1), probs = c(1, 1))),
+    "count column must contain nonnegative integers"
+  )
+  expect_error(
+    observation_probability(data.frame(counts = c(10, 5), probs = c(-1, 2))),
+    "probability column must contain nonnegative values"
+  )
+  expect_error(
+    observation_probability(data.frame(counts = c(10.5, 5), probs = c(1, 1))),
+    "count column must contain nonnegative integers"
+  )
+  expect_error(
+    observation_probability(data.frame(counts = c(10, 5), probs = c(0, 0))),
+    "probability column must contain nonnegative values"
+  )
+  expect_error(
+    observation_probability(data.frame(counts = c(10, 5))),
+    "2-column object"
+  )
+})

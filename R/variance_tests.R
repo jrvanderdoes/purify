@@ -11,6 +11,11 @@
 #' *Fligner*: Also called Fligner-Killeen. Non-parametric test
 #' *Hartley*: Requires normal distribution and equal number of observations.
 #'
+#' By default, ratio, Levene, Bartlett, and Fligner tests are run. Use `tests`
+#' to select a subset. The tests have different assumptions, so results should
+#' be interpreted in light of the study design rather than by selecting the
+#' smallest p-value.
+#'
 #'
 #' @param data Data.frame with the first column the values and the second column
 #'  the group names
@@ -32,33 +37,39 @@
 #' variance_tests(data)
 variance_tests <- function(data, tests = c("ratio", "levene", "bartlett", "fligner"),
                            ratio.threshold = 4) {
+  tests <- .validate_tests(
+    tests,
+    c("ratio", "levene", "bartlett", "fligner", "hartley")
+  )
+
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
   groups <- tmp$groups
   form <- tmp$form
+  .validate_group_variances(data)
 
   # Variance Tests
   vars <- tapply(data[, 1], data[, 2], stats::var, na.rm = TRUE)
   res <- list("var" = vars)
 
-  if ("ratio" %in% tolower(tests)) {
+  if ("ratio" %in% tests) {
     ratio <- max(vars) / min(vars)
     res <- append(res, list("ratio" = ratio, "ratio.threshold" = ratio.threshold))
   }
-  if ("levene" %in% tolower(tests)) {
+  if ("levene" %in% tests) {
     levene <- car::leveneTest(form, data = data)
     res <- append(res, list("levene_pvalue" = levene$`Pr(>F)`[1]))
   }
-  if ("bartlett" %in% tolower(tests)) {
+  if ("bartlett" %in% tests) {
     bartlett <- stats::bartlett.test(formula = form, data = data)
     res <- append(res, list("bartlett_pvalue" = bartlett$p.value))
   }
-  if ("fligner" %in% tolower(tests)) {
+  if ("fligner" %in% tests) {
     fligner <- stats::fligner.test(formula = form, data)
     res <- append(res, list("fligner_pvalue" = fligner$p.value))
   }
-  if ("hartley" %in% tolower(tests)) {
+  if ("hartley" %in% tests) {
     hartley <- suppressWarnings(PMCMRplus::hartleyTest(formula = form, data = data))
     res <- append(res, list("hartley_pvalue" = hartley$p.value))
   }
@@ -85,8 +96,26 @@ variance_tests <- function(data, tests = c("ratio", "levene", "bartlett", "flign
 #'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
 #'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
 #' )
-#' resample_variance(data)
+#' resample_variance(data, M = 50)
 resample_variance <- function(data, alphas = 0.05, M = 1000) {
+  if (length(M) != 1 ||
+      !is.numeric(M) ||
+      !is.finite(M) ||
+      M < 1 ||
+      M != round(M)) {
+    stop("`M` must be a positive integer.", call. = FALSE)
+  }
+  M <- as.integer(M)
+
+  if (length(alphas) < 1 ||
+      !is.numeric(alphas) ||
+      any(!is.finite(alphas)) ||
+      any(alphas <= 0) ||
+      any(alphas >= 1)) {
+    stop("`alphas` must contain values strictly between 0 and 1.",
+         call. = FALSE)
+  }
+
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
@@ -98,7 +127,7 @@ resample_variance <- function(data, alphas = 0.05, M = 1000) {
   vars <- tapply(data[, 1], data[, 2], stats::var, na.rm = TRUE)
 
   # Sim data
-  statistics <- sapply(1:M,
+  statistics <- vapply(seq_len(M),
     function(x, data, grp_unique) {
       # resample
       dat <- data.frame()
@@ -115,8 +144,9 @@ resample_variance <- function(data, alphas = 0.05, M = 1000) {
             )
           )
       }
-      dat$value
+      as.numeric(dat$value)
     },
+    FUN.VALUE = numeric(length(grp_unique)),
     data = data, grp_unique = grp_unique
   )
 

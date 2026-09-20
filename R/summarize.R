@@ -33,6 +33,20 @@
 #' resample_data <- resample(data = data, fn = fn, M = 10, ignore.columns = "output")
 #' results <- summarize_resample(resample_data)
 summarize_resample <- function(data, alpha = 0.05) {
+  alpha <- .validate_alpha(alpha)
+
+  if ((!is.data.frame(data) && !is.matrix(data)) ||
+      NROW(data) < 1 ||
+      NCOL(data) < 1 ||
+      (is.data.frame(data) && !all(vapply(data, is.numeric, logical(1)))) ||
+      (is.matrix(data) && !is.numeric(data))) {
+    stop("`data` must be a non-empty data.frame or numeric matrix.",
+         call. = FALSE)
+  }
+  if (any(!is.finite(as.matrix(data)))) {
+    stop("`data` cannot contain missing or non-finite values.", call. = FALSE)
+  }
+
   # Results
   cnames <- colnames(data)
   # Estimate values

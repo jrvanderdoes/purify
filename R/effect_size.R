@@ -31,20 +31,36 @@
 #' cohens_d(x, y, var.type = "pooled", hedges.correction = TRUE)
 cohens_d <- function(x, y = NULL, var.type = "unequal", hedges.correction = FALSE,
                      hedges.approx = TRUE) {
+  valid_var_types <- c("unequal", "pooled", "x", "y")
+  if (length(var.type) != 1 ||
+      !is.character(var.type) ||
+      is.na(var.type) ||
+      !tolower(var.type) %in% valid_var_types) {
+    stop("`var.type` must be one of: unequal, pooled, x, or y.",
+         call. = FALSE)
+  }
+  var.type <- tolower(var.type)
+
   if (is.null(y)) {
+    x <- .validate_group_data(x)
     X_tmp <- x
     groups <- unique(x[, 2])
     if (length(groups) != 2) stop("Cohen's d / Hedges' g only used for two groups")
     x <- X_tmp[X_tmp[, 2] == groups[1], 1]
     y <- X_tmp[X_tmp[, 2] == groups[2], 1]
+  } else {
+    if (!is.numeric(x) || !is.numeric(y) ||
+        length(x) < 2 || length(y) < 2 ||
+        any(!is.finite(x)) || any(!is.finite(y))) {
+      stop("`x` and `y` must be finite numeric vectors with at least 2 observations.",
+           call. = FALSE)
+    }
   }
-
-  if (is.null(y)) stop("Cohen's d / Hedges' g used for two groups - see documentation")
 
   lx <- length(x) - 1
   ly <- length(y) - 1
 
-  if (is.null(var.type) || var.type == "unequal") {
+  if (var.type == "unequal") {
     var_est <- (stats::var(x) + stats::var(y)) / 2
   } else if (var.type == "pooled") {
     var_est <- (lx * stats::var(x) + ly * stats::var(y)) / (lx + ly)
@@ -54,6 +70,11 @@ cohens_d <- function(x, y = NULL, var.type = "unequal", hedges.correction = FALS
     var_est <- stats::var(y)
   } else {
     stop("Verify variance status")
+  }
+
+  if (!is.finite(var_est) || var_est <= 0) {
+    stop("The selected variance estimate must be positive and finite.",
+         call. = FALSE)
   }
 
   est <- abs(mean(x) - mean(y)) / sqrt(var_est)
@@ -92,43 +113,54 @@ cohens_d <- function(x, y = NULL, var.type = "unequal", hedges.correction = FALS
 #' )
 #' eta_squared(data)
 eta_squared <- function(data) {
+  data <- .validate_group_data(data)
+
   ## General Info
-  if (dim(data)[2] != 2) {
-    stop("The parameter data must be a 2-column data.frame / matrix.")
-  } else {
+  col_names <- colnames(data)
+  if (is.null(col_names)) {
+    colnames(data) <- c("value", "group")
     col_names <- colnames(data)
-    if (is.null(col_names)) {
-      colnames(data) <- c("value", "group")
-      col_names <- colnames(data)
-    }
   }
   data[, 2] <- as.factor(data[, 2])
   groups <- unique(data[, 2])
 
+  total_variance <- stats::var(data[[col_names[1]]])
+  if (!is.finite(total_variance) || total_variance <= 0) {
+    stop("The response variable must have positive, finite variance.",
+         call. = FALSE)
+  }
+
   ## ANOVA
-  form <- stats::as.formula(paste(col_names[1], "~", col_names[2]))
+  form <- stats::reformulate(
+    termlabels = col_names[2],
+    response = col_names[1]
+  )
 
   anova_res <- stats::aov(form, data)
 
   ## Eta^2
-  eta2 <- stats::var(stats::predict(anova_res)) / stats::var(data$value)
+  eta2 <- stats::var(stats::predict(anova_res)) / stats::var(data[[col_names[1]]])
 
   cbind("eta squared" = c(eta2, 1 - eta2), summary(anova_res)[[1]])
 }
 
 
-#' Effect Size by Resampling Differences
+#' Resampled Mean Differences
 #'
-#' Use with caution as this is still being tested. This function generates
-#'  confidence intervals for the mean differences between groups.
+#' Estimate pairwise mean differences and percentile bootstrap confidence
+#' intervals between groups. The returned \code{se} column is the ordinary
+#' standard error of a difference between two independent means, estimated from
+#' the bootstrap group variances.
 #'
 #' @param data Data.frame with the first column the values and the second column
 #'  the group names
 #' @param alpha Significance for confidence intervals, defaults to 0.05
 #' @inheritParams resample
 #'
-#' @returns Table with the mean differences, confidence intervals and other
-#'  information
+#' @returns A data frame with one row for each pair of groups. The \code{diff}
+#'  column contains the mean difference (second group minus first group),
+#'  \code{lwr} and \code{upr} contain the percentile bootstrap confidence
+#'  limits, and \code{se} contains the estimated standard error.
 #' @export
 #'
 #' @examples
@@ -139,6 +171,25 @@ eta_squared <- function(data) {
 #' # Be sure to increase M for real use cases
 #' resample_differences(data, M = 50)
 resample_differences <- function(data, alpha = 0.05, M = 1000) {
+  if (length(alpha) != 1 ||
+      !is.numeric(alpha) ||
+      !is.finite(alpha) ||
+      alpha <= 0 ||
+      alpha >= 1) {
+    stop("`alpha` must be strictly between 0 and 1.", call. = FALSE)
+  }
+
+  if (length(M) != 1 ||
+      !is.numeric(M) ||
+      !is.finite(M) ||
+      M < 1 ||
+      M != round(M)) {
+    stop("`M` must be a positive integer.", call. = FALSE)
+  }
+  M <- as.integer(M)
+
+  data <- .validate_group_data(data)
+
   grp <- data[, 2]
   obs <- data[, 1]
 
@@ -164,31 +215,11 @@ resample_differences <- function(data, alpha = 0.05, M = 1000) {
       vars1 <- apply(g1, MARGIN = 1, stats::var) / ns[combs[1, x]]
       vars2 <- apply(g2, MARGIN = 1, stats::var) / ns[combs[2, x]]
 
-      # # Summary
       mean_diff <- means[combs[2, x]] - means[combs[1, x]]
-      # var1 <- vars[combs[1,x]] / ns[combs[1,x]]
-      # var2 <- vars[combs[2,x]] / ns[combs[2,x]]
-
-      # # Degrees of Freedom
-      # df <- (var1 + var2)^2 /
-      #   ( var1^2 / (ns[combs[1,x]] - 1) + var2^2 / (ns[combs[2,x]] - 1) )
-      #
-      # # t / p-values
-      # t <- abs(mean_diff) / sqrt( var1 + var2 )
-      # p <- stats::ptukey(sqrt(2) * t, groups, df, lower.tail = FALSE)
-      #
-      # # Sigma standard error
-      # sd12 <- sqrt( 0.5 * (var1 + var2) )
-      #
-      # # Confidence Intervals (not sure why don'y split alpha but matches elsewhere)
-      # int <- stats::qtukey(p = 1-alpha, nmeans = groups, df = df) * sd12
-      # upper.conf <-  mean_diff + int
-      # lower.conf <-  mean_diff - int
-
 
       c(
         paste0(combs[2, x], "-", combs[1, x]),
-        mean_diff, sqrt(0.5 * mean(vars1) + mean(vars2)),
+        mean_diff, sqrt(mean(vars1) + mean(vars2)),
         as.numeric(stats::quantile(mean_diffs, probs = c(alpha / 2, 1 - alpha / 2)))
       )
     },
@@ -205,7 +236,7 @@ resample_differences <- function(data, alpha = 0.05, M = 1000) {
     as.numeric(as.matrix(results[-1]))
 
   # Rename data frame columns
-  colnames(results) <- c("groups", "diff", "se", "upr", "lwr")
+  colnames(results) <- c("groups", "diff", "se", "lwr", "upr")
   rownames(results) <- results$groups
 
   results[, c(2, 4:5, 3)]

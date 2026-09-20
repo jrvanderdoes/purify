@@ -1,3 +1,75 @@
+# Validate grouped numeric data used by the analysis functions.
+.validate_alpha <- function(alpha) {
+  if (length(alpha) != 1 ||
+      !is.numeric(alpha) ||
+      !is.finite(alpha) ||
+      alpha <= 0 ||
+      alpha >= 1) {
+    stop("`alpha` must be strictly between 0 and 1.", call. = FALSE)
+  }
+
+  alpha
+}
+
+.validate_tests <- function(tests, allowed) {
+  if (!is.character(tests) || length(tests) < 1) {
+    stop("`tests` must contain one or more test names.", call. = FALSE)
+  }
+
+  tests <- tolower(tests)
+  allowed <- tolower(allowed)
+
+  if (any(!tests %in% allowed)) {
+    stop(
+      paste0("Unknown test. Choose from: ",
+             paste(allowed, collapse = ", "), "."),
+      call. = FALSE
+    )
+  }
+
+  tests
+}
+
+.validate_group_data <- function(data, min_group_size = 2) {
+  if (!is.data.frame(data) && !is.matrix(data)) {
+    stop("`data` must be a data.frame or matrix.", call. = FALSE)
+  }
+
+  if (ncol(data) != 2) {
+    stop("The parameter data must be a 2-column data.frame / matrix.",
+         call. = FALSE)
+  }
+
+  if (!is.numeric(data[, 1])) {
+    stop("The first column of `data` must be numeric.", call. = FALSE)
+  }
+
+  if (anyNA(data[, 1]) || anyNA(data[, 2])) {
+    stop("`data` cannot contain missing values in its value or group columns.",
+         call. = FALSE)
+  }
+
+  group_counts <- table(data[, 2])
+  if (any(group_counts < min_group_size)) {
+    stop(
+      paste0("Each group must contain at least ", min_group_size,
+             " observations."),
+      call. = FALSE
+    )
+  }
+
+  data
+}
+
+.validate_group_variances <- function(data) {
+  variances <- tapply(data[, 1], data[, 2], stats::var)
+  if (any(!is.finite(variances)) || any(variances <= 0)) {
+    stop("Each group must have a positive, finite variance.", call. = FALSE)
+  }
+
+  variances
+}
+
 #' Prepare Data Utility
 #'
 #' @param data Data.frame with the first column the values and the second column
@@ -6,19 +78,20 @@
 #' @returns List with data, groups, and formula
 .prepare_data <- function(data) {
   ## General Info
-  if (dim(data)[2] != 2) {
-    stop("The parameter data must be a 2-column data.frame / matrix.")
-  } else {
+  data <- .validate_group_data(data)
+
+  col_names <- colnames(data)
+  if (is.null(col_names)) {
+    colnames(data) <- c("value", "group")
     col_names <- colnames(data)
-    if (is.null(col_names)) {
-      colnames(data) <- c("value", "group")
-      col_names <- colnames(data)
-    }
   }
   data[, 2] <- as.factor(data[, 2])
   groups <- unique(data[, 2])
 
-  form <- stats::as.formula(paste(col_names[1], "~", col_names[2]))
+  form <- stats::reformulate(
+    termlabels = col_names[2],
+    response = col_names[1]
+  )
 
   list(
     "data" = data,
