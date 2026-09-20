@@ -10,18 +10,34 @@
 #' @export
 #'
 #' @examples
-#' resample_distribution(rnorm(100))
 #' resample_distribution(
 #'   data.frame(
 #'     "data" = c(rnorm(100), rnorm(50, mean = 10)),
 #'     "strata" = c(rep("A", 100), rep("B", 50))
 #'   ),
-#'   strata = "strata"
+#'   strata = "strata", M = 10
 #' )
-#' resample_distribution(rnorm(100), fn = mean)
+#' resample_distribution(rnorm(100), fn = mean, M = 10)
 resample_distribution <- function(data, resampled_data = NULL,
                                   strata = NULL,
                                   ignore.columns = NULL, ...) {
+  if (NROW(data) < 1) {
+    stop("`data` must be non-empty.", call. = FALSE)
+  }
+  if (!is.null(resampled_data) && length(resampled_data) < 1) {
+    stop("`resampled_data` must be non-empty.", call. = FALSE)
+  }
+
+  hist_binwidth <- function(x, density = FALSE) {
+    width <- diff(range(x))
+    if (!is.finite(width) || width <= 0) return(0.2)
+    if (density) {
+      min(width / 10, max(0.2, 4 * width / length(x)))
+    } else {
+      max(0.2, 2 * width / length(x))
+    }
+  }
+
   if (is.null(resampled_data)) {
     resampled_data <- resample(data,
       strata = strata,
@@ -40,7 +56,7 @@ resample_distribution <- function(data, resampled_data = NULL,
           x = dat,
           y = ggplot2::after_stat(density), group = data[, strata], fill = data[, strata]
         ),
-        alpha = 0.5, binwidth = max(0.2, 2 * sum(abs(range(dat))) / length(dat)),
+        alpha = 0.5, binwidth = hist_binwidth(dat),
         position = "identity"
       ) +
       ggplot2::geom_density(ggplot2::aes(
@@ -67,7 +83,7 @@ resample_distribution <- function(data, resampled_data = NULL,
           x = dat_res,
           y = ggplot2::after_stat(density), group = stack_res[, strata], fill = stack_res[, strata]
         ),
-        alpha = 0.5, binwidth = max(0.2, 2 * sum(abs(range(dat_res))) / length(dat_res)),
+        alpha = 0.5, binwidth = hist_binwidth(dat_res),
         position = "identity"
       ) +
       ggplot2::geom_density(ggplot2::aes(
@@ -103,10 +119,7 @@ resample_distribution <- function(data, resampled_data = NULL,
       ggplot2::ggplot() +
       ggplot2::geom_histogram(ggplot2::aes(
         x = data, y = ggplot2::after_stat(density)
-      ), alpha = 0.5, binwidth = min(
-        sum(abs(range(data))) / 10,
-        max(0.2, 2 * 2 * sum(abs(range(data))) / length(data))
-      )) +
+      ), alpha = 0.5, binwidth = hist_binwidth(data, density = TRUE)) +
       ggplot2::geom_density(ggplot2::aes(
         x = data, y = ggplot2::after_stat(density)
       ), linewidth = 1) +
@@ -129,10 +142,7 @@ resample_distribution <- function(data, resampled_data = NULL,
           x = as.matrix(resampled_data), y = ggplot2::after_stat(density)
         ),
         alpha = 0.5,
-        binwidth = min(
-          sum(abs(range(resampled_data))) / 10,
-          max(0.2, 2 * sum(abs(range(resampled_data))) / length(resampled_data))
-        )
+        binwidth = hist_binwidth(resampled_data, density = TRUE)
       ) +
       ggplot2::geom_density(ggplot2::aes(
         x = as.matrix(resampled_data), y = ggplot2::after_stat(density)
@@ -176,10 +186,7 @@ resample_distribution <- function(data, resampled_data = NULL,
           y = ggplot2::after_stat(density)
         ),
         alpha = 0.5,
-        binwidth = min(
-          sum(abs(range(dat))) / 10,
-          max(0.2, 2 * sum(abs(range(dat))) / length(dat))
-        ),
+        binwidth = hist_binwidth(dat, density = TRUE),
         position = "identity"
       ) +
       ggplot2::geom_density(ggplot2::aes(
@@ -206,10 +213,7 @@ resample_distribution <- function(data, resampled_data = NULL,
           x = dat_res,
           y = ggplot2::after_stat(density)
         ),
-        alpha = 0.5, binwidth = min(
-          sum(abs(range(dat_res))) / 10,
-          max(0.2, 2 * sum(abs(range(dat_res))) / length(dat_res))
-        ),
+        alpha = 0.5, binwidth = hist_binwidth(dat_res, density = TRUE),
         position = "identity"
       ) +
       ggplot2::geom_density(ggplot2::aes(

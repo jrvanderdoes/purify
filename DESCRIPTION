@@ -1,14 +1,16 @@
 Package: purify
 Title: Clean and Analyze Data Using Resampling
-Version: 1.1.0
+Version: 1.3.0
 Authors@R: c( 
     person("Jeremy", "VanderDoes", email="jeremyvanderdoes@gmail.com", 
            role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0001-9885-3073")),
-    person("Yuling", "Chen", email="yuling.chen@uwaterloo.ca", 
+    person("Yuling Max", "Chen", email="yuling.chen@uwaterloo.ca", 
            role = c("aut"),
            comment = c(ORCID = "0009-0000-5713-9255"))
     )
+Author: Jeremy VanderDoes [aut, cre, cph], Yuling Max Chen [aut]
+Maintainer: Jeremy VanderDoes <jeremyvanderdoes@gmail.com>
 Description: Resampling and related methods for data under dependence 
   and uneven groups. Methods of resampling, cross-validation, and forecasting 
   confidence intervals purify the data by with potential dependence or stratified 
@@ -24,7 +26,7 @@ Description: Resampling and related methods for data under dependence
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 URL: https://github.com/jrvanderdoes/purify,
     https://jrvanderdoes.github.io/purify/
 BugReports: https://github.com/jrvanderdoes/purify/issues

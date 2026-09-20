@@ -31,6 +31,9 @@
 two_group_tests <- function(data,
                             tests = c("t", "wilcox", "bayes", "factor"),
                             alpha = 0.05) {
+  alpha <- .validate_alpha(alpha)
+  tests <- .validate_tests(tests, c("t", "wilcox", "bayes", "factor"))
+
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
@@ -42,7 +45,7 @@ two_group_tests <- function(data,
   # Two-group Tests
   res <- list()
 
-  if ("t" %in% tolower(tests)) {
+  if ("t" %in% tests) {
     t_test <- stats::t.test(
       formula = form, data = data, var.equal = TRUE,
       conf.level = 1 - alpha
@@ -63,11 +66,11 @@ two_group_tests <- function(data,
       "interval" = t_test1$conf.int
     )))
   }
-  if ("wilcox" %in% tolower(tests)) {
+  if ("wilcox" %in% tests) {
     tmp <- stats::wilcox.test(formula = form, data = data)
     res <- append(res, list("wilcox" = list("pvalue" = tmp$p.value)))
   }
-  if ("bayes" %in% tolower(tests)) {
+  if ("bayes" %in% tests) {
     bayes_t_test <- Bolstad::bayes.t.test(
       formula = form, data = data,
       var.equal = TRUE, conf.level = 1 - alpha
@@ -90,7 +93,7 @@ two_group_tests <- function(data,
       )
     ))
   }
-  if ("factor" %in% tolower(tests)) {
+  if ("factor" %in% tests) {
     factor_t_test <- BayesFactor::ttestBF(formula = form, data = data)
 
     res <- append(res, list("bayes_factor" = factor_t_test@bayesFactor$bf))
@@ -137,7 +140,11 @@ two_group_tests <- function(data,
 #' *kwn*: Kruskal-Wallis type,  Nemeyi's non-parametric all-pairs comparison test
 #' *median*: Brown-Mood all paris median test
 #'
-#' References to specific functions are given in the seealso section
+#' By default, all listed post-hoc procedures are run. Use `tests` to select
+#' only the procedures appropriate for the data and research question. The
+#' collection of returned p-values is not a single multiplicity-adjusted
+#' decision across all methods. References to specific functions are given in
+#' the seealso section.
 #'
 #' @param data Data.frame with the first column the values and the second column
 #'  the group names
@@ -162,8 +169,8 @@ two_group_tests <- function(data,
 #'
 #' @examples
 #' data <- data.frame(
-#'   "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
-#'   "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+#'   "value" = c(rnorm(8, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+#'   "group" = c(rep("A", 8), rep("B", 6), rep("C", 20))
 #' )
 #' group_tests(data)
 group_tests <- function(data,
@@ -173,11 +180,22 @@ group_tests <- function(data,
                           "dunn", "dscf", "kwc", "kwd", "kwn", "median"
                         ),
                         alpha = 0.05) {
+  alpha <- .validate_alpha(alpha)
+  tests <- .validate_tests(
+    tests,
+    c(
+      "tukey", "snk", "lsd", "bt", "kramer", "duncan", "scheffe",
+      "tamhaneT2", "uwh", "gh", "d3", "dunn", "dscf", "kwc", "kwd",
+      "kwn", "median"
+    )
+  )
+
   # Prepare Data
   tmp <- .prepare_data(data)
   data <- tmp$data
   groups <- tmp$groups
   form <- tmp$form
+  group_col <- colnames(data)[2]
 
   lm_mod <- stats::lm(form, data = data)
   anova_res <- stats::aov(form, data)
@@ -193,13 +211,22 @@ group_tests <- function(data,
   # TODO:: Add code for grouping
 
   # Equal Var and no/mild imbalance
-  if ("tukey" %in% tolower(tests)) {
+  if ("tukey" %in% tests) {
     # TukeyHSD(anova_res)
     tukey <- stats::TukeyHSD(anova_res, conf.level = 1 - alpha)
-    tukey_info <- as.data.frame(tukey$group)
+    tukey_info <- as.data.frame(tukey[[group_col]])
     # TODO:: Do this in-package
+    tukey_spec <- stats::setNames(list("Tukey"), group_col)
+
+    tukey_mcp <- do.call(
+      multcomp::mcp,
+      tukey_spec
+    )
     tmp <- multcomp::cld(
-      multcomp::glht(lm_mod, multcomp::mcp(group = "Tukey"))
+      multcomp::glht(
+        lm_mod,
+        linfct = tukey_mcp
+      )
     )
     tmp_group <- trimws(tmp$mcletters$monospacedLetters)
 
@@ -208,7 +235,7 @@ group_tests <- function(data,
       "groups" = tmp_group
     )))
   }
-  if ("snk" %in% tolower(tests)) {
+  if ("snk" %in% tests) {
     tmp <- PMCMRplus::snkTest(formula = form, data = data)
     res <- append(res, list("snk" = list(
       "pvalues" = tmp$p.value,
@@ -216,7 +243,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("lsd" %in% tolower(tests)) {
+  if ("lsd" %in% tests) {
     tmp <- PMCMRplus::lsdTest(formula = form, data = data)
     res <- append(res, list("lsd" = list(
       "pvalues" = tmp$p.value,
@@ -226,7 +253,7 @@ group_tests <- function(data,
   }
 
 
-  if ("bt" %in% tolower(tests)) {
+  if ("bt" %in% tests) {
     tmp <- stats::pairwise.t.test(
       x = data[, 1], g = data[, 2],
       p.adjust.method = "bonferroni"
@@ -237,18 +264,18 @@ group_tests <- function(data,
     )
     res <- append(res, list("bt" = list(
       "pvalues" = tmp$p.value,
-      "pvalues_nonpool" = tmp1$pvalues
+      "pvalues_nonpool" = tmp1$p.value
     )))
   }
 
 
 
   # Equal Var, imbalance (normal)
-  if ("kramer" %in% tolower(tests)) {
-    tukey_kramer <- agricolae::HSD.test(lm_mod, "group", unbalanced = TRUE, alpha = alpha)
+  if ("kramer" %in% tests) {
+    tukey_kramer <- agricolae::HSD.test(lm_mod, group_col, unbalanced = TRUE, alpha = alpha)
     res <- append(res, list("tukey_kramer" = tukey_kramer$groups))
   }
-  if ("duncan" %in% tolower(tests)) {
+  if ("duncan" %in% tests) {
     tmp <- PMCMRplus::duncanTest(formula = form, data = data) # data[,1],g=data[,2])
     res <- append(res, list("duncan" = list(
       "pvalues" = tmp$p.value,
@@ -256,7 +283,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("scheffe" %in% tolower(tests)) {
+  if ("scheffe" %in% tests) {
     tmp <- PMCMRplus::scheffeTest(formula = form, data = data) # data[,1],g=data[,2])
     res <- append(res, list("scheffe" = list(
       "pvalues" = tmp$p.value,
@@ -266,7 +293,7 @@ group_tests <- function(data,
   }
 
   # Unequal var, unbalanced, normal
-  if ("tamhaneT2" %in% tolower(tests)) {
+  if ("tamhanet2" %in% tests) {
     tmp <- PMCMRplus::tamhaneT2Test(formula = form, data = data) # data[,1],g=data[,2])
     res <- append(res, list("tamhane_t2" = list(
       "pvalues" = tmp$p.value,
@@ -274,7 +301,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("uwh" %in% tolower(tests)) {
+  if ("uwh" %in% tests) {
     tmp <- PMCMRplus::uryWigginsHochbergTest(formula = form, data = data) # data[,1],g=data[,2])
     res <- append(res, list("uwh" = list(
       "pvalues" = tmp$p.value,
@@ -284,11 +311,11 @@ group_tests <- function(data,
   }
 
   # Unequal var, unbalanced, non-normal
-  if ("gh" %in% tolower(tests)) {
+  if ("gh" %in% tests) {
     tmp <- games_howell(data)
     res <- append(res, list("games_howell" = tmp))
   }
-  if ("d3" %in% tolower(tests)) {
+  if ("d3" %in% tests) {
     tmp <- PMCMRplus::dunnettT3Test(formula = form, data = data) # data[,1], g=data[,2])
     res <- append(res, list("dunnett_t3" = list(
       "pvalues" = tmp$p.value,
@@ -298,7 +325,7 @@ group_tests <- function(data,
   }
 
   # Non-parametric
-  if ("dunn" %in% tolower(tests)) {
+  if ("dunn" %in% tests) {
     sink(nullfile())
     tmp <- dunn.test::dunn.test(data[, 1], g = data[, 2], alpha = alpha)
     sink()
@@ -313,7 +340,7 @@ group_tests <- function(data,
       )
     )
   }
-  if ("dscf" %in% tolower(tests)) {
+  if ("dscf" %in% tests) {
     tmp <- PMCMRplus::dscfAllPairsTest(formula = form, data = data)
     res <- append(res, list("dscf" = list(
       "pvalues" = tmp$p.value,
@@ -321,7 +348,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("kwc" %in% tolower(tests)) {
+  if ("kwc" %in% tests) {
     tmp <- PMCMRplus::kwAllPairsConoverTest(formula = form, data = data)
     res <- append(res, list("kw_conover" = list(
       "pvalues" = tmp$p.value,
@@ -329,7 +356,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("kwd" %in% tolower(tests)) {
+  if ("kwd" %in% tests) {
     tmp <- PMCMRplus::kwAllPairsDunnTest(formula = form, data = data)
     res <- append(res, list("kw_dunn" = list(
       "pvalues" = tmp$p.value,
@@ -337,7 +364,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("kwn" %in% tolower(tests)) {
+  if ("kwn" %in% tests) {
     tmp <- PMCMRplus::kwAllPairsNemenyiTest(formula = form, data = data)
     res <- append(res, list("kw_nemenyi" = list(
       "pvalues" = tmp$p.value,
@@ -345,7 +372,7 @@ group_tests <- function(data,
         .PMCMRplus_summary(tmp, alpha = alpha)
     )))
   }
-  if ("median" %in% tolower(tests)) {
+  if ("median" %in% tests) {
     tmp <- suppressWarnings(PMCMRplus::medianAllPairsTest(
       formula = form, data = data,
       p.adjust.method = "bonferroni"

@@ -18,6 +18,14 @@
 #' )
 #' boxcox_transformation(data)
 boxcox_transformation <- function(data, lambdas = seq(-3, 3, 1 / 10)) {
+  data <- .validate_group_data(data)
+  if (!is.numeric(lambdas) ||
+      length(lambdas) < 1 ||
+      any(!is.finite(lambdas))) {
+    stop("`lambdas` must be a non-empty finite numeric vector.",
+         call. = FALSE)
+  }
+
   # Make all positive
   x_shift <- data[, 1] - min(data[, 1]) + 1
 
@@ -60,6 +68,16 @@ boxcox_transformation <- function(data, lambdas = seq(-3, 3, 1 / 10)) {
 #' tmp <- boxcox_transformation(data)
 #' boxcox_inverse(tmp$data[, 1], tmp$lambda, tmp$shift)
 boxcox_inverse <- function(x, lambda, shift) {
+  if (!is.numeric(x) || any(!is.finite(x))) {
+    stop("`x` must be a finite numeric vector.", call. = FALSE)
+  }
+  if (length(lambda) != 1 || !is.numeric(lambda) || !is.finite(lambda)) {
+    stop("`lambda` must be a single finite numeric value.", call. = FALSE)
+  }
+  if (length(shift) != 1 || !is.numeric(shift) || !is.finite(shift)) {
+    stop("`shift` must be a single finite numeric value.", call. = FALSE)
+  }
+
   if (lambda != 0) {
     partial_invert <- (x * lambda + 1)^(1 / lambda)
   } else {

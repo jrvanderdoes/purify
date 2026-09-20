@@ -11,3 +11,15 @@ test_that("Resample Distribution Test", {
   )
   expect_equal(class(tmp)[1], "patchwork")
 })
+
+test_that("resample_distribution rejects empty inputs", {
+  expect_error(
+    resample_distribution(numeric(0), M = 10),
+    "must be non-empty"
+  )
+  expect_error(
+    resample_distribution(1:3, resampled_data = list()),
+    "must be non-empty"
+  )
+  expect_no_error(resample_distribution(rep(1, 10), M = 2))
+})

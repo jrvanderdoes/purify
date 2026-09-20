@@ -1,0 +1,31 @@
+* using log directory 'C:/Users/jerem/OneDrive/Documents/School/Waterloo/Research/RPackages/purify/..Rcheck'
+* using R version 4.5.3 (2026-03-11 ucrt)
+* using platform: x86_64-w64-mingw32
+* R was compiled by
+    gcc.exe (GCC) 14.3.0
+    GNU Fortran (GCC) 14.3.0
+* running under: Windows 11 x64 (build 26200)
+* using session charset: ASCII
+* using option '--no-manual'
+* checking for file './DESCRIPTION' ... OK
+* this is package 'purify' version '1.1.0'
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... ERROR
+Packages required but not available:
+  'agricolae', 'BayesFactor', 'Bolstad', 'car', 'dunn.test', 'ggplot2',
+  'multcomp', 'multcompView', 'nortest', 'patchwork', 'PMCMRplus'
+
+Packages suggested but not available:
+  'forecast', 'knitr', 'rmarkdown', 'testthat'
+
+VignetteBuilder package required for checking but not installed: 'knitr'
+
+The suggested packages are required for a complete check.
+Checking can be attempted without them by setting the environment
+variable _R_CHECK_FORCE_SUGGESTS_ to a false value.
+
+See section 'The DESCRIPTION file' in the 'Writing R Extensions'
+manual.
+* DONE
+Status: 1 ERROR

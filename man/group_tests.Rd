@@ -61,12 +61,16 @@ The following are non-parametric
 \emph{kwn}: Kruskal-Wallis type,  Nemeyi's non-parametric all-pairs comparison test
 \emph{median}: Brown-Mood all paris median test
 
-References to specific functions are given in the seealso section
+By default, all listed post-hoc procedures are run. Use \code{tests} to select
+only the procedures appropriate for the data and research question. The
+collection of returned p-values is not a single multiplicity-adjusted
+decision across all methods. References to specific functions are given in
+the seealso section.
 }
 \examples{
 data <- data.frame(
-  "value" = c(rnorm(14, sd = 2), rnorm(6), rnorm(20, mean = 2)),
-  "group" = c(rep("A", 14), rep("B", 6), rep("C", 20))
+  "value" = c(rnorm(8, sd = 2), rnorm(6), rnorm(20, mean = 2)),
+  "group" = c(rep("A", 8), rep("B", 6), rep("C", 20))
 )
 group_tests(data)
 }

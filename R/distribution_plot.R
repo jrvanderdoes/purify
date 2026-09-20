@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' distribution_plot(rnorm(100))
-#' distribution_plot(rexp(100), dist = "exp")
+#' distribution_plot(rexp(100), distribution = "exp")
 distribution_plot <- function(x, distribution = "norm",
                               alpha = 0.05, labels = names(x), ...) {
   # General Information

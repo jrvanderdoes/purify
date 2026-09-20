@@ -11,3 +11,16 @@ test_that("Box-Cox Testing", {
   tmp1 <- boxcox_inverse(tmp$data[, 1], tmp$lambda, tmp$shift)
   expect_equal(tmp1, data1[, 1])
 })
+
+test_that("Box-Cox functions validate inputs", {
+  dat <- data.frame(value = 1:6, group = rep(c("A", "B"), each = 3))
+
+  expect_error(
+    boxcox_transformation(dat, lambdas = numeric(0)),
+    "non-empty finite numeric vector"
+  )
+  expect_error(
+    boxcox_inverse(1:3, lambda = NA, shift = 0),
+    "single finite numeric value"
+  )
+})

@@ -65,8 +65,8 @@ as desired. Choices for simple, stratified, and block (both sliding and
 separate) resampling. Bootstrap and permutation resampling can be performed.
 }
 \examples{
-results <- resample(1:100)
-results <- resample(1:100, fn = mean)
+results <- resample(1:100, M = 100)
+results <- resample(1:100, fn = mean, M = 100)
 
 n <- 50
 data <- data.frame(
@@ -75,7 +75,7 @@ data <- data.frame(
   predictor2 = rnorm(n)
 )
 data$output <- 2 * data$predictor1 - data$predictor2 + stats::rnorm(nrow(data))
-results <- resample(data, ignore.columns = "output")
+results <- resample(data, ignore.columns = "output", M = 100)
 
 fn <- function(data) {
   coef(lm(output ~ ., data = data))

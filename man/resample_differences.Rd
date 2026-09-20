@@ -2,7 +2,7 @@
 % Please edit documentation in R/effect_size.R
 \name{resample_differences}
 \alias{resample_differences}
-\title{Effect Size by Resampling Differences}
+\title{Resampled Mean Differences}
 \usage{
 resample_differences(data, alpha = 0.05, M = 1000)
 }
@@ -15,12 +15,16 @@ the group names}
 \item{M}{Numeric. Number of resample iterations.}
 }
 \value{
-Table with the mean differences, confidence intervals and other
-information
+A data frame with one row for each pair of groups. The \code{diff}
+column contains the mean difference (second group minus first group),
+\code{lwr} and \code{upr} contain the percentile bootstrap confidence
+limits, and \code{se} contains the estimated standard error.
 }
 \description{
-Use with caution as this is still being tested. This function generates
-confidence intervals for the mean differences between groups.
+Estimate pairwise mean differences and percentile bootstrap confidence
+intervals between groups. The returned \code{se} column is the ordinary
+standard error of a difference between two independent means, estimated from
+the bootstrap group variances.
 }
 \examples{
 data <- data.frame(

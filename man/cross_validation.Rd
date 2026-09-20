@@ -7,7 +7,7 @@
 cross_validation(
   data,
   pred_fn,
-  cv_group_number = nrow(data),
+  cv_group_number = NULL,
   error_fn = function(data, pred) {
      sum((data - pred)^2)
  },

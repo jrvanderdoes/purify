@@ -25,12 +25,36 @@
 #'   data.frame("counts" = c(10, 10), c(0.5, 0.5))
 #' )
 observation_probability <- function(strata_info) {
-  if (ncol(strata_info) != 2) stop("Parameter strata_info must be a 2-column object.")
+  if (!is.data.frame(strata_info) && !is.matrix(strata_info)) {
+    stop("`strata_info` must be a data.frame or matrix.", call. = FALSE)
+  }
+
+  if (ncol(strata_info) != 2) {
+    stop("Parameter strata_info must be a 2-column object.", call. = FALSE)
+  }
+
   # Get information from the df
   freq <- strata_info[, 1]
+  if (!is.numeric(freq) ||
+      any(!is.finite(freq)) ||
+      any(freq < 0) ||
+      any(freq != round(freq)) ||
+      sum(freq) < 1) {
+    stop("The count column must contain nonnegative integers with a positive total.",
+         call. = FALSE)
+  }
+  freq <- as.integer(freq)
   size <- sum(freq)
 
   probs <- strata_info[, 2]
+  if (!is.numeric(probs) ||
+      any(!is.finite(probs)) ||
+      any(probs < 0) ||
+      sum(probs) <= 0) {
+    stop("The probability column must contain nonnegative values with a positive total.",
+         call. = FALSE)
+  }
+
   # Weight in case it does not sum to 1
   probs <- probs / sum(probs)
 
@@ -45,9 +69,15 @@ observation_probability <- function(strata_info) {
   #   probs <- freq / size
   # }
 
-  ideal_freq <- round(size * probs)
-  if (sum(ideal_freq) != size) {
-    stop("Internal error. Please report so we can fix this.")
+  expected_freq <- size * probs
+  ideal_freq <- floor(expected_freq)
+
+  remaining <- size - sum(ideal_freq)
+
+  if (remaining > 0) {
+    fractional_parts <- expected_freq - ideal_freq
+    add_to <- order(fractional_parts, decreasing = TRUE)[seq_len(remaining)]
+    ideal_freq[add_to] <- ideal_freq[add_to] + 1
   }
 
   diff_ideal <- abs(ideal_freq - freq)
