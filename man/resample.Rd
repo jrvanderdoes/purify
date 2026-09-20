@@ -44,8 +44,9 @@ sampled separately.}
 \item{sizes}{Option for selecting the resampled size or sizes of each stata.
 When used for non-strata, either numeric or NULL and is taken as the number
 of observations. When used for strate, can be
-numeric (single value or a value for each strata), function (e.g. min or
-max), or NULL (original sizes).}
+numeric (single value or a value for each strata), function (e.g. min, max,
+or mean), or NULL (original sizes). Function results are rounded to the
+nearest integer with a warning when necessary.}
 
 \item{fn}{Function to apply on the resampled data. When NULL, the resampled
 data are directly returned.}
